@@ -140,7 +140,7 @@ async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
 
 ### Download progress
 
-In cases where translation or language detection is only possible after a download, you can monitor the download progress (e.g. in order to show your users a progress bar) using code such as the following:
+For cases where using the API is only possible after a download, you can monitor the download progress (e.g. in order to show your users a progress bar) using code such as the following:
 
 ```js
 const translator = await ai.translator.create({
@@ -148,13 +148,19 @@ const translator = await ai.translator.create({
   targetLanguage,
   monitor(m) {
     m.addEventListener("downloadprogress", e => {
-      console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
+      console.log(`Downloaded ${e.loaded * 100}%`);
     });
   }
 });
 ```
 
 If the download fails, then `downloadprogress` events will stop being emitted, and the promise returned by `create()` will be rejected with a "`NetworkError`" `DOMException`.
+
+Note that in the case that multiple entities are downloaded (e.g., an `en` ↔ `ja` language pack and a `en` ↔ `ko` language pack to support the `ja` ↔ `ko` use case) web developers do not get the ability to monitor the individual downloads. All of them are bundled into the overall `downloadprogress` events, and the `create()` promise is not fulfilled until all downloads and loads are successful.
+
+The event is a [`ProgressEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) whose `loaded` property is between 0 and 1, and whose `total` property is always 1. (The exact number of total or downloaded bytes are not exposed; see the discussion in [webmachinelearning/writing-assistance-apis issue #15](https://github.com/webmachinelearning/writing-assistance-apis/issues/15).)
+
+At least two events, with `e.loaded === 0` and `e.loaded === 1`, will always be fired. This is true even if creating the translator or language detector doesn't require any downloading.
 
 <details>
 <summary>What's up with this pattern?</summary>
