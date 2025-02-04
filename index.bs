@@ -20,4 +20,4 @@ Die On: warning
 Introduction {#intro}
 =====================
 
-For now, see the [explainer]([REPOSITORYURL]).
+For now, see the [explainer](https://github.com/webmachinelearning/translation-api).
