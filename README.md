@@ -224,7 +224,7 @@ interface AICreateMonitor : EventTarget {
 
 callback AICreateMonitorCallback = undefined (AICreateMonitor monitor);
 
-enum AICapabilityAvailability { "unavailable", "downloadable", "downloading", "available" };
+enum AIAvailability { "unavailable", "downloadable", "downloading", "available" };
 ```
 
 ```webidl
@@ -233,7 +233,7 @@ enum AICapabilityAvailability { "unavailable", "downloadable", "downloading", "a
 [Exposed=(Window,Worker), SecureContext]
 interface AITranslatorFactory {
   Promise<AITranslator> create(AITranslatorCreateOptions options);
-  Promise<AICapabilityAvailability> availability(AITranslatorCreateCoreOptions options);
+  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
 };
 
 [Exposed=(Window,Worker), SecureContext]
@@ -268,7 +268,7 @@ dictionary AITranslatorTranslateOptions {
 [Exposed=(Window,Worker), SecureContext]
 interface AILanguageDetectorFactory {
   Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
-  Promise<AICapabilityAvailability> availability(optional AILanguageDetectorCreateCoreOptions = {});
+  Promise<AIAvailability> availability(optional AILanguageDetectorCreateCoreOptions = {});
 };
 
 [Exposed=(Window,Worker), SecureContext]
