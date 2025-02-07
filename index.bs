@@ -74,7 +74,7 @@ dictionary AITranslatorTranslateOptions {
 };
 </xmp>
 
-Each {{AI}} has a <dfn for="AI">translator factory</dfn>, an {{AITranslatorFactory}} object. Upon creation of the {{AI}} object, its [=AI/translator factory=] must be set to a [=new=] {{AITranslatorFactory}} object created in the {{AI}} object's [=relevant realm=].
+Every {{AI}} has a <dfn for="AI">translator factory</dfn>, an {{AITranslatorFactory}} object. Upon creation of the {{AI}} object, its [=AI/translator factory=] must be set to a [=new=] {{AITranslatorFactory}} object created in the {{AI}} object's [=relevant realm=].
 
 The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]'s [=AI/translator factory=].
 
@@ -183,9 +183,9 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
     1. If |sourceLanguageBestFit| and |targetLanguageBestFit| are both not undefined, then:
 
-      1. Set |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |sourceLanguageBestFit|.
+      1. Set |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |sourceLanguageBestFit|.\[[locale]].
 
-      1. Set |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] to |targetLanguageBestFit|.
+      1. Set |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] to |targetLanguageBestFit|.\[[locale]].
 
       1. Return |availability|.
 
