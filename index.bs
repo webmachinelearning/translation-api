@@ -189,6 +189,18 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
       1. Return |availability|.
 
+  1. If (|options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"], |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]) [=language arc/can be fulfilled by the identity translation=], then return "{{AIAvailability/available}}".
+
+     <p class="note">Such cases could also return "{{AIAvailability/downloadable}}", "{{AIAvailability/downloading}}", or "{{AIAvailability/available}}" because of the above steps, if the user agent has specific entries in its [=translator language arc availabilities=] for the given language arc. However, the identity translation is always available, so this step ensures that we never return "{{AIAvailability/unavailable}}" for such cases.
+
+     <div class="example" id="example-identity-translation">
+      <p>One [=language arc=] that [=language arc/can be fulfilled by the identity translation=] is (`"en-US"`, `"en-GB"`). It is conceivable that an implementation might support a specialized model for this translation, which would show up in the [=translator language arc availabilities=].
+
+      <p>On the other hand, it's pretty unlikely that an implementation has any specialized model for the [=language arc=] ("`en-x-asdf`", "`en-x-xyzw`"). In such a case, this step takes over, and later calls to the [=translate=] algorithm will use the identity translation.
+
+      <p>Note that when this step takes over, |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] and |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] are not modified, so if this algorithm is being called from {{AITranslatorFactory/create()}}, that means the resulting {{AITranslator}} object's {{AITranslator/sourceLanguage}} and {{AITranslator/targetLanguage}} properties will return the original inputs, and not some canonicalized form.
+     </div>
+
   1. Return "{{AIAvailability/unavailable}}".
 </div>
 
@@ -210,28 +222,6 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
     * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after performing a not-currently ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/downloadable}}".
 
     * The [=map/keys=] must not include any [=language arcs=] that [=language arc/overlap=] with the other [=map/keys=].
-</div>
-
-<div algorithm>
-  A [=language arc=] |arc| <dfn for="language arc">overlaps</dfn> with a [=set=] of [=language arcs=] |otherArcs| if the following steps return true:
-
-  1. Let |sourceLanguages| be the [=set=] composed of the [=language arc/source languages=] of each [=set/item=] in |otherArcs|.
-
-  1. If [$LookupMatchingLocaleByBestFit$](|sourceLanguages|, |arc|'s [=language arc/source language=]) is not undefined, then return true.
-
-  1. Let |targetLanguages| be the [=set=] composed of the [=language arc/target languages=] of each [=set/item=] in |otherArcs|.
-
-  1. If [$LookupMatchingLocaleByBestFit$](|targetLanguages|, |arc|'s [=language arc/target language=]) is not undefined, then return true.
-
-  1. Return false.
-</div>
-
-<div class="example" id="example-language-arc-overlap">
-  The [=language arc=] ("`en`", "`fr`") [=language arc/overlaps=] with « ("`en`", "`fr-CA`") », so the user agent's [=translator language arc availabilities=] cannot contain both of these [=language arcs=] at the same time.
-
-  Instead, a typical user agent will either support only one English-to-French language arc (presumably ("`en`", "`fr`")), or it could support multiple non-overlapping English-to-French language arcs, such as ("`en`", "`fr-FR`"), ("`en`", "`fr-CA`"), and ("`en`", "`fr-CH`").
-
-  In the latter case, if the web developer requested to create a translator using <code highlight="js">ai.translator.create({ sourceLanguage: "en", targetLanguage: "fr" })</code>, the [$LookupMatchingLocaleByBestFit$] algorithm would choose one of the three possible language arcs to use (presumably ("`en`", "`fr-FR`")).
 </div>
 
 <div class="example" id="example-language-arc-support">
@@ -259,10 +249,42 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
     await a("en-US", "zh-Hant") === "downloadable"; // en-US will best-fit to en
     await a("en-GB", "zh-Hant") === "downloadable"; // en-GB will best-fit to en
 
-    // Even very unexpected subtags will best-fit to en / zh-Hans
+    // Even very unexpected subtags will best-fit to en or zh-Hans
     await a("en-Braille-x-lolcat", "zh-Hant") === "downloadable";
     await a("en", "zh-BR-Kana") === "available";
     </xmp>
+</div>
+
+<div algorithm>
+  A [=language arc=] |arc| <dfn for="language arc">overlaps</dfn> with a [=set=] of [=language arcs=] |otherArcs| if the following steps return true:
+
+  1. Let |sourceLanguages| be the [=set=] composed of the [=language arc/source languages=] of each [=set/item=] in |otherArcs|.
+
+  1. If [$LookupMatchingLocaleByBestFit$](|sourceLanguages|, |arc|'s [=language arc/source language=]) is not undefined, then return true.
+
+  1. Let |targetLanguages| be the [=set=] composed of the [=language arc/target languages=] of each [=set/item=] in |otherArcs|.
+
+  1. If [$LookupMatchingLocaleByBestFit$](|targetLanguages|, |arc|'s [=language arc/target language=]) is not undefined, then return true.
+
+  1. Return false.
+</div>
+
+<div class="example" id="example-language-arc-overlap">
+  The [=language arc=] ("`en`", "`fr`") [=language arc/overlaps=] with « ("`en`", "`fr-CA`") », so the user agent's [=translator language arc availabilities=] cannot contain both of these [=language arcs=] at the same time.
+
+  Instead, a typical user agent will either support only one English-to-French language arc (presumably ("`en`", "`fr`")), or it could support multiple non-overlapping English-to-French language arcs, such as ("`en`", "`fr-FR`"), ("`en`", "`fr-CA`"), and ("`en`", "`fr-CH`").
+
+  In the latter case, if the web developer requested to create a translator using <code highlight="js">ai.translator.create({ sourceLanguage: "en", targetLanguage: "fr" })</code>, the [$LookupMatchingLocaleByBestFit$] algorithm would choose one of the three possible language arcs to use (presumably ("`en`", "`fr-FR`")).
+</div>
+
+<div algorithm>
+  A [=language arc=] |arc| <dfn for="language arc">can be fulfilled by the identity translation</dfn> if the following steps return true:
+
+  1. If [$LookupMatchingLocaleByBestFit$](|arc|'s [=language arc/source language=], « |arc|'s [=language arc/target language=] ») is not undefined, then return true.
+
+  1. If [$LookupMatchingLocaleByBestFit$](|arc|'s [=language arc/target language=], « |arc|'s [=language arc/source language=] ») is not undefined, then return true.
+
+  1. Return false.
 </div>
 
 <h3 id="the-aitranslator-class">The {{AITranslator}} class</h3>
@@ -317,6 +339,8 @@ The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to r
   1. In an [=implementation-defined=] manner, subject to the following guidelines, begin the processs of translating |input| from |sourceLanguage| into |targetLanguage|.
 
      If |input| is the empty string, or otherwise consists of no translatable content (e.g., only contains whitespace, or control characters), then the resulting translation should be |input|. In such cases, |sourceLanguage| and |targetLanguage| should be ignored.
+
+     If (|sourceLanguage|, |targetLanguage|) [=language arc/can be fulfilled by the identity translation=], then the resulting translation should be |input|.
 
   1. While true:
 
