@@ -177,9 +177,9 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
   1. [=map/For each=] |languageArc| → |availability| in |availabilities|:
 
-    1. Let |sourceLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/source language=] », |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"]).
+    1. Let |sourceLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/source language=] », « |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] »).
 
-    1. Let |targetLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/target language=] », |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]).
+    1. Let |targetLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/target language=] », « |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] »).
 
     1. If |sourceLanguageBestFit| and |targetLanguageBestFit| are both not undefined, then:
 
@@ -260,11 +260,11 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
 
   1. Let |sourceLanguages| be the [=set=] composed of the [=language arc/source languages=] of each [=set/item=] in |otherArcs|.
 
-  1. If [$LookupMatchingLocaleByBestFit$](|sourceLanguages|, |arc|'s [=language arc/source language=]) is not undefined, then return true.
+  1. If [$LookupMatchingLocaleByBestFit$](|sourceLanguages|, « |arc|'s [=language arc/source language=] ») is not undefined, then return true.
 
   1. Let |targetLanguages| be the [=set=] composed of the [=language arc/target languages=] of each [=set/item=] in |otherArcs|.
 
-  1. If [$LookupMatchingLocaleByBestFit$](|targetLanguages|, |arc|'s [=language arc/target language=]) is not undefined, then return true.
+  1. If [$LookupMatchingLocaleByBestFit$](|targetLanguages|, « |arc|'s [=language arc/target language=] ») is not undefined, then return true.
 
   1. Return false.
 </div>
@@ -280,9 +280,9 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
 <div algorithm>
   A [=language arc=] |arc| <dfn for="language arc">can be fulfilled by the identity translation</dfn> if the following steps return true:
 
-  1. If [$LookupMatchingLocaleByBestFit$](|arc|'s [=language arc/source language=], « |arc|'s [=language arc/target language=] ») is not undefined, then return true.
+  1. If [$LookupMatchingLocaleByBestFit$](« |arc|'s [=language arc/source language=] », « |arc|'s [=language arc/target language=] ») is not undefined, then return true.
 
-  1. If [$LookupMatchingLocaleByBestFit$](|arc|'s [=language arc/target language=], « |arc|'s [=language arc/source language=] ») is not undefined, then return true.
+  1. If [$LookupMatchingLocaleByBestFit$](« |arc|'s [=language arc/target language=] », « |arc|'s [=language arc/source language=] ») is not undefined, then return true.
 
   1. Return false.
 </div>
