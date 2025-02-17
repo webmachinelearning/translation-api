@@ -5,10 +5,10 @@
   <title>Translator and Language Detector APIs</title>
   <meta content="CG-DRAFT" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 97a1608be, updated Mon Feb 3 16:09:34 2025 -0800" name="generator">
+  <meta content="Bikeshed version 0781e88e0, updated Fri Feb 14 13:26:46 2025 -0800" name="generator">
   <link href="https://webmachinelearning.github.io/translation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="f478eab8a113fff0f7932c7362bf7c8b10f09ca6" name="revision">
+  <meta content="9c3419ebec0c838d6063d915c75e9a932a5ff0a7" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -331,6 +331,135 @@ figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
 }
 </style>
+<style>/* Boilerplate: style-dfn-panel */
+:root {
+    --dfnpanel-bg: #ddd;
+    --dfnpanel-text: var(--text);
+    --dfnpanel-target-bg: #ffc;
+    --dfnpanel-target-outline: orange;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dfnpanel-bg: #222;
+        --dfnpanel-text: var(--text);
+        --dfnpanel-target-bg: #333;
+        --dfnpanel-target-outline: silver;
+    }
+}
+.dfn-panel {
+    position: absolute;
+    z-index: 35;
+    width: 20em;
+    width: 300px;
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    padding: 0.5em 0.75em;
+    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+    background: var(--dfnpanel-bg);
+    color: var(--dfnpanel-text);
+    border: outset 0.2em;
+    white-space: normal; /* in case it's moved into a pre */
+}
+.dfn-panel:not(.on) { display: none; }
+.dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+.dfn-panel > b { display: block; }
+.dfn-panel a { color: var(--dfnpanel-text); }
+.dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+.dfn-panel a:focus {
+    outline: 5px auto Highlight;
+    outline: 5px auto -webkit-focus-ring-color;
+}
+.dfn-panel > b + b { margin-top: 0.25em; }
+.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
+.dfn-panel li a {
+    max-width: calc(300px - 1.5em - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dfn-panel.activated {
+    display: inline-block;
+    position: fixed;
+    left: 8px;
+    bottom: 2em;
+    margin: 0 auto;
+    max-width: calc(100vw - 1.5em - .4em - .5em);
+    max-height: 30vh;
+    transition: left 1s ease-out, bottom 1s ease-out;
+}
+
+.dfn-panel .link-item:hover {
+    text-decoration: underline;
+}
+.dfn-panel .link-item .copy-icon {
+    opacity: 0;
+}
+.dfn-panel .link-item:hover .copy-icon,
+.dfn-panel .link-item .copy-icon:focus {
+    opacity: 1;
+}
+
+.dfn-panel .copy-icon {
+    display: inline-block;
+    margin-right: 0.5em;
+    width: 0.85em;
+    height: 1em;
+    border-radius: 3px;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.dfn-panel .copy-icon .icon {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.dfn-panel .copy-icon .icon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    background-color: #ccc;
+    opacity: 0.25;
+    transform: translate(3px, -3px);
+}
+
+.dfn-panel .copy-icon:active .icon::before {
+    opacity: 1;
+}
+
+.dfn-paneled[role="button"] { cursor: help; }
+
+.highlighted {
+    animation: target-fade 3s;
+}
+
+@keyframes target-fade {
+    from {
+        background-color: var(--dfnpanel-target-bg);
+        outline: 5px solid var(--dfnpanel-target-outline);
+    }
+    to {
+        color: var(--a-normal-text);
+        background-color: transparent;
+        outline: transparent;
+    }
+}
+</style>
+<style>/* Boilerplate: style-idl-highlighting */
+pre.idl.highlight {
+    background: var(--borderedblock-bg, var(--def-bg));
+}
+</style>
 <style>/* Boilerplate: style-issues */
 a[href].issue-return {
     float: right;
@@ -349,6 +478,39 @@ a[href].issue-return {
 [data-md] > :last-child {
     margin-bottom: 0;
 }
+</style>
+<style>/* Boilerplate: style-ref-hints */
+:root {
+    --ref-hint-bg: #ddd;
+    --ref-hint-text: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ref-hint-bg: #222;
+        --ref-hint-text: var(--text);
+    }
+}
+
+.ref-hint {
+    display: inline-block;
+    position: absolute;
+    z-index: 35;
+    width: 20em;
+    width: 300px;
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    padding: 0.5em 0.5em;
+    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+    background: var(--ref-hint-bg);
+    color: var(--ref-hint-text);
+    border: outset 0.2em;
+    white-space: normal; /* in case it's moved into a pre */
+}
+
+.ref-hint * { margin: 0; padding: 0; text-indent: 0; }
+
+.ref-hint ul { padding: 0 0 0 1em; list-style: none; }
 </style>
 <style>/* Boilerplate: style-selflinks */
 :root {
@@ -409,11 +571,175 @@ a.self-link::before            { content: "¶"; }
 .heading > a.self-link::before { content: "§"; }
 dfn > a.self-link::before      { content: "#"; }
 </style>
+<style>/* Boilerplate: style-syntax-highlighting */
+code.highlight { padding: .1em; border-radius: .3em; }
+pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+
+.highlight:not(.idl) { background: rgba(0, 0, 0, .03); }
+c-[a] { color: #990055 } /* Keyword.Declaration */
+c-[b] { color: #990055 } /* Keyword.Type */
+c-[c] { color: #708090 } /* Comment */
+c-[d] { color: #708090 } /* Comment.Multiline */
+c-[e] { color: #0077aa } /* Name.Attribute */
+c-[f] { color: #669900 } /* Name.Tag */
+c-[g] { color: #222222 } /* Name.Variable */
+c-[k] { color: #990055 } /* Keyword */
+c-[l] { color: #000000 } /* Literal */
+c-[m] { color: #000000 } /* Literal.Number */
+c-[n] { color: #0077aa } /* Name */
+c-[o] { color: #999999 } /* Operator */
+c-[p] { color: #999999 } /* Punctuation */
+c-[s] { color: #a67f59 } /* Literal.String */
+c-[t] { color: #a67f59 } /* Literal.String.Single */
+c-[u] { color: #a67f59 } /* Literal.String.Double */
+c-[cp] { color: #708090 } /* Comment.Preproc */
+c-[c1] { color: #708090 } /* Comment.Single */
+c-[cs] { color: #708090 } /* Comment.Special */
+c-[kc] { color: #990055 } /* Keyword.Constant */
+c-[kn] { color: #990055 } /* Keyword.Namespace */
+c-[kp] { color: #990055 } /* Keyword.Pseudo */
+c-[kr] { color: #990055 } /* Keyword.Reserved */
+c-[ld] { color: #000000 } /* Literal.Date */
+c-[nc] { color: #0077aa } /* Name.Class */
+c-[no] { color: #0077aa } /* Name.Constant */
+c-[nd] { color: #0077aa } /* Name.Decorator */
+c-[ni] { color: #0077aa } /* Name.Entity */
+c-[ne] { color: #0077aa } /* Name.Exception */
+c-[nf] { color: #0077aa } /* Name.Function */
+c-[nl] { color: #0077aa } /* Name.Label */
+c-[nn] { color: #0077aa } /* Name.Namespace */
+c-[py] { color: #0077aa } /* Name.Property */
+c-[ow] { color: #999999 } /* Operator.Word */
+c-[mb] { color: #000000 } /* Literal.Number.Bin */
+c-[mf] { color: #000000 } /* Literal.Number.Float */
+c-[mh] { color: #000000 } /* Literal.Number.Hex */
+c-[mi] { color: #000000 } /* Literal.Number.Integer */
+c-[mo] { color: #000000 } /* Literal.Number.Oct */
+c-[sb] { color: #a67f59 } /* Literal.String.Backtick */
+c-[sc] { color: #a67f59 } /* Literal.String.Char */
+c-[sd] { color: #a67f59 } /* Literal.String.Doc */
+c-[se] { color: #a67f59 } /* Literal.String.Escape */
+c-[sh] { color: #a67f59 } /* Literal.String.Heredoc */
+c-[si] { color: #a67f59 } /* Literal.String.Interpol */
+c-[sx] { color: #a67f59 } /* Literal.String.Other */
+c-[sr] { color: #a67f59 } /* Literal.String.Regex */
+c-[ss] { color: #a67f59 } /* Literal.String.Symbol */
+c-[vc] { color: #0077aa } /* Name.Variable.Class */
+c-[vg] { color: #0077aa } /* Name.Variable.Global */
+c-[vi] { color: #0077aa } /* Name.Variable.Instance */
+c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
+
+@media (prefers-color-scheme: dark) {
+    .highlight:not(.idl) { background: rgba(255, 255, 255, .05); }
+
+    c-[a] { color: #d33682 } /* Keyword.Declaration */
+    c-[b] { color: #d33682 } /* Keyword.Type */
+    c-[c] { color: #2aa198 } /* Comment */
+    c-[d] { color: #2aa198 } /* Comment.Multiline */
+    c-[e] { color: #268bd2 } /* Name.Attribute */
+    c-[f] { color: #b58900 } /* Name.Tag */
+    c-[g] { color: #cb4b16 } /* Name.Variable */
+    c-[k] { color: #d33682 } /* Keyword */
+    c-[l] { color: #657b83 } /* Literal */
+    c-[m] { color: #657b83 } /* Literal.Number */
+    c-[n] { color: #268bd2 } /* Name */
+    c-[o] { color: #657b83 } /* Operator */
+    c-[p] { color: #657b83 } /* Punctuation */
+    c-[s] { color: #6c71c4 } /* Literal.String */
+    c-[t] { color: #6c71c4 } /* Literal.String.Single */
+    c-[u] { color: #6c71c4 } /* Literal.String.Double */
+    c-[ch] { color: #2aa198 } /* Comment.Hashbang */
+    c-[cp] { color: #2aa198 } /* Comment.Preproc */
+    c-[cpf] { color: #2aa198 } /* Comment.PreprocFile */
+    c-[c1] { color: #2aa198 } /* Comment.Single */
+    c-[cs] { color: #2aa198 } /* Comment.Special */
+    c-[kc] { color: #d33682 } /* Keyword.Constant */
+    c-[kn] { color: #d33682 } /* Keyword.Namespace */
+    c-[kp] { color: #d33682 } /* Keyword.Pseudo */
+    c-[kr] { color: #d33682 } /* Keyword.Reserved */
+    c-[ld] { color: #657b83 } /* Literal.Date */
+    c-[nc] { color: #268bd2 } /* Name.Class */
+    c-[no] { color: #268bd2 } /* Name.Constant */
+    c-[nd] { color: #268bd2 } /* Name.Decorator */
+    c-[ni] { color: #268bd2 } /* Name.Entity */
+    c-[ne] { color: #268bd2 } /* Name.Exception */
+    c-[nf] { color: #268bd2 } /* Name.Function */
+    c-[nl] { color: #268bd2 } /* Name.Label */
+    c-[nn] { color: #268bd2 } /* Name.Namespace */
+    c-[py] { color: #268bd2 } /* Name.Property */
+    c-[ow] { color: #657b83 } /* Operator.Word */
+    c-[mb] { color: #657b83 } /* Literal.Number.Bin */
+    c-[mf] { color: #657b83 } /* Literal.Number.Float */
+    c-[mh] { color: #657b83 } /* Literal.Number.Hex */
+    c-[mi] { color: #657b83 } /* Literal.Number.Integer */
+    c-[mo] { color: #657b83 } /* Literal.Number.Oct */
+    c-[sa] { color: #6c71c4 } /* Literal.String.Affix */
+    c-[sb] { color: #6c71c4 } /* Literal.String.Backtick */
+    c-[sc] { color: #6c71c4 } /* Literal.String.Char */
+    c-[dl] { color: #6c71c4 } /* Literal.String.Delimiter */
+    c-[sd] { color: #6c71c4 } /* Literal.String.Doc */
+    c-[se] { color: #6c71c4 } /* Literal.String.Escape */
+    c-[sh] { color: #6c71c4 } /* Literal.String.Heredoc */
+    c-[si] { color: #6c71c4 } /* Literal.String.Interpol */
+    c-[sx] { color: #6c71c4 } /* Literal.String.Other */
+    c-[sr] { color: #6c71c4 } /* Literal.String.Regex */
+    c-[ss] { color: #6c71c4 } /* Literal.String.Symbol */
+    c-[fm] { color: #268bd2 } /* Name.Function.Magic */
+    c-[vc] { color: #cb4b16 } /* Name.Variable.Class */
+    c-[vg] { color: #cb4b16 } /* Name.Variable.Global */
+    c-[vi] { color: #cb4b16 } /* Name.Variable.Instance */
+    c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
+    c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
+}
+</style>
+<style>/* Boilerplate: style-var-click-highlighting */
+/*
+Colors were chosen in Lab using https://nixsensor.com/free-color-converter/
+D50 2deg illuminant, L in [0,100], a and b in [-128, 128]
+0 = lab(85,0,85)
+1 = lab(85,80,30)
+2 = lab(85,-40,40)
+3 = lab(85,-50,0)
+4 = lab(85,5,15)
+5 = lab(85,-10,-50)
+6 = lab(85,35,-15)
+
+For darkmode:
+0 = oklab(50%   0%  108%)
+1 = oklab(50% -51%   51%)
+2 = oklab(50% -64%  -20%)
+3 = oklab(50%   6%   19%)
+4 = oklab(50% -12%  -64%)
+5 = oklab(50%  44%  -19%)  
+6 = oklab(50% 102%   38%)
+*/
+
+[data-algorithm] var { cursor: pointer; }
+var[data-var-color] { background-color: var(--var-bg); box-shadow: 0 0 0 2px var(--var-bg); }
+
+var[data-var-color] { --var-bg: #F4D200; }
+var[data-var-color="1"] { --var-bg: #FF87A2; }
+var[data-var-color="2"] { --var-bg: #96E885; }
+var[data-var-color="3"] { --var-bg: #3EEED2; }
+var[data-var-color="4"] { --var-bg: #EACFB6; }
+var[data-var-color="5"] { --var-bg: #82DDFF; }
+var[data-var-color="6"] { --var-vg: #FFBCF2; }
+
+@media (prefers-color-scheme: dark) {
+	var[data-var-color] { --var-bg: #bc1a00; }
+	var[data-var-color="1"] { --var-bg: #007f00; }
+	var[data-var-color="2"] { --var-bg: #008698; }
+	var[data-var-color="3"] { --var-bg: #7f5b2b; }
+	var[data-var-color="4"] { --var-bg: #004df3; }
+	var[data-var-color="5"] { --var-bg: #a1248a; }
+	var[data-var-color="6"] { --var-vg: #ff0000; }
+}
+</style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://webmachinelearning.github.io/"> <img alt="Logo" height="100" src="https://webmachinelearning.github.io/webmachinelearning-logo.png" width="100"> </a> </p>
    <h1 class="p-name no-ref" id="title">Translator and Language Detector APIs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-02-05">5 February 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-02-17">17 February 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -451,10 +777,1693 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
     <li><a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
+    <li>
+     <a href="#translator-api"><span class="secno">2</span> <span class="content">The translator API</span></a>
+     <ol class="toc">
+      <li><a href="#translator-creation"><span class="secno">2.1</span> <span class="content">Creation</span></a>
+      <li><a href="#translator-availability"><span class="secno">2.2</span> <span class="content">Availability</span></a>
+      <li><a href="#the-aitranslator-class"><span class="secno">2.3</span> <span class="content">The <code class="idl"><span>AITranslator</span></code> class</span></a>
+      <li>
+       <a href="#translator-translation"><span class="secno">2.4</span> <span class="content">Translation</span></a>
+       <ol class="toc">
+        <li><a href="#translator-algorithm"><span class="secno">2.4.1</span> <span class="content">The algorithm</span></a>
+        <li><a href="#translator-errors"><span class="secno">2.4.2</span> <span class="content">Errors</span></a>
+       </ol>
+     </ol>
+    <li>
+     <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
+     <ol class="toc">
+      <li><a href="#index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+      <li><a href="#index-defined-elsewhere"><span class="secno"></span> <span class="content">Terms defined by reference</span></a>
+     </ol>
+    <li>
+     <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
+     <ol class="toc">
+      <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
+     </ol>
+    <li><a href="#idl-index"><span class="secno"></span> <span class="content">IDL Index</span></a>
    </ol>
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
-   <p>For now, see the <a href="https://github.com/webmachinelearning/translation-api">explainer</a>.</p>
+   <p>For now, see the <a href="https://github.com/webmachinelearning/translation-api/blob/main/README.md">explainer</a>.</p>
+   <h2 class="heading settled" data-level="2" id="translator-api"><span class="secno">2. </span><span class="content">The translator API</span><a class="self-link" href="#translator-api"></a></h2>
+<pre class="idl highlight def">// TODO FIX: workaround for https://github.com/speced/bikeshed/issues/3023
+// partial interface AI {
+//   readonly attribute AITranslatorFactory translator;
+// };
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext" id="ref-for-SecureContext"><c- g>SecureContext</c-></a>]
+<c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="aitranslatorfactory"><code><c- g>AITranslatorFactory</c-></code></dfn> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#aitranslator" id="ref-for-aitranslator"><c- n>AITranslator</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-aitranslatorfactory-create" id="ref-for-dom-aitranslatorfactory-create"><c- g>create</c-></a>(<a data-link-type="idl-name" href="#dictdef-aitranslatorcreateoptions" id="ref-for-dictdef-aitranslatorcreateoptions"><c- n>AITranslatorCreateOptions</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorFactory/create(options)" data-dfn-type="argument" data-export id="dom-aitranslatorfactory-create-options-options"><code><c- g>options</c-></code></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability" id="ref-for-enumdef-aiavailability"><c- n>AIAvailability</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-aitranslatorfactory-availability" id="ref-for-dom-aitranslatorfactory-availability"><c- g>availability</c-></a>(<a data-link-type="idl-name" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions"><c- n>AITranslatorCreateCoreOptions</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorFactory/availability(options)" data-dfn-type="argument" data-export id="dom-aitranslatorfactory-availability-options-options"><code><c- g>options</c-></code></dfn>);
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed①"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext" id="ref-for-SecureContext①"><c- g>SecureContext</c-></a>]
+<c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="aitranslator"><code><c- g>AITranslator</c-></code></dfn> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise②"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-aitranslator-translate" id="ref-for-dom-aitranslator-translate"><c- g>translate</c-></a>(
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString①"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator/translate(input, options), AITranslator/translate(input)" data-dfn-type="argument" data-export id="dom-aitranslator-translate-input-options-input"><code><c- g>input</c-></code></dfn>,
+    <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-aitranslatortranslateoptions" id="ref-for-dictdef-aitranslatortranslateoptions"><c- n>AITranslatorTranslateOptions</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator/translate(input, options), AITranslator/translate(input)" data-dfn-type="argument" data-export id="dom-aitranslator-translate-input-options-options"><code><c- g>options</c-></code></dfn> = {}
+  );
+  <a data-link-type="idl-name" href="https://streams.spec.whatwg.org/#readablestream" id="ref-for-readablestream"><c- n>ReadableStream</c-></a> <a class="idl-code" data-link-type="method" href="#dom-aitranslator-translatestreaming" id="ref-for-dom-aitranslator-translatestreaming"><c- g>translateStreaming</c-></a>(
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString②"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator/translateStreaming(input, options), AITranslator/translateStreaming(input)" data-dfn-type="argument" data-export id="dom-aitranslator-translatestreaming-input-options-input"><code><c- g>input</c-></code></dfn>,
+    <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-aitranslatortranslateoptions" id="ref-for-dictdef-aitranslatortranslateoptions①"><c- n>AITranslatorTranslateOptions</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator/translateStreaming(input, options), AITranslator/translateStreaming(input)" data-dfn-type="argument" data-export id="dom-aitranslator-translatestreaming-input-options-options"><code><c- g>options</c-></code></dfn> = {}
+  );
+
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString③"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-aitranslator-sourcelanguage" id="ref-for-dom-aitranslator-sourcelanguage"><c- g>sourceLanguage</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString④"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-aitranslator-targetlanguage" id="ref-for-dom-aitranslator-targetlanguage"><c- g>targetLanguage</c-></a>;
+};
+<a data-link-type="idl-name" href="#aitranslator" id="ref-for-aitranslator①"><c- n>AITranslator</c-></a> <c- b>includes</c-> <a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#aidestroyable" id="ref-for-aidestroyable"><c- n>AIDestroyable</c-></a>;
+
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-aitranslatorcreatecoreoptions"><code><c- g>AITranslatorCreateCoreOptions</c-></code></dfn> {
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑤"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorCreateCoreOptions" data-dfn-type="dict-member" data-export data-type="DOMString" id="dom-aitranslatorcreatecoreoptions-sourcelanguage"><code><c- g>sourceLanguage</c-></code></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑥"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorCreateCoreOptions" data-dfn-type="dict-member" data-export data-type="DOMString" id="dom-aitranslatorcreatecoreoptions-targetlanguage"><code><c- g>targetLanguage</c-></code></dfn>;
+};
+
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-aitranslatorcreateoptions"><code><c- g>AITranslatorCreateOptions</c-></code></dfn> : <a data-link-type="idl-name" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions①"><c- n>AITranslatorCreateCoreOptions</c-></a> {
+  <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal"><c- n>AbortSignal</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorCreateOptions" data-dfn-type="dict-member" data-export data-type="AbortSignal" id="dom-aitranslatorcreateoptions-signal"><code><c- g>signal</c-></code></dfn>;
+  <a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#callbackdef-aicreatemonitorcallback" id="ref-for-callbackdef-aicreatemonitorcallback"><c- n>AICreateMonitorCallback</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorCreateOptions" data-dfn-type="dict-member" data-export data-type="AICreateMonitorCallback" id="dom-aitranslatorcreateoptions-monitor"><code><c- g>monitor</c-></code></dfn>;
+};
+
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-aitranslatortranslateoptions"><code><c- g>AITranslatorTranslateOptions</c-></code></dfn> {
+  <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal①"><c- n>AbortSignal</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorTranslateOptions" data-dfn-type="dict-member" data-export data-type="AbortSignal" id="dom-aitranslatortranslateoptions-signal"><code><c- g>signal</c-></code></dfn>;
+};
+</pre>
+   <p>Every <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#ai" id="ref-for-ai">AI</a></code> has a <dfn class="dfn-paneled" data-dfn-for="AI" data-dfn-type="dfn" data-noexport id="ai-translator-factory">translator factory</dfn>, an <code class="idl"><a data-link-type="idl" href="#aitranslatorfactory" id="ref-for-aitranslatorfactory">AITranslatorFactory</a></code> object. Upon creation of the <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#ai" id="ref-for-ai①">AI</a></code> object, its <a data-link-type="dfn" href="#ai-translator-factory" id="ref-for-ai-translator-factory">translator factory</a> must be set to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new">new</a> <code class="idl"><a data-link-type="idl" href="#aitranslatorfactory" id="ref-for-aitranslatorfactory①">AITranslatorFactory</a></code> object created in the <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#ai" id="ref-for-ai②">AI</a></code> object’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm">relevant realm</a>.</p>
+   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AI" data-dfn-type="attribute" data-export id="dom-ai-translator"><code>translator</code></dfn> getter steps are to return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this">this</a>’s <a data-link-type="dfn" href="#ai-translator-factory" id="ref-for-ai-translator-factory①">translator factory</a>.</p>
+   <h3 class="heading settled" data-level="2.1" id="translator-creation"><span class="secno">2.1. </span><span class="content">Creation</span><a class="self-link" href="#translator-creation"></a></h3>
+   <div class="algorithm" data-algorithm="create(options)" data-algorithm-for="AITranslatorFactory">
+     The <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorFactory" data-dfn-type="method" data-export id="dom-aitranslatorfactory-create"><code>create(<var>options</var>)</code></dfn> method steps are: 
+    <ol>
+     <li data-md>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global">relevant global object</a> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#window" id="ref-for-window">Window</a></code> whose <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window" id="ref-for-concept-document-window">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/document-sequences.html#fully-active" id="ref-for-fully-active">fully active</a>, then return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code>.</p>
+     <li data-md>
+      <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreateoptions-signal" id="ref-for-dom-aitranslatorcreateoptions-signal">signal</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exists</a> and is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted">aborted</a>, then return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①">a promise rejected with</a> <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreateoptions-signal" id="ref-for-dom-aitranslatorcreateoptions-signal①">signal</a></code>"]'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-abort-reason" id="ref-for-abortsignal-abort-reason">abort reason</a>.</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="#validate-and-canonicalize-translator-options" id="ref-for-validate-and-canonicalize-translator-options">Validate and canonicalize translator options</a> given <var>options</var>.</p>
+      <p class="note" role="note">This can mutate <var>options</var>. </p>
+     <li data-md>
+      <p>Return the result of <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#create-an-ai-model-object" id="ref-for-create-an-ai-model-object">creating an AI model object</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①">relevant realm</a>, <var>options</var>, <a data-link-type="dfn" href="#compute-translator-options-availability" id="ref-for-compute-translator-options-availability">compute translator options availability</a>, <a data-link-type="dfn" href="#download-the-translation-model" id="ref-for-download-the-translation-model">download the translation model</a>, <a data-link-type="dfn" href="#initialize-the-translation-model" id="ref-for-initialize-the-translation-model">initialize the translation model</a>, and <a data-link-type="dfn" href="#create-a-translator-object" id="ref-for-create-a-translator-object">create a translator object</a>.</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="validate and canonicalize translator options">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-translator-options">validate and canonicalize translator options</dfn> given an <code class="idl"><a data-link-type="idl" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions②">AITranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code> if any are invalid. 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags" id="ref-for-validate-and-canonicalize-language-tags">Validate and canonicalize language tags</a> given <var>options</var> and "<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage">sourceLanguage</a></code>".</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags" id="ref-for-validate-and-canonicalize-language-tags①">Validate and canonicalize language tags</a> given <var>options</var> and "<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage">targetLanguage</a></code>".</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="download the translation model">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="download-the-translation-model">download the translation model</dfn>, given an <code class="idl"><a data-link-type="idl" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions③">AITranslatorCreateCoreOptions</a></code> <var>options</var>: 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a>: these steps are running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in parallel</a>.</p>
+     <li data-md>
+      <p>Initiate the download process for everything the user agent needs to translate text from <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage①">sourceLanguage</a></code>"] to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage①">targetLanguage</a></code>"]. This could include both a base translation model and specific language arc material, or perhaps material for multiple language arcs if an intermediate language is used.</p>
+     <li data-md>
+      <p>If the download process cannot be started for any reason, then return false.</p>
+     <li data-md>
+      <p>Return true.</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="initialize the translation model">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="initialize-the-translation-model">initialize the translation model</dfn>, given an <code class="idl"><a data-link-type="idl" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions④">AITranslatorCreateCoreOptions</a></code> <var>options</var>: 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: these steps are running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel①">in parallel</a>.</p>
+     <li data-md>
+      <p>Perform any necessary initialization operations for the AI model backing the user agent’s capabilities for translating from <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage②">sourceLanguage</a></code>"] to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage②">targetLanguage</a></code>"].</p>
+      <p>This could include loading the model into memory, or loading any fine-tunings necessary to support the specific options in question.</p>
+     <li data-md>
+      <p>If initialization failed for any reason, then return false.</p>
+     <li data-md>
+      <p>Return true.</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="create a translator object">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="create-a-translator-object">create a translator object</dfn>, given a <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm" id="ref-for-realm">realm</a> <var>realm</var> and an <code class="idl"><a data-link-type="idl" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions⑤">AITranslatorCreateCoreOptions</a></code> <var>options</var>: 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: these steps are running on <var>realm</var>’s <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent">surrounding agent</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop" id="ref-for-concept-agent-event-loop">event loop</a>.</p>
+     <li data-md>
+      <p>Return a new <code class="idl"><a data-link-type="idl" href="#aitranslator" id="ref-for-aitranslator②">AITranslator</a></code> object, created in <var>realm</var>, with</p>
+      <dl class="props">
+       <dt data-md><a data-link-type="dfn" href="#aitranslator-source-language" id="ref-for-aitranslator-source-language">source language</a>
+       <dd data-md>
+        <p><var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage③">sourceLanguage</a></code>"]</p>
+       <dt data-md><a data-link-type="dfn" href="#aitranslator-target-language" id="ref-for-aitranslator-target-language">target language</a>
+       <dd data-md>
+        <p><var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage③">targetLanguage</a></code>"]</p>
+      </dl>
+    </ol>
+   </div>
+   <h3 class="heading settled" data-level="2.2" id="translator-availability"><span class="secno">2.2. </span><span class="content">Availability</span><a class="self-link" href="#translator-availability"></a></h3>
+   <div class="algorithm" data-algorithm="availability(options)" data-algorithm-for="AITranslatorFactory">
+     The <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslatorFactory" data-dfn-type="method" data-export id="dom-aitranslatorfactory-availability"><code>availability(<var>options</var>)</code></dfn> method steps are: 
+    <ol>
+     <li data-md>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this③">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①">relevant global object</a> is a <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#window" id="ref-for-window①">Window</a></code> whose <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window" id="ref-for-concept-document-window①">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/document-sequences.html#fully-active" id="ref-for-fully-active①">fully active</a>, then return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with②">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="#validate-and-canonicalize-translator-options" id="ref-for-validate-and-canonicalize-translator-options①">Validate and canonicalize translator options</a> given <var>options</var>.</p>
+     <li data-md>
+      <p>Let <var>promise</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise">a new promise</a> created in <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this④">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm②">relevant realm</a>.</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel②">In parallel</a>:</p>
+      <ol>
+       <li data-md>
+        <p>Let <var>availability</var> be the result of <a data-link-type="dfn" href="#compute-translator-options-availability" id="ref-for-compute-translator-options-availability①">computing translator options availability</a> given <var>options</var>.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task" id="ref-for-queue-a-global-task">Queue a global task</a> on the <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#ai-task-source" id="ref-for-ai-task-source">AI task source</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②">relevant global object</a> to perform the following steps:</p>
+        <ol>
+         <li data-md>
+          <p>If <var>availability</var> is null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject">reject</a> <var>promise</var> with an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#unknownerror" id="ref-for-unknownerror">UnknownError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
+         <li data-md>
+          <p>Otherwise, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve">resolve</a> <var>promise</var> with <var>availability</var>.</p>
+        </ol>
+      </ol>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="compute translator options availability">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compute-translator-options-availability">compute translator options availability</dfn> given an <code class="idl"><a data-link-type="idl" href="#dictdef-aitranslatorcreatecoreoptions" id="ref-for-dictdef-aitranslatorcreatecoreoptions⑥">AITranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They return either an <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability" id="ref-for-enumdef-aiavailability①">AIAvailability</a></code> value or null, and they mutate <var>options</var> in place to update language tags to their best-fit matches. 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: this algorithm is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel③">in parallel</a>.</p>
+     <li data-md>
+      <p>Let <var>availabilities</var> be the user agent’s <a data-link-type="dfn" href="#translator-language-arc-availabilities" id="ref-for-translator-language-arc-availabilities">translator language arc availabilities</a>.</p>
+     <li data-md>
+      <p>If <var>availabilities</var> is null, then return null.</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-iterate" id="ref-for-map-iterate">For each</a> <var>languageArc</var> → <var>availability</var> in <var>availabilities</var>:</p>
+      <ol>
+       <li data-md>
+        <p>Let <var>sourceLanguageBestFit</var> be <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit">LookupMatchingLocaleByBestFit</a>(« <var>languageArc</var>’s <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language">source language</a> », « <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage④">sourceLanguage</a></code>"] »).</p>
+       <li data-md>
+        <p>Let <var>targetLanguageBestFit</var> be <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit①">LookupMatchingLocaleByBestFit</a>(« <var>languageArc</var>’s <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language">target language</a> », « <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage④">targetLanguage</a></code>"] »).</p>
+       <li data-md>
+        <p>If <var>sourceLanguageBestFit</var> and <var>targetLanguageBestFit</var> are both not undefined, then:</p>
+        <ol>
+         <li data-md>
+          <p>Set <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage⑤">sourceLanguage</a></code>"] to <var>sourceLanguageBestFit</var>.[[locale]].</p>
+         <li data-md>
+          <p>Set <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage⑤">targetLanguage</a></code>"] to <var>targetLanguageBestFit</var>.[[locale]].</p>
+         <li data-md>
+          <p>Return <var>availability</var>.</p>
+        </ol>
+      </ol>
+     <li data-md>
+      <p>If (<var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage⑥">sourceLanguage</a></code>"], <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage⑥">targetLanguage</a></code>"]) <a data-link-type="dfn" href="#language-arc-can-be-fulfilled-by-the-identity-translation" id="ref-for-language-arc-can-be-fulfilled-by-the-identity-translation">can be fulfilled by the identity translation</a>, then return "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available" id="ref-for-dom-aiavailability-available">available</a></code>".</p>
+      <p class="note" role="note">Such cases could also return "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloadable" id="ref-for-dom-aiavailability-downloadable">downloadable</a></code>", "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloading" id="ref-for-dom-aiavailability-downloading">downloading</a></code>", or "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available" id="ref-for-dom-aiavailability-available①">available</a></code>" because of the above steps, if the user agent has specific entries in its <a data-link-type="dfn" href="#translator-language-arc-availabilities" id="ref-for-translator-language-arc-availabilities①">translator language arc availabilities</a> for the given language arc. However, the identity translation is always available, so this step ensures that we never return "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-unavailable" id="ref-for-dom-aiavailability-unavailable">unavailable</a></code>" for such cases. </p>
+      <div class="example" id="example-identity-translation">
+       <a class="self-link" href="#example-identity-translation"></a> 
+       <p>One <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc">language arc</a> that <a data-link-type="dfn" href="#language-arc-can-be-fulfilled-by-the-identity-translation" id="ref-for-language-arc-can-be-fulfilled-by-the-identity-translation①">can be fulfilled by the identity translation</a> is (<code>"en-US"</code>, <code>"en-GB"</code>). It is conceivable that an implementation might support a specialized model for this translation, which would show up in the <a data-link-type="dfn" href="#translator-language-arc-availabilities" id="ref-for-translator-language-arc-availabilities②">translator language arc availabilities</a>. </p>
+       <p>On the other hand, it’s pretty unlikely that an implementation has any specialized model for the <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①">language arc</a> ("<code>en-x-asdf</code>", "<code>en-x-xyzw</code>"). In such a case, this step takes over, and later calls to the <a data-link-type="dfn" href="#translate" id="ref-for-translate">translate</a> algorithm will use the identity translation. </p>
+       <p>Note that when this step takes over, <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage⑦">sourceLanguage</a></code>"] and <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-aitranslatorcreatecoreoptions-targetlanguage" id="ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage⑦">targetLanguage</a></code>"] are not modified, so if this algorithm is being called from <code class="idl"><a data-link-type="idl" href="#dom-aitranslatorfactory-create" id="ref-for-dom-aitranslatorfactory-create①">create()</a></code>, that means the resulting <code class="idl"><a data-link-type="idl" href="#aitranslator" id="ref-for-aitranslator③">AITranslator</a></code> object’s <code class="idl"><a data-link-type="idl" href="#dom-aitranslator-sourcelanguage" id="ref-for-dom-aitranslator-sourcelanguage①">sourceLanguage</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-aitranslator-targetlanguage" id="ref-for-dom-aitranslator-targetlanguage①">targetLanguage</a></code> properties will return the original inputs, and not some canonicalized form. </p>
+      </div>
+     <li data-md>
+      <p>Return "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-unavailable" id="ref-for-dom-aiavailability-unavailable①">unavailable</a></code>".</p>
+    </ol>
+   </div>
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="language-arc">language arc</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#tuple" id="ref-for-tuple">tuple</a> of two strings, a <dfn class="dfn-paneled" data-dfn-for="language arc" data-dfn-type="dfn" data-noexport id="language-arc-source-language">source language</dfn> and a <dfn class="dfn-paneled" data-dfn-for="language arc" data-dfn-type="dfn" data-noexport id="language-arc-target-language">target language</dfn>. Each item is a <a data-link-type="dfn" href="https://tc39.es/ecma402/#sec-language-tags" id="ref-for-sec-language-tags">Unicode canonicalized locale identifier</a>.</p>
+   <div class="algorithm" data-algorithm="translator language arc availabilities">
+     The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="translator-language-arc-availabilities">translator language arc availabilities</dfn> are given by the following steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map">map</a> from <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc②">language arcs</a> to <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability" id="ref-for-enumdef-aiavailability②">AIAvailability</a></code> values, or null. 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">Assert</a>: this algorithm is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel④">in parallel</a>.</p>
+     <li data-md>
+      <p>If there is some error attempting to determine what language arcs the user agent supports translating text between, which the user agent believes to be transient (such that re-querying the <a data-link-type="dfn" href="#translator-language-arc-availabilities" id="ref-for-translator-language-arc-availabilities③">translator language arc availabilities</a> could stop producing such an error), then return null.</p>
+     <li data-md>
+      <p>Return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①">map</a> from <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc③">language arcs</a> to <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability" id="ref-for-enumdef-aiavailability③">AIAvailability</a></code> values, where each key is a <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc④">language arc</a> that the user agent supports translating text between, filled according to the following constraints:</p>
+      <ul>
+       <li data-md>
+        <p>If the user agent supports translating text from the <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language①">source language</a> to the <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language①">target language</a> of the <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc⑤">language arc</a> without performing any downloading operations, then the map must contain an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-entry" id="ref-for-map-entry">entry</a> whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-key" id="ref-for-map-key">key</a> is that <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc⑥">language arc</a> and whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-value" id="ref-for-map-value">value</a> is "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available" id="ref-for-dom-aiavailability-available②">available</a></code>".</p>
+       <li data-md>
+        <p>If the user agent supports translating text from the <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language②">source language</a> to the <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language②">target language</a> of the <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc⑦">language arc</a>, but only after finishing a currently-ongoing download, then the map must contain an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-entry" id="ref-for-map-entry①">entry</a> whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-key" id="ref-for-map-key①">key</a> is that <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc⑧">language arc</a> and whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-value" id="ref-for-map-value①">value</a> is "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloading" id="ref-for-dom-aiavailability-downloading①">downloading</a></code>".</p>
+       <li data-md>
+        <p>If the user agent supports translating text from the <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language③">source language</a> to the <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language③">target language</a> of the <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc⑨">language arc</a>, but only after performing a not-currently ongoing download, then the map must contain an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-entry" id="ref-for-map-entry②">entry</a> whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-key" id="ref-for-map-key②">key</a> is that <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①⓪">language arc</a> and whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-value" id="ref-for-map-value②">value</a> is "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloadable" id="ref-for-dom-aiavailability-downloadable①">downloadable</a></code>".</p>
+       <li data-md>
+        <p>The <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-getting-the-keys" id="ref-for-map-getting-the-keys">keys</a> must not include any <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①①">language arcs</a> that <a data-link-type="dfn" href="#language-arc-overlaps" id="ref-for-language-arc-overlaps">overlap</a> with the other <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-getting-the-keys" id="ref-for-map-getting-the-keys①">keys</a>.</p>
+      </ul>
+    </ol>
+   </div>
+   <div class="example" id="example-language-arc-support">
+    <a class="self-link" href="#example-language-arc-support"></a> Let’s suppose that the user agent’s <a data-link-type="dfn" href="#translator-language-arc-availabilities" id="ref-for-translator-language-arc-availabilities④">translator language arc availabilities</a> are as follows: 
+    <ul>
+     <li data-md>
+      <p>("<code>en</code>", "<code>zh-Hans</code>") → "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available" id="ref-for-dom-aiavailability-available③">available</a></code>"</p>
+     <li data-md>
+      <p>("<code>en</code>", "<code>zh-Hant</code>") → "<code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloadable" id="ref-for-dom-aiavailability-downloadable②">downloadable</a></code>"</p>
+    </ul>
+    <p>The use of <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit②">LookupMatchingLocaleByBestFit</a> means that <code class="idl"><a data-link-type="idl" href="#dom-aitranslatorfactory-availability" id="ref-for-dom-aitranslatorfactory-availability①">availability()</a></code> will probably give the following answers:</p>
+<pre class="language-js highlight"><c- a>function</c-> a<c- p>(</c->sourceLanguage<c- p>,</c-> targetLanguage<c- p>)</c-> <c- p>{</c->
+  <c- k>return</c-> ai<c- p>.</c->translator<c- p>.</c->availability<c- p>({</c-> sourceLanguage<c- p>,</c-> targetLanguage <c- p>})</c-><c- o>:</c->
+<c- p>}</c->
+
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh-Hans"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"available"</c-><c- p>;</c->
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh-Hant"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"downloadable"</c-><c- p>;</c->
+
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"available"</c-><c- p>;</c->            <c- c1>// zh will best-fit to zh-Hans</c->
+
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh-TW"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"downloadable"</c-><c- p>;</c->      <c- c1>// zh-TW will best-fit to zh-Hant</c->
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh-HK"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"available"</c-><c- p>;</c->         <c- c1>// zh-HK will best-fit to zh-Hans</c->
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh-CN"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"available"</c-><c- p>;</c->         <c- c1>// zh-CN will best-fit to zh-Hans</c->
+
+<c- k>await</c-> a<c- p>(</c-><c- u>"en-US"</c-><c- p>,</c-> <c- u>"zh-Hant"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"downloadable"</c-><c- p>;</c-> <c- c1>// en-US will best-fit to en</c->
+<c- k>await</c-> a<c- p>(</c-><c- u>"en-GB"</c-><c- p>,</c-> <c- u>"zh-Hant"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"downloadable"</c-><c- p>;</c-> <c- c1>// en-GB will best-fit to en</c->
+
+<c- c1>// Even very unexpected subtags will best-fit to en or zh-Hans</c->
+<c- k>await</c-> a<c- p>(</c-><c- u>"en-Braille-x-lolcat"</c-><c- p>,</c-> <c- u>"zh-Hant"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"downloadable"</c-><c- p>;</c->
+<c- k>await</c-> a<c- p>(</c-><c- u>"en"</c-><c- p>,</c-> <c- u>"zh-BR-Kana"</c-><c- p>)</c-> <c- o>===</c-> <c- u>"available"</c-><c- p>;</c->
+</pre>
+   </div>
+   <div class="algorithm" data-algorithm="overlaps" data-algorithm-for="language arc">
+     A <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①②">language arc</a> <var>arc</var> <dfn class="dfn-paneled" data-dfn-for="language arc" data-dfn-type="dfn" data-noexport id="language-arc-overlaps">overlaps</dfn> with a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">set</a> of <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①③">language arcs</a> <var>otherArcs</var> if the following steps return true: 
+    <ol>
+     <li data-md>
+      <p>Let <var>sourceLanguages</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set①">set</a> composed of the <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language④">source languages</a> of each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-item" id="ref-for-list-item">item</a> in <var>otherArcs</var>.</p>
+     <li data-md>
+      <p>If <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit③">LookupMatchingLocaleByBestFit</a>(<var>sourceLanguages</var>, « <var>arc</var>’s <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language⑤">source language</a> ») is not undefined, then return true.</p>
+     <li data-md>
+      <p>Let <var>targetLanguages</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set②">set</a> composed of the <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language④">target languages</a> of each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-item" id="ref-for-list-item①">item</a> in <var>otherArcs</var>.</p>
+     <li data-md>
+      <p>If <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit④">LookupMatchingLocaleByBestFit</a>(<var>targetLanguages</var>, « <var>arc</var>’s <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language⑤">target language</a> ») is not undefined, then return true.</p>
+     <li data-md>
+      <p>Return false.</p>
+    </ol>
+   </div>
+   <div class="example" id="example-language-arc-overlap">
+    <a class="self-link" href="#example-language-arc-overlap"></a> The <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①④">language arc</a> ("<code>en</code>", "<code>fr</code>") <a data-link-type="dfn" href="#language-arc-overlaps" id="ref-for-language-arc-overlaps①">overlaps</a> with « ("<code>en</code>", "<code>fr-CA</code>") », so the user agent’s <a data-link-type="dfn" href="#translator-language-arc-availabilities" id="ref-for-translator-language-arc-availabilities⑤">translator language arc availabilities</a> cannot contain both of these <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①⑤">language arcs</a> at the same time. 
+    <p>Instead, a typical user agent will either support only one English-to-French language arc (presumably ("<code>en</code>", "<code>fr</code>")), or it could support multiple non-overlapping English-to-French language arcs, such as ("<code>en</code>", "<code>fr-FR</code>"), ("<code>en</code>", "<code>fr-CA</code>"), and ("<code>en</code>", "<code>fr-CH</code>").</p>
+    <p>In the latter case, if the web developer requested to create a translator using <code class="highlight">ai<c- p>.</c->translator<c- p>.</c->create<c- p>({</c-> sourceLanguage<c- o>:</c-> <c- u>"en"</c-><c- p>,</c-> targetLanguage<c- o>:</c-> <c- u>"fr"</c-> <c- p>})</c-></code>, the <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit⑤">LookupMatchingLocaleByBestFit</a> algorithm would choose one of the three possible language arcs to use (presumably ("<code>en</code>", "<code>fr-FR</code>")).</p>
+   </div>
+   <div class="algorithm" data-algorithm="can be fulfilled by the identity translation" data-algorithm-for="language arc">
+     A <a data-link-type="dfn" href="#language-arc" id="ref-for-language-arc①⑥">language arc</a> <var>arc</var> <dfn class="dfn-paneled" data-dfn-for="language arc" data-dfn-type="dfn" data-noexport id="language-arc-can-be-fulfilled-by-the-identity-translation">can be fulfilled by the identity translation</dfn> if the following steps return true: 
+    <ol>
+     <li data-md>
+      <p>If <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit⑥">LookupMatchingLocaleByBestFit</a>(« <var>arc</var>’s <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language⑥">source language</a> », « <var>arc</var>’s <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language⑥">target language</a> ») is not undefined, then return true.</p>
+     <li data-md>
+      <p>If <a data-link-type="abstract-op" href="https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit" id="ref-for-sec-lookupmatchinglocalebybestfit⑦">LookupMatchingLocaleByBestFit</a>(« <var>arc</var>’s <a data-link-type="dfn" href="#language-arc-target-language" id="ref-for-language-arc-target-language⑦">target language</a> », « <var>arc</var>’s <a data-link-type="dfn" href="#language-arc-source-language" id="ref-for-language-arc-source-language⑦">source language</a> ») is not undefined, then return true.</p>
+     <li data-md>
+      <p>Return false.</p>
+    </ol>
+   </div>
+   <h3 class="heading settled" data-level="2.3" id="the-aitranslator-class"><span class="secno">2.3. </span><span class="content">The <code class="idl"><a data-link-type="idl" href="#aitranslator" id="ref-for-aitranslator④">AITranslator</a></code> class</span><a class="self-link" href="#the-aitranslator-class"></a></h3>
+   <p>Every <code class="idl"><a data-link-type="idl" href="#aitranslator" id="ref-for-aitranslator⑤">AITranslator</a></code> has a <dfn class="dfn-paneled" data-dfn-for="AITranslator" data-dfn-type="dfn" data-noexport id="aitranslator-source-language">source language</dfn>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string">string</a>, set during creation.</p>
+   <p>Every <code class="idl"><a data-link-type="idl" href="#aitranslator" id="ref-for-aitranslator⑥">AITranslator</a></code> has a <dfn class="dfn-paneled" data-dfn-for="AITranslator" data-dfn-type="dfn" data-noexport id="aitranslator-target-language">target language</dfn>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①">string</a>, set during creation.</p>
+   <hr>
+   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator" data-dfn-type="attribute" data-export id="dom-aitranslator-sourcelanguage"><code>sourceLanguage</code></dfn> getter steps are to return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥">this</a>’s <a data-link-type="dfn" href="#aitranslator-source-language" id="ref-for-aitranslator-source-language①">source language</a>.</p>
+   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator" data-dfn-type="attribute" data-export id="dom-aitranslator-targetlanguage"><code>targetLanguage</code></dfn> getter steps are to return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑦">this</a>’s <a data-link-type="dfn" href="#aitranslator-target-language" id="ref-for-aitranslator-target-language①">target language</a>.</p>
+   <hr>
+   <div class="algorithm" data-algorithm="translate(input, options)" data-algorithm-for="AITranslator">
+     The <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator" data-dfn-type="method" data-export data-lt="translate(input, options)|translate(input)" id="dom-aitranslator-translate"><code>translate(<var>input</var>, <var>options</var>)</code></dfn> method steps are: 
+    <ol>
+     <li data-md>
+      <p>Let <var>operation</var> be an algorithm step which takes arguments <var>chunkProduced</var>, <var>done</var>, <var>error</var>, and <var>stopProducing</var>, and <a data-link-type="dfn" href="#translate" id="ref-for-translate①">translates</a> <var>input</var> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑧">this</a>’s <a data-link-type="dfn" href="#aitranslator-source-language" id="ref-for-aitranslator-source-language②">source language</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑨">this</a>’s <a data-link-type="dfn" href="#aitranslator-target-language" id="ref-for-aitranslator-target-language②">target language</a>, <var>chunkProduced</var>, <var>done</var>, <var>error</var>, and <var>stopProducing</var>.</p>
+     <li data-md>
+      <p>Return the result of <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#get-an-aggregated-ai-model-result" id="ref-for-get-an-aggregated-ai-model-result">getting an aggregated AI model result</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①⓪">this</a>, <var>options</var>, and <var>operation</var>.</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="translateStreaming(input, options)" data-algorithm-for="AITranslator">
+     The <dfn class="dfn-paneled idl-code" data-dfn-for="AITranslator" data-dfn-type="method" data-export data-lt="translateStreaming(input, options)|translateStreaming(input)" id="dom-aitranslator-translatestreaming"><code>translateStreaming(<var>input</var>, <var>options</var>)</code></dfn> method steps are: 
+    <ol>
+     <li data-md>
+      <p>Let <var>operation</var> be an algorithm step which takes arguments <var>chunkProduced</var>, <var>done</var>, <var>error</var>, and <var>stopProducing</var>, and <a data-link-type="dfn" href="#translate" id="ref-for-translate②">translates</a> <var>input</var> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①①">this</a>’s <a data-link-type="dfn" href="#aitranslator-source-language" id="ref-for-aitranslator-source-language③">source language</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①②">this</a>’s <a data-link-type="dfn" href="#aitranslator-target-language" id="ref-for-aitranslator-target-language③">target language</a>, <var>chunkProduced</var>, <var>done</var>, <var>error</var>, and <var>stopProducing</var>.</p>
+     <li data-md>
+      <p>Return the result of <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#get-a-streaming-ai-model-result" id="ref-for-get-a-streaming-ai-model-result">getting a streaming AI model result</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①③">this</a>, <var>options</var>, and <var>operation</var>.</p>
+    </ol>
+   </div>
+   <h3 class="heading settled" data-level="2.4" id="translator-translation"><span class="secno">2.4. </span><span class="content">Translation</span><a class="self-link" href="#translator-translation"></a></h3>
+   <h4 class="heading settled" data-level="2.4.1" id="translator-algorithm"><span class="secno">2.4.1. </span><span class="content">The algorithm</span><a class="self-link" href="#translator-algorithm"></a></h4>
+   <div class="algorithm" data-algorithm="translate">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="translate">translate</dfn> given: 
+    <ul>
+     <li data-md>
+      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②">string</a> <var>input</var>,</p>
+     <li data-md>
+      <p>a <a data-link-type="dfn" href="https://tc39.es/ecma402/#sec-language-tags" id="ref-for-sec-language-tags①">Unicode canonicalized locale identifier</a> <var>sourceLanguage</var>,</p>
+     <li data-md>
+      <p>a <a data-link-type="dfn" href="https://tc39.es/ecma402/#sec-language-tags" id="ref-for-sec-language-tags②">Unicode canonicalized locale identifier</a> <var>targetLanguage</var>,</p>
+     <li data-md>
+      <p>an algorithm <var>chunkProduced</var> that takes a string and returns nothing,</p>
+     <li data-md>
+      <p>an algorithm <var>done</var> that takes no arguments and returns nothing,</p>
+     <li data-md>
+      <p>an algorithm <var>error</var> that takes <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#error-information" id="ref-for-error-information">error information</a> and returns nothing, and</p>
+     <li data-md>
+      <p>an algorithm <var>stopProducing</var> that takes no arguments and returns a boolean,</p>
+    </ul>
+    <p>perform the following steps:</p>
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: this algorithm is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel⑤">in parallel</a>.</p>
+     <li data-md>
+      <p>In an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">implementation-defined</a> manner, subject to the following guidelines, begin the processs of translating <var>input</var> from <var>sourceLanguage</var> into <var>targetLanguage</var>.</p>
+      <p>If <var>input</var> is the empty string, or otherwise consists of no translatable content (e.g., only contains whitespace, or control characters), then the resulting translation should be <var>input</var>. In such cases, <var>sourceLanguage</var> and <var>targetLanguage</var> should be ignored.</p>
+      <p>If (<var>sourceLanguage</var>, <var>targetLanguage</var>) <a data-link-type="dfn" href="#language-arc-can-be-fulfilled-by-the-identity-translation" id="ref-for-language-arc-can-be-fulfilled-by-the-identity-translation②">can be fulfilled by the identity translation</a>, then the resulting translation should be <var>input</var>.</p>
+     <li data-md>
+      <p>While true:</p>
+      <ol>
+       <li data-md>
+        <p>Wait for the next chunk of translated text to be produced, for the translation process to finish, or for the result of calling <var>stopProducing</var> to become true.</p>
+       <li data-md>
+        <p>If such a chunk is successfully produced:</p>
+        <ol>
+         <li data-md>
+          <p>Let it be represented as a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③">string</a> <var>chunk</var>.</p>
+         <li data-md>
+          <p>Perform <var>chunkProduced</var> given <var>chunk</var>.</p>
+        </ol>
+       <li data-md>
+        <p>Otherwise, if the translation process has finished:</p>
+        <ol>
+         <li data-md>
+          <p>Perform <var>done</var>.</p>
+         <li data-md>
+          <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break">Break</a>.</p>
+        </ol>
+       <li data-md>
+        <p>Otherwise, if <var>stopProducing</var> returns true, then <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break①">break</a>.</p>
+       <li data-md>
+        <p>Otherwise, if an error occurred during translation:</p>
+        <ol>
+         <li data-md>
+          <p>Let the error be represented as <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#error-information" id="ref-for-error-information①">error information</a> <var>errorInfo</var> according to the guidance in <a href="#translator-errors">§ 2.4.2 Errors</a>.</p>
+         <li data-md>
+          <p>Perform <var>error</var> given <var>errorInfo</var>.</p>
+         <li data-md>
+          <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break②">Break</a>.</p>
+        </ol>
+      </ol>
+    </ol>
+   </div>
+   <h4 class="heading settled" data-level="2.4.2" id="translator-errors"><span class="secno">2.4.2. </span><span class="content">Errors</span><a class="self-link" href="#translator-errors"></a></h4>
+   <p>When translation fails, the following possible reasons may be surfaced to the web developer. This table lists the possible <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#domexception-name" id="ref-for-domexception-name">names</a> and the cases in which an implementation should use them:</p>
+   <table class="data">
+    <thead>
+     <tr>
+      <th><code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④">DOMException</a></code> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#domexception-name" id="ref-for-domexception-name①">name</a> 
+      <th>Scenarios 
+    <tbody>
+     <tr>
+      <td>"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror">NotAllowedError</a></code>" 
+      <td>
+       <p>Translation is disabled by user choice or user agent policy. </p>
+     <tr>
+      <td>"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notreadableerror" id="ref-for-notreadableerror">NotReadableError</a></code>" 
+      <td>
+       <p>The translation output was filtered by the user agent, e.g., because it was detected to be harmful, inaccurate, or nonsensical. </p>
+     <tr>
+      <td>"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#quotaexceedederror" id="ref-for-quotaexceedederror">QuotaExceededError</a></code>" 
+      <td>
+       <p>The input to be translated was too large for the user agent to handle. </p>
+     <tr>
+      <td>"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#unknownerror" id="ref-for-unknownerror①">UnknownError</a></code>" 
+      <td>
+       <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason. </p>
+   </table>
+   <p class="note" role="note">This table does not give the complete list of exceptions that can be surfaced by <code class="idl"><a data-link-type="idl" href="#dom-aitranslator-translate" id="ref-for-dom-aitranslator-translate①">translator.translate()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-aitranslator-translatestreaming" id="ref-for-dom-aitranslator-translatestreaming①">translator.translateStreaming()</a></code>. It only contains those which can come from the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①">implementation-defined</a> <a data-link-type="dfn" href="#translate" id="ref-for-translate③">translate</a> algorithm. </p>
   </main>
   <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <ul class="index">
+   <li><a href="#aitranslator">AITranslator</a><span>, in § 2</span>
+   <li><a href="#dictdef-aitranslatorcreatecoreoptions">AITranslatorCreateCoreOptions</a><span>, in § 2</span>
+   <li><a href="#dictdef-aitranslatorcreateoptions">AITranslatorCreateOptions</a><span>, in § 2</span>
+   <li><a href="#aitranslatorfactory">AITranslatorFactory</a><span>, in § 2</span>
+   <li><a href="#dictdef-aitranslatortranslateoptions">AITranslatorTranslateOptions</a><span>, in § 2</span>
+   <li><a href="#dom-aitranslatorfactory-availability">availability(options)</a><span>, in § 2.2</span>
+   <li><a href="#language-arc-can-be-fulfilled-by-the-identity-translation">can be fulfilled by the identity translation</a><span>, in § 2.2</span>
+   <li><a href="#compute-translator-options-availability">compute translator options availability</a><span>, in § 2.2</span>
+   <li><a href="#create-a-translator-object">create a translator object</a><span>, in § 2.1</span>
+   <li><a href="#dom-aitranslatorfactory-create">create(options)</a><span>, in § 2.1</span>
+   <li><a href="#download-the-translation-model">download the translation model</a><span>, in § 2.1</span>
+   <li><a href="#initialize-the-translation-model">initialize the translation model</a><span>, in § 2.1</span>
+   <li><a href="#language-arc">language arc</a><span>, in § 2.2</span>
+   <li><a href="#dom-aitranslatorcreateoptions-monitor">monitor</a><span>, in § 2</span>
+   <li><a href="#language-arc-overlaps">overlaps</a><span>, in § 2.2</span>
+   <li>
+    signal
+    <ul>
+     <li><a href="#dom-aitranslatorcreateoptions-signal">dict-member for AITranslatorCreateOptions</a><span>, in § 2</span>
+     <li><a href="#dom-aitranslatortranslateoptions-signal">dict-member for AITranslatorTranslateOptions</a><span>, in § 2</span>
+    </ul>
+   <li>
+    source language
+    <ul>
+     <li><a href="#aitranslator-source-language">dfn for AITranslator</a><span>, in § 2.3</span>
+     <li><a href="#language-arc-source-language">dfn for language arc</a><span>, in § 2.2</span>
+    </ul>
+   <li>
+    sourceLanguage
+    <ul>
+     <li><a href="#dom-aitranslator-sourcelanguage">attribute for AITranslator</a><span>, in § 2.3</span>
+     <li><a href="#dom-aitranslatorcreatecoreoptions-sourcelanguage">dict-member for AITranslatorCreateCoreOptions</a><span>, in § 2</span>
+    </ul>
+   <li>
+    target language
+    <ul>
+     <li><a href="#aitranslator-target-language">dfn for AITranslator</a><span>, in § 2.3</span>
+     <li><a href="#language-arc-target-language">dfn for language arc</a><span>, in § 2.2</span>
+    </ul>
+   <li>
+    targetLanguage
+    <ul>
+     <li><a href="#dom-aitranslator-targetlanguage">attribute for AITranslator</a><span>, in § 2.3</span>
+     <li><a href="#dom-aitranslatorcreatecoreoptions-targetlanguage">dict-member for AITranslatorCreateCoreOptions</a><span>, in § 2</span>
+    </ul>
+   <li><a href="#translate">translate</a><span>, in § 2.4.1</span>
+   <li><a href="#dom-aitranslator-translate">translate(input)</a><span>, in § 2.3</span>
+   <li><a href="#dom-aitranslator-translate">translate(input, options)</a><span>, in § 2.3</span>
+   <li><a href="#dom-aitranslator-translatestreaming">translateStreaming(input)</a><span>, in § 2.3</span>
+   <li><a href="#dom-aitranslator-translatestreaming">translateStreaming(input, options)</a><span>, in § 2.3</span>
+   <li><a href="#dom-ai-translator">translator</a><span>, in § 2</span>
+   <li><a href="#ai-translator-factory">translator factory</a><span>, in § 2</span>
+   <li><a href="#translator-language-arc-availabilities">translator language arc availabilities</a><span>, in § 2.2</span>
+   <li><a href="#validate-and-canonicalize-translator-options">validate and canonicalize translator options</a><span>, in § 2.1</span>
+  </ul>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <ul class="index">
+   <li>
+    <a data-link-type="biblio">[DOM]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="cca3cdb2">AbortSignal</span>
+     <li><span class="dfn-paneled" id="28e64574">abort reason</span>
+     <li><span class="dfn-paneled" id="535dd335">aborted</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[ECMA-402]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="0e5dca01">LookupMatchingLocaleByBestFit</span>
+     <li><span class="dfn-paneled" id="93e4c9ae">Unicode canonicalized locale identifier</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[ECMASCRIPT]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="a5f015e3">realm</span>
+     <li><span class="dfn-paneled" id="4ad913ae">surrounding agent</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="5d7209e9">Window</span>
+     <li><span class="dfn-paneled" id="3349d69f">associated Document</span>
+     <li><span class="dfn-paneled" id="b78d6a64">event loop</span>
+     <li><span class="dfn-paneled" id="0e3ba9f8">fully active</span>
+     <li><span class="dfn-paneled" id="a72449dd">in parallel</span>
+     <li><span class="dfn-paneled" id="48438eb3">queue a global task</span>
+     <li><span class="dfn-paneled" id="e99bd18e">relevant global object</span>
+     <li><span class="dfn-paneled" id="5991ccfb">relevant realm</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[INFRA]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="77b4c09a">assert</span>
+     <li><span class="dfn-paneled" id="7b0d918d">break</span>
+     <li><span class="dfn-paneled" id="8958b003">entry</span>
+     <li><span class="dfn-paneled" id="1243a891">exist</span>
+     <li><span class="dfn-paneled" id="45209803">for each</span>
+     <li><span class="dfn-paneled" id="860300d4">implementation-defined</span>
+     <li><span class="dfn-paneled" id="5afbefcd">item</span>
+     <li><span class="dfn-paneled" id="d14a6f26">key</span>
+     <li><span class="dfn-paneled" id="31db57e6">keys</span>
+     <li><span class="dfn-paneled" id="3fca5a9e">map</span>
+     <li><span class="dfn-paneled" id="15e48c39">set</span>
+     <li><span class="dfn-paneled" id="0698d556">string</span>
+     <li><span class="dfn-paneled" id="0e8de730">tuple</span>
+     <li><span class="dfn-paneled" id="802b0fdd">value</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[STREAMS]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="59ed4e57">ReadableStream</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="dca2de17">DOMException</span>
+     <li><span class="dfn-paneled" id="8855a9aa">DOMString</span>
+     <li><span class="dfn-paneled" id="889e932f">Exposed</span>
+     <li><span class="dfn-paneled" id="797018a7">InvalidStateError</span>
+     <li><span class="dfn-paneled" id="ba556545">NotAllowedError</span>
+     <li><span class="dfn-paneled" id="0be3911e">NotReadableError</span>
+     <li><span class="dfn-paneled" id="bdbd19d1">Promise</span>
+     <li><span class="dfn-paneled" id="5e129c74">QuotaExceededError</span>
+     <li><span class="dfn-paneled" id="b75bb3bd">SecureContext</span>
+     <li><span class="dfn-paneled" id="82ca3efc">TypeError</span>
+     <li><span class="dfn-paneled" id="81dd847b">UnknownError</span>
+     <li><span class="dfn-paneled" id="dacde8b5">a new promise</span>
+     <li><span class="dfn-paneled" id="d0b4a948">a promise rejected with</span>
+     <li><span class="dfn-paneled" id="44959ae4">name</span>
+     <li><span class="dfn-paneled" id="56f81a8e">new</span>
+     <li><span class="dfn-paneled" id="b262501e">reject</span>
+     <li><span class="dfn-paneled" id="3b90bdcd">resolve</span>
+     <li><span class="dfn-paneled" id="4013a022">this</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[WRITING-ASSISTANCE-APIS]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="4d491ab9">"available"</span>
+     <li><span class="dfn-paneled" id="9529bb00">"downloadable"</span>
+     <li><span class="dfn-paneled" id="c89b1a15">"downloading"</span>
+     <li><span class="dfn-paneled" id="16933767">"unavailable"</span>
+     <li><span class="dfn-paneled" id="d40a61bd">AI</span>
+     <li><span class="dfn-paneled" id="df5f9420">AIAvailability</span>
+     <li><span class="dfn-paneled" id="71a962ff">AICreateMonitorCallback</span>
+     <li><span class="dfn-paneled" id="08d9f516">AIDestroyable</span>
+     <li><span class="dfn-paneled" id="bd018051">AI task source</span>
+     <li><span class="dfn-paneled" id="a68d4447">create an AI model object</span>
+     <li><span class="dfn-paneled" id="7ef1b769">error information</span>
+     <li><span class="dfn-paneled" id="3259cbdf">get a streaming AI model result</span>
+     <li><span class="dfn-paneled" id="8f0df616">get an aggregated AI model result</span>
+     <li><span class="dfn-paneled" id="814c5352">validate and canonicalize language tags</span>
+    </ul>
+  </ul>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <dl>
+   <dt id="biblio-dom">[DOM]
+   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/"><cite>DOM Standard</cite></a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
+   <dt id="biblio-ecma-402">[ECMA-402]
+   <dd><a href="https://tc39.es/ecma402/"><cite>ECMAScript Internationalization API Specification</cite></a>. URL: <a href="https://tc39.es/ecma402/">https://tc39.es/ecma402/</a>
+   <dt id="biblio-ecmascript">[ECMASCRIPT]
+   <dd><a href="https://tc39.es/ecma262/multipage/"><cite>ECMAScript Language Specification</cite></a>. URL: <a href="https://tc39.es/ecma262/multipage/">https://tc39.es/ecma262/multipage/</a>
+   <dt id="biblio-html">[HTML]
+   <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
+   <dt id="biblio-infra">[INFRA]
+   <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/"><cite>Infra Standard</cite></a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dt id="biblio-streams">[STREAMS]
+   <dd>Adam Rice; et al. <a href="https://streams.spec.whatwg.org/"><cite>Streams Standard</cite></a>. Living Standard. URL: <a href="https://streams.spec.whatwg.org/">https://streams.spec.whatwg.org/</a>
+   <dt id="biblio-webidl">[WEBIDL]
+   <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
+   <dt id="biblio-writing-assistance-apis">[WRITING-ASSISTANCE-APIS]
+   <dd><a href="https://wicg.github.io/writing-assistance-apis/"><cite>Writing Assistance APIs</cite></a>. Draft Community Group Report. URL: <a href="https://wicg.github.io/writing-assistance-apis/">https://wicg.github.io/writing-assistance-apis/</a>
+  </dl>
+  <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
+<pre class="idl highlight def">// TODO FIX: workaround for https://github.com/speced/bikeshed/issues/3023
+// partial interface AI {
+//   readonly attribute AITranslatorFactory translator;
+// };
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext"><c- g>SecureContext</c-></a>]
+<c- b>interface</c-> <a href="#aitranslatorfactory"><code><c- g>AITranslatorFactory</c-></code></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#aitranslator"><c- n>AITranslator</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-aitranslatorfactory-create"><c- g>create</c-></a>(<a data-link-type="idl-name" href="#dictdef-aitranslatorcreateoptions"><c- n>AITranslatorCreateOptions</c-></a> <a href="#dom-aitranslatorfactory-create-options-options"><code><c- g>options</c-></code></a>);
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability"><c- n>AIAvailability</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-aitranslatorfactory-availability"><c- g>availability</c-></a>(<a data-link-type="idl-name" href="#dictdef-aitranslatorcreatecoreoptions"><c- n>AITranslatorCreateCoreOptions</c-></a> <a href="#dom-aitranslatorfactory-availability-options-options"><code><c- g>options</c-></code></a>);
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=(<c- n>Window</c->,<c- n>Worker</c->), <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext"><c- g>SecureContext</c-></a>]
+<c- b>interface</c-> <a href="#aitranslator"><code><c- g>AITranslator</c-></code></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-aitranslator-translate"><c- g>translate</c-></a>(
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a href="#dom-aitranslator-translate-input-options-input"><code><c- g>input</c-></code></a>,
+    <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-aitranslatortranslateoptions"><c- n>AITranslatorTranslateOptions</c-></a> <a href="#dom-aitranslator-translate-input-options-options"><code><c- g>options</c-></code></a> = {}
+  );
+  <a data-link-type="idl-name" href="https://streams.spec.whatwg.org/#readablestream"><c- n>ReadableStream</c-></a> <a class="idl-code" data-link-type="method" href="#dom-aitranslator-translatestreaming"><c- g>translateStreaming</c-></a>(
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a href="#dom-aitranslator-translatestreaming-input-options-input"><code><c- g>input</c-></code></a>,
+    <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-aitranslatortranslateoptions"><c- n>AITranslatorTranslateOptions</c-></a> <a href="#dom-aitranslator-translatestreaming-input-options-options"><code><c- g>options</c-></code></a> = {}
+  );
+
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-aitranslator-sourcelanguage"><c- g>sourceLanguage</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-aitranslator-targetlanguage"><c- g>targetLanguage</c-></a>;
+};
+<a data-link-type="idl-name" href="#aitranslator"><c- n>AITranslator</c-></a> <c- b>includes</c-> <a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#aidestroyable"><c- n>AIDestroyable</c-></a>;
+
+<c- b>dictionary</c-> <a href="#dictdef-aitranslatorcreatecoreoptions"><code><c- g>AITranslatorCreateCoreOptions</c-></code></a> {
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a data-type="DOMString" href="#dom-aitranslatorcreatecoreoptions-sourcelanguage"><code><c- g>sourceLanguage</c-></code></a>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a data-type="DOMString" href="#dom-aitranslatorcreatecoreoptions-targetlanguage"><code><c- g>targetLanguage</c-></code></a>;
+};
+
+<c- b>dictionary</c-> <a href="#dictdef-aitranslatorcreateoptions"><code><c- g>AITranslatorCreateOptions</c-></code></a> : <a data-link-type="idl-name" href="#dictdef-aitranslatorcreatecoreoptions"><c- n>AITranslatorCreateCoreOptions</c-></a> {
+  <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal"><c- n>AbortSignal</c-></a> <a data-type="AbortSignal" href="#dom-aitranslatorcreateoptions-signal"><code><c- g>signal</c-></code></a>;
+  <a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#callbackdef-aicreatemonitorcallback"><c- n>AICreateMonitorCallback</c-></a> <a data-type="AICreateMonitorCallback" href="#dom-aitranslatorcreateoptions-monitor"><code><c- g>monitor</c-></code></a>;
+};
+
+<c- b>dictionary</c-> <a href="#dictdef-aitranslatortranslateoptions"><code><c- g>AITranslatorTranslateOptions</c-></code></a> {
+  <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal"><c- n>AbortSignal</c-></a> <a data-type="AbortSignal" href="#dom-aitranslatortranslateoptions-signal"><code><c- g>signal</c-></code></a>;
+};
+
+</pre>
+<script>/* Boilerplate: script-dom-helper */
+"use strict";
+function query(sel) { return document.querySelector(sel); }
+
+function queryAll(sel) { return [...document.querySelectorAll(sel)]; }
+
+function iter(obj) {
+	if(!obj) return [];
+	var it = obj[Symbol.iterator];
+	if(it) return it;
+	return Object.entries(obj);
+}
+
+function mk(tagname, attrs, ...children) {
+	const el = document.createElement(tagname);
+	for(const [k,v] of iter(attrs)) {
+		if(k.slice(0,3) == "_on") {
+			const eventName = k.slice(3);
+			el.addEventListener(eventName, v);
+		} else if(k[0] == "_") {
+			// property, not attribute
+			el[k.slice(1)] = v;
+		} else {
+			if(v === false || v == null) {
+        continue;
+      } else if(v === true) {
+        el.setAttribute(k, "");
+        continue;
+      } else {
+  			el.setAttribute(k, v);
+      }
+		}
+	}
+	append(el, children);
+	return el;
+}
+
+/* Create shortcuts for every known HTML element */
+[
+  "a",
+  "abbr",
+  "acronym",
+  "address",
+  "applet",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "basefont",
+  "bdo",
+  "big",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "center",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "embed",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "font",
+  "footer",
+  "form",
+  "frame",
+  "frameset",
+  "head",
+  "header",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "hr",
+  "html",
+  "i",
+  "iframe",
+  "img",
+  "input",
+  "ins",
+  "kbd",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "meta",
+  "meter",
+  "nav",
+  "nobr",
+  "noscript",
+  "object",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "pre",
+  "progress",
+  "q",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "small",
+  "source",
+  "span",
+  "strike",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "table",
+  "tbody",
+  "td",
+  "template",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr",
+  "xmp",
+].forEach(tagname=>{
+	mk[tagname] = (...args) => mk(tagname, ...args);
+});
+
+function* nodesFromChildList(children) {
+	for(const child of children.flat(Infinity)) {
+		if(child instanceof Node) {
+			yield child;
+		} else {
+			yield new Text(child);
+		}
+	}
+}
+function append(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		if(el instanceof Node) el.appendChild(child);
+		else el.push(child);
+	}
+	return el;
+}
+
+function insertAfter(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		el.parentNode.insertBefore(child, el.nextSibling);
+	}
+	return el;
+}
+
+function clearContents(el) {
+	el.innerHTML = "";
+	return el;
+}
+
+function parseHTML(markup) {
+	if(markup.toLowerCase().trim().indexOf('<!doctype') === 0) {
+		const doc = document.implementation.createHTMLDocument("");
+		doc.documentElement.innerHTML = markup;
+		return doc;
+	} else {
+		const el = mk.template({});
+		el.innerHTML = markup;
+		return el.content;
+	}
+}</script>
+<script>/* Boilerplate: script-dfn-panel */
+"use strict";
+{
+let dfnPanelData = {
+"0698d556": {"dfnID":"0698d556","dfnText":"string","external":true,"refSections":[{"refs":[{"id":"ref-for-string"},{"id":"ref-for-string\u2460"}],"title":"2.3. The AITranslator class"},{"refs":[{"id":"ref-for-string\u2461"},{"id":"ref-for-string\u2462"}],"title":"2.4.1. The algorithm"}],"url":"https://infra.spec.whatwg.org/#string"},
+"08d9f516": {"dfnID":"08d9f516","dfnText":"AIDestroyable","external":true,"refSections":[{"refs":[{"id":"ref-for-aidestroyable"}],"title":"2. The translator API"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#aidestroyable"},
+"0be3911e": {"dfnID":"0be3911e","dfnText":"NotReadableError","external":true,"refSections":[{"refs":[{"id":"ref-for-notreadableerror"}],"title":"2.4.2. Errors"}],"url":"https://webidl.spec.whatwg.org/#notreadableerror"},
+"0e3ba9f8": {"dfnID":"0e3ba9f8","dfnText":"fully active","external":true,"refSections":[{"refs":[{"id":"ref-for-fully-active"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-fully-active\u2460"}],"title":"2.2. Availability"}],"url":"https://html.spec.whatwg.org/multipage/document-sequences.html#fully-active"},
+"0e5dca01": {"dfnID":"0e5dca01","dfnText":"LookupMatchingLocaleByBestFit","external":true,"refSections":[{"refs":[{"id":"ref-for-sec-lookupmatchinglocalebybestfit"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2460"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2461"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2462"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2463"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2464"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2465"},{"id":"ref-for-sec-lookupmatchinglocalebybestfit\u2466"}],"title":"2.2. Availability"}],"url":"https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit"},
+"0e8de730": {"dfnID":"0e8de730","dfnText":"tuple","external":true,"refSections":[{"refs":[{"id":"ref-for-tuple"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#tuple"},
+"1243a891": {"dfnID":"1243a891","dfnText":"exist","external":true,"refSections":[{"refs":[{"id":"ref-for-map-exists"}],"title":"2.1. Creation"}],"url":"https://infra.spec.whatwg.org/#map-exists"},
+"15e48c39": {"dfnID":"15e48c39","dfnText":"set","external":true,"refSections":[{"refs":[{"id":"ref-for-ordered-set"},{"id":"ref-for-ordered-set\u2460"},{"id":"ref-for-ordered-set\u2461"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#ordered-set"},
+"16933767": {"dfnID":"16933767","dfnText":"\"unavailable\"","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-aiavailability-unavailable"},{"id":"ref-for-dom-aiavailability-unavailable\u2460"}],"title":"2.2. Availability"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-unavailable"},
+"28e64574": {"dfnID":"28e64574","dfnText":"abort reason","external":true,"refSections":[{"refs":[{"id":"ref-for-abortsignal-abort-reason"}],"title":"2.1. Creation"}],"url":"https://dom.spec.whatwg.org/#abortsignal-abort-reason"},
+"31db57e6": {"dfnID":"31db57e6","dfnText":"keys","external":true,"refSections":[{"refs":[{"id":"ref-for-map-getting-the-keys"},{"id":"ref-for-map-getting-the-keys\u2460"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#map-getting-the-keys"},
+"3259cbdf": {"dfnID":"3259cbdf","dfnText":"get a streaming AI model result","external":true,"refSections":[{"refs":[{"id":"ref-for-get-a-streaming-ai-model-result"}],"title":"2.3. The AITranslator class"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#get-a-streaming-ai-model-result"},
+"3349d69f": {"dfnID":"3349d69f","dfnText":"associated Document","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-document-window"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-concept-document-window\u2460"}],"title":"2.2. Availability"}],"url":"https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window"},
+"3b90bdcd": {"dfnID":"3b90bdcd","dfnText":"resolve","external":true,"refSections":[{"refs":[{"id":"ref-for-resolve"}],"title":"2.2. Availability"}],"url":"https://webidl.spec.whatwg.org/#resolve"},
+"3fca5a9e": {"dfnID":"3fca5a9e","dfnText":"map","external":true,"refSections":[{"refs":[{"id":"ref-for-ordered-map"},{"id":"ref-for-ordered-map\u2460"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#ordered-map"},
+"4013a022": {"dfnID":"4013a022","dfnText":"this","external":true,"refSections":[{"refs":[{"id":"ref-for-this"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-this\u2460"},{"id":"ref-for-this\u2461"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-this\u2462"},{"id":"ref-for-this\u2463"},{"id":"ref-for-this\u2464"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-this\u2465"},{"id":"ref-for-this\u2466"},{"id":"ref-for-this\u2467"},{"id":"ref-for-this\u2468"},{"id":"ref-for-this\u2460\u24ea"},{"id":"ref-for-this\u2460\u2460"},{"id":"ref-for-this\u2460\u2461"},{"id":"ref-for-this\u2460\u2462"}],"title":"2.3. The AITranslator class"}],"url":"https://webidl.spec.whatwg.org/#this"},
+"44959ae4": {"dfnID":"44959ae4","dfnText":"name","external":true,"refSections":[{"refs":[{"id":"ref-for-domexception-name"},{"id":"ref-for-domexception-name\u2460"}],"title":"2.4.2. Errors"}],"url":"https://webidl.spec.whatwg.org/#domexception-name"},
+"45209803": {"dfnID":"45209803","dfnText":"for each","external":true,"refSections":[{"refs":[{"id":"ref-for-map-iterate"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#map-iterate"},
+"48438eb3": {"dfnID":"48438eb3","dfnText":"queue a global task","external":true,"refSections":[{"refs":[{"id":"ref-for-queue-a-global-task"}],"title":"2.2. Availability"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task"},
+"4ad913ae": {"dfnID":"4ad913ae","dfnText":"surrounding agent","external":true,"refSections":[{"refs":[{"id":"ref-for-surrounding-agent"}],"title":"2.1. Creation"}],"url":"https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent"},
+"4d491ab9": {"dfnID":"4d491ab9","dfnText":"\"available\"","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-aiavailability-available"},{"id":"ref-for-dom-aiavailability-available\u2460"},{"id":"ref-for-dom-aiavailability-available\u2461"},{"id":"ref-for-dom-aiavailability-available\u2462"}],"title":"2.2. Availability"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available"},
+"535dd335": {"dfnID":"535dd335","dfnText":"aborted","external":true,"refSections":[{"refs":[{"id":"ref-for-abortsignal-aborted"}],"title":"2.1. Creation"}],"url":"https://dom.spec.whatwg.org/#abortsignal-aborted"},
+"56f81a8e": {"dfnID":"56f81a8e","dfnText":"new","external":true,"refSections":[{"refs":[{"id":"ref-for-new"}],"title":"2. The translator API"}],"url":"https://webidl.spec.whatwg.org/#new"},
+"5991ccfb": {"dfnID":"5991ccfb","dfnText":"relevant realm","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-relevant-realm"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-concept-relevant-realm\u2460"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-concept-relevant-realm\u2461"}],"title":"2.2. Availability"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm"},
+"59ed4e57": {"dfnID":"59ed4e57","dfnText":"ReadableStream","external":true,"refSections":[{"refs":[{"id":"ref-for-readablestream"}],"title":"2. The translator API"}],"url":"https://streams.spec.whatwg.org/#readablestream"},
+"5afbefcd": {"dfnID":"5afbefcd","dfnText":"item","external":true,"refSections":[{"refs":[{"id":"ref-for-list-item"},{"id":"ref-for-list-item\u2460"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#list-item"},
+"5d7209e9": {"dfnID":"5d7209e9","dfnText":"Window","external":true,"refSections":[{"refs":[{"id":"ref-for-window"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-window\u2460"}],"title":"2.2. Availability"}],"url":"https://html.spec.whatwg.org/multipage/nav-history-apis.html#window"},
+"5e129c74": {"dfnID":"5e129c74","dfnText":"QuotaExceededError","external":true,"refSections":[{"refs":[{"id":"ref-for-quotaexceedederror"}],"title":"2.4.2. Errors"}],"url":"https://webidl.spec.whatwg.org/#quotaexceedederror"},
+"71a962ff": {"dfnID":"71a962ff","dfnText":"AICreateMonitorCallback","external":true,"refSections":[{"refs":[{"id":"ref-for-callbackdef-aicreatemonitorcallback"}],"title":"2. The translator API"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#callbackdef-aicreatemonitorcallback"},
+"77b4c09a": {"dfnID":"77b4c09a","dfnText":"assert","external":true,"refSections":[{"refs":[{"id":"ref-for-assert"},{"id":"ref-for-assert\u2460"},{"id":"ref-for-assert\u2461"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-assert\u2462"},{"id":"ref-for-assert\u2463"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-assert\u2464"}],"title":"2.4.1. The algorithm"}],"url":"https://infra.spec.whatwg.org/#assert"},
+"797018a7": {"dfnID":"797018a7","dfnText":"InvalidStateError","external":true,"refSections":[{"refs":[{"id":"ref-for-invalidstateerror"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-invalidstateerror\u2460"}],"title":"2.2. Availability"}],"url":"https://webidl.spec.whatwg.org/#invalidstateerror"},
+"7b0d918d": {"dfnID":"7b0d918d","dfnText":"break","external":true,"refSections":[{"refs":[{"id":"ref-for-iteration-break"},{"id":"ref-for-iteration-break\u2460"},{"id":"ref-for-iteration-break\u2461"}],"title":"2.4.1. The algorithm"}],"url":"https://infra.spec.whatwg.org/#iteration-break"},
+"7ef1b769": {"dfnID":"7ef1b769","dfnText":"error information","external":true,"refSections":[{"refs":[{"id":"ref-for-error-information"},{"id":"ref-for-error-information\u2460"}],"title":"2.4.1. The algorithm"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#error-information"},
+"802b0fdd": {"dfnID":"802b0fdd","dfnText":"value","external":true,"refSections":[{"refs":[{"id":"ref-for-map-value"},{"id":"ref-for-map-value\u2460"},{"id":"ref-for-map-value\u2461"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#map-value"},
+"814c5352": {"dfnID":"814c5352","dfnText":"validate and canonicalize language tags","external":true,"refSections":[{"refs":[{"id":"ref-for-validate-and-canonicalize-language-tags"},{"id":"ref-for-validate-and-canonicalize-language-tags\u2460"}],"title":"2.1. Creation"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags"},
+"81dd847b": {"dfnID":"81dd847b","dfnText":"UnknownError","external":true,"refSections":[{"refs":[{"id":"ref-for-unknownerror"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-unknownerror\u2460"}],"title":"2.4.2. Errors"}],"url":"https://webidl.spec.whatwg.org/#unknownerror"},
+"82ca3efc": {"dfnID":"82ca3efc","dfnText":"TypeError","external":true,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-typeerror"}],"title":"2.1. Creation"}],"url":"https://webidl.spec.whatwg.org/#exceptiondef-typeerror"},
+"860300d4": {"dfnID":"860300d4","dfnText":"implementation-defined","external":true,"refSections":[{"refs":[{"id":"ref-for-implementation-defined"}],"title":"2.4.1. The algorithm"},{"refs":[{"id":"ref-for-implementation-defined\u2460"}],"title":"2.4.2. Errors"}],"url":"https://infra.spec.whatwg.org/#implementation-defined"},
+"8855a9aa": {"dfnID":"8855a9aa","dfnText":"DOMString","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-DOMString"},{"id":"ref-for-idl-DOMString\u2460"},{"id":"ref-for-idl-DOMString\u2461"},{"id":"ref-for-idl-DOMString\u2462"},{"id":"ref-for-idl-DOMString\u2463"},{"id":"ref-for-idl-DOMString\u2464"},{"id":"ref-for-idl-DOMString\u2465"}],"title":"2. The translator API"}],"url":"https://webidl.spec.whatwg.org/#idl-DOMString"},
+"889e932f": {"dfnID":"889e932f","dfnText":"Exposed","external":true,"refSections":[{"refs":[{"id":"ref-for-Exposed"},{"id":"ref-for-Exposed\u2460"}],"title":"2. The translator API"}],"url":"https://webidl.spec.whatwg.org/#Exposed"},
+"8958b003": {"dfnID":"8958b003","dfnText":"entry","external":true,"refSections":[{"refs":[{"id":"ref-for-map-entry"},{"id":"ref-for-map-entry\u2460"},{"id":"ref-for-map-entry\u2461"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#map-entry"},
+"8f0df616": {"dfnID":"8f0df616","dfnText":"get an aggregated AI model result","external":true,"refSections":[{"refs":[{"id":"ref-for-get-an-aggregated-ai-model-result"}],"title":"2.3. The AITranslator class"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#get-an-aggregated-ai-model-result"},
+"93e4c9ae": {"dfnID":"93e4c9ae","dfnText":"Unicode canonicalized locale identifier","external":true,"refSections":[{"refs":[{"id":"ref-for-sec-language-tags"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-sec-language-tags\u2460"},{"id":"ref-for-sec-language-tags\u2461"}],"title":"2.4.1. The algorithm"}],"url":"https://tc39.es/ecma402/#sec-language-tags"},
+"9529bb00": {"dfnID":"9529bb00","dfnText":"\"downloadable\"","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-aiavailability-downloadable"},{"id":"ref-for-dom-aiavailability-downloadable\u2460"},{"id":"ref-for-dom-aiavailability-downloadable\u2461"}],"title":"2.2. Availability"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloadable"},
+"a5f015e3": {"dfnID":"a5f015e3","dfnText":"realm","external":true,"refSections":[{"refs":[{"id":"ref-for-realm"}],"title":"2.1. Creation"}],"url":"https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm"},
+"a68d4447": {"dfnID":"a68d4447","dfnText":"create an AI model object","external":true,"refSections":[{"refs":[{"id":"ref-for-create-an-ai-model-object"}],"title":"2.1. Creation"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#create-an-ai-model-object"},
+"a72449dd": {"dfnID":"a72449dd","dfnText":"in parallel","external":true,"refSections":[{"refs":[{"id":"ref-for-in-parallel"},{"id":"ref-for-in-parallel\u2460"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-in-parallel\u2461"},{"id":"ref-for-in-parallel\u2462"},{"id":"ref-for-in-parallel\u2463"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-in-parallel\u2464"}],"title":"2.4.1. The algorithm"}],"url":"https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel"},
+"ai-translator-factory": {"dfnID":"ai-translator-factory","dfnText":"translator factory","external":false,"refSections":[{"refs":[{"id":"ref-for-ai-translator-factory"},{"id":"ref-for-ai-translator-factory\u2460"}],"title":"2. The translator API"}],"url":"#ai-translator-factory"},
+"aitranslator": {"dfnID":"aitranslator","dfnText":"AITranslator","external":false,"refSections":[{"refs":[{"id":"ref-for-aitranslator"},{"id":"ref-for-aitranslator\u2460"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-aitranslator\u2461"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-aitranslator\u2462"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-aitranslator\u2463"},{"id":"ref-for-aitranslator\u2464"},{"id":"ref-for-aitranslator\u2465"}],"title":"2.3. The AITranslator class"}],"url":"#aitranslator"},
+"aitranslator-source-language": {"dfnID":"aitranslator-source-language","dfnText":"source language","external":false,"refSections":[{"refs":[{"id":"ref-for-aitranslator-source-language"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-aitranslator-source-language\u2460"},{"id":"ref-for-aitranslator-source-language\u2461"},{"id":"ref-for-aitranslator-source-language\u2462"}],"title":"2.3. The AITranslator class"}],"url":"#aitranslator-source-language"},
+"aitranslator-target-language": {"dfnID":"aitranslator-target-language","dfnText":"target language","external":false,"refSections":[{"refs":[{"id":"ref-for-aitranslator-target-language"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-aitranslator-target-language\u2460"},{"id":"ref-for-aitranslator-target-language\u2461"},{"id":"ref-for-aitranslator-target-language\u2462"}],"title":"2.3. The AITranslator class"}],"url":"#aitranslator-target-language"},
+"aitranslatorfactory": {"dfnID":"aitranslatorfactory","dfnText":"AITranslatorFactory","external":false,"refSections":[{"refs":[{"id":"ref-for-aitranslatorfactory"},{"id":"ref-for-aitranslatorfactory\u2460"}],"title":"2. The translator API"}],"url":"#aitranslatorfactory"},
+"b262501e": {"dfnID":"b262501e","dfnText":"reject","external":true,"refSections":[{"refs":[{"id":"ref-for-reject"}],"title":"2.2. Availability"}],"url":"https://webidl.spec.whatwg.org/#reject"},
+"b75bb3bd": {"dfnID":"b75bb3bd","dfnText":"SecureContext","external":true,"refSections":[{"refs":[{"id":"ref-for-SecureContext"},{"id":"ref-for-SecureContext\u2460"}],"title":"2. The translator API"}],"url":"https://webidl.spec.whatwg.org/#SecureContext"},
+"b78d6a64": {"dfnID":"b78d6a64","dfnText":"event loop","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-agent-event-loop"}],"title":"2.1. Creation"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop"},
+"ba556545": {"dfnID":"ba556545","dfnText":"NotAllowedError","external":true,"refSections":[{"refs":[{"id":"ref-for-notallowederror"}],"title":"2.4.2. Errors"}],"url":"https://webidl.spec.whatwg.org/#notallowederror"},
+"bd018051": {"dfnID":"bd018051","dfnText":"AI task source","external":true,"refSections":[{"refs":[{"id":"ref-for-ai-task-source"}],"title":"2.2. Availability"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#ai-task-source"},
+"bdbd19d1": {"dfnID":"bdbd19d1","dfnText":"Promise","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-promise"},{"id":"ref-for-idl-promise\u2460"},{"id":"ref-for-idl-promise\u2461"}],"title":"2. The translator API"}],"url":"https://webidl.spec.whatwg.org/#idl-promise"},
+"c89b1a15": {"dfnID":"c89b1a15","dfnText":"\"downloading\"","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-aiavailability-downloading"},{"id":"ref-for-dom-aiavailability-downloading\u2460"}],"title":"2.2. Availability"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloading"},
+"cca3cdb2": {"dfnID":"cca3cdb2","dfnText":"AbortSignal","external":true,"refSections":[{"refs":[{"id":"ref-for-abortsignal"},{"id":"ref-for-abortsignal\u2460"}],"title":"2. The translator API"}],"url":"https://dom.spec.whatwg.org/#abortsignal"},
+"compute-translator-options-availability": {"dfnID":"compute-translator-options-availability","dfnText":"compute translator options availability","external":false,"refSections":[{"refs":[{"id":"ref-for-compute-translator-options-availability"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-compute-translator-options-availability\u2460"}],"title":"2.2. Availability"}],"url":"#compute-translator-options-availability"},
+"create-a-translator-object": {"dfnID":"create-a-translator-object","dfnText":"create a translator object","external":false,"refSections":[{"refs":[{"id":"ref-for-create-a-translator-object"}],"title":"2.1. Creation"}],"url":"#create-a-translator-object"},
+"d0b4a948": {"dfnID":"d0b4a948","dfnText":"a promise rejected with","external":true,"refSections":[{"refs":[{"id":"ref-for-a-promise-rejected-with"},{"id":"ref-for-a-promise-rejected-with\u2460"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-a-promise-rejected-with\u2461"}],"title":"2.2. Availability"}],"url":"https://webidl.spec.whatwg.org/#a-promise-rejected-with"},
+"d14a6f26": {"dfnID":"d14a6f26","dfnText":"key","external":true,"refSections":[{"refs":[{"id":"ref-for-map-key"},{"id":"ref-for-map-key\u2460"},{"id":"ref-for-map-key\u2461"}],"title":"2.2. Availability"}],"url":"https://infra.spec.whatwg.org/#map-key"},
+"d40a61bd": {"dfnID":"d40a61bd","dfnText":"AI","external":true,"refSections":[{"refs":[{"id":"ref-for-ai"},{"id":"ref-for-ai\u2460"},{"id":"ref-for-ai\u2461"}],"title":"2. The translator API"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#ai"},
+"dacde8b5": {"dfnID":"dacde8b5","dfnText":"a new promise","external":true,"refSections":[{"refs":[{"id":"ref-for-a-new-promise"}],"title":"2.2. Availability"}],"url":"https://webidl.spec.whatwg.org/#a-new-promise"},
+"dca2de17": {"dfnID":"dca2de17","dfnText":"DOMException","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-DOMException"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-idl-DOMException\u2460"},{"id":"ref-for-idl-DOMException\u2461"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-idl-DOMException\u2462"},{"id":"ref-for-idl-DOMException\u2463"}],"title":"2.4.2. Errors"}],"url":"https://webidl.spec.whatwg.org/#idl-DOMException"},
+"df5f9420": {"dfnID":"df5f9420","dfnText":"AIAvailability","external":true,"refSections":[{"refs":[{"id":"ref-for-enumdef-aiavailability"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-enumdef-aiavailability\u2460"},{"id":"ref-for-enumdef-aiavailability\u2461"},{"id":"ref-for-enumdef-aiavailability\u2462"}],"title":"2.2. Availability"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability"},
+"dictdef-aitranslatorcreatecoreoptions": {"dfnID":"dictdef-aitranslatorcreatecoreoptions","dfnText":"AITranslatorCreateCoreOptions","external":false,"refSections":[{"refs":[{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions"},{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions\u2460"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions\u2461"},{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions\u2462"},{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions\u2463"},{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions\u2464"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-dictdef-aitranslatorcreatecoreoptions\u2465"}],"title":"2.2. Availability"}],"url":"#dictdef-aitranslatorcreatecoreoptions"},
+"dictdef-aitranslatorcreateoptions": {"dfnID":"dictdef-aitranslatorcreateoptions","dfnText":"AITranslatorCreateOptions","external":false,"refSections":[{"refs":[{"id":"ref-for-dictdef-aitranslatorcreateoptions"}],"title":"2. The translator API"}],"url":"#dictdef-aitranslatorcreateoptions"},
+"dictdef-aitranslatortranslateoptions": {"dfnID":"dictdef-aitranslatortranslateoptions","dfnText":"AITranslatorTranslateOptions","external":false,"refSections":[{"refs":[{"id":"ref-for-dictdef-aitranslatortranslateoptions"},{"id":"ref-for-dictdef-aitranslatortranslateoptions\u2460"}],"title":"2. The translator API"}],"url":"#dictdef-aitranslatortranslateoptions"},
+"dom-ai-translator": {"dfnID":"dom-ai-translator","dfnText":"translator","external":false,"refSections":[],"url":"#dom-ai-translator"},
+"dom-aitranslator-sourcelanguage": {"dfnID":"dom-aitranslator-sourcelanguage","dfnText":"sourceLanguage","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslator-sourcelanguage"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dom-aitranslator-sourcelanguage\u2460"}],"title":"2.2. Availability"}],"url":"#dom-aitranslator-sourcelanguage"},
+"dom-aitranslator-targetlanguage": {"dfnID":"dom-aitranslator-targetlanguage","dfnText":"targetLanguage","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslator-targetlanguage"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dom-aitranslator-targetlanguage\u2460"}],"title":"2.2. Availability"}],"url":"#dom-aitranslator-targetlanguage"},
+"dom-aitranslator-translate": {"dfnID":"dom-aitranslator-translate","dfnText":"translate(input, options)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslator-translate"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dom-aitranslator-translate\u2460"}],"title":"2.4.2. Errors"}],"url":"#dom-aitranslator-translate"},
+"dom-aitranslator-translate-input-options-input": {"dfnID":"dom-aitranslator-translate-input-options-input","dfnText":"input","external":false,"refSections":[],"url":"#dom-aitranslator-translate-input-options-input"},
+"dom-aitranslator-translate-input-options-options": {"dfnID":"dom-aitranslator-translate-input-options-options","dfnText":"options","external":false,"refSections":[],"url":"#dom-aitranslator-translate-input-options-options"},
+"dom-aitranslator-translatestreaming": {"dfnID":"dom-aitranslator-translatestreaming","dfnText":"translateStreaming(input, options)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslator-translatestreaming"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dom-aitranslator-translatestreaming\u2460"}],"title":"2.4.2. Errors"}],"url":"#dom-aitranslator-translatestreaming"},
+"dom-aitranslator-translatestreaming-input-options-input": {"dfnID":"dom-aitranslator-translatestreaming-input-options-input","dfnText":"input","external":false,"refSections":[],"url":"#dom-aitranslator-translatestreaming-input-options-input"},
+"dom-aitranslator-translatestreaming-input-options-options": {"dfnID":"dom-aitranslator-translatestreaming-input-options-options","dfnText":"options","external":false,"refSections":[],"url":"#dom-aitranslator-translatestreaming-input-options-options"},
+"dom-aitranslatorcreatecoreoptions-sourcelanguage": {"dfnID":"dom-aitranslatorcreatecoreoptions-sourcelanguage","dfnText":"sourceLanguage","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2460"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2461"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2462"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2463"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2464"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2465"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-sourcelanguage\u2466"}],"title":"2.2. Availability"}],"url":"#dom-aitranslatorcreatecoreoptions-sourcelanguage"},
+"dom-aitranslatorcreatecoreoptions-targetlanguage": {"dfnID":"dom-aitranslatorcreatecoreoptions-targetlanguage","dfnText":"targetLanguage","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2460"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2461"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2462"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2463"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2464"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2465"},{"id":"ref-for-dom-aitranslatorcreatecoreoptions-targetlanguage\u2466"}],"title":"2.2. Availability"}],"url":"#dom-aitranslatorcreatecoreoptions-targetlanguage"},
+"dom-aitranslatorcreateoptions-monitor": {"dfnID":"dom-aitranslatorcreateoptions-monitor","dfnText":"monitor","external":false,"refSections":[],"url":"#dom-aitranslatorcreateoptions-monitor"},
+"dom-aitranslatorcreateoptions-signal": {"dfnID":"dom-aitranslatorcreateoptions-signal","dfnText":"signal","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslatorcreateoptions-signal"},{"id":"ref-for-dom-aitranslatorcreateoptions-signal\u2460"}],"title":"2.1. Creation"}],"url":"#dom-aitranslatorcreateoptions-signal"},
+"dom-aitranslatorfactory-availability": {"dfnID":"dom-aitranslatorfactory-availability","dfnText":"availability(options)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslatorfactory-availability"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dom-aitranslatorfactory-availability\u2460"}],"title":"2.2. Availability"}],"url":"#dom-aitranslatorfactory-availability"},
+"dom-aitranslatorfactory-availability-options-options": {"dfnID":"dom-aitranslatorfactory-availability-options-options","dfnText":"options","external":false,"refSections":[],"url":"#dom-aitranslatorfactory-availability-options-options"},
+"dom-aitranslatorfactory-create": {"dfnID":"dom-aitranslatorfactory-create","dfnText":"create(options)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-aitranslatorfactory-create"}],"title":"2. The translator API"},{"refs":[{"id":"ref-for-dom-aitranslatorfactory-create\u2460"}],"title":"2.2. Availability"}],"url":"#dom-aitranslatorfactory-create"},
+"dom-aitranslatorfactory-create-options-options": {"dfnID":"dom-aitranslatorfactory-create-options-options","dfnText":"options","external":false,"refSections":[],"url":"#dom-aitranslatorfactory-create-options-options"},
+"dom-aitranslatortranslateoptions-signal": {"dfnID":"dom-aitranslatortranslateoptions-signal","dfnText":"signal","external":false,"refSections":[],"url":"#dom-aitranslatortranslateoptions-signal"},
+"download-the-translation-model": {"dfnID":"download-the-translation-model","dfnText":"download the translation model","external":false,"refSections":[{"refs":[{"id":"ref-for-download-the-translation-model"}],"title":"2.1. Creation"}],"url":"#download-the-translation-model"},
+"e99bd18e": {"dfnID":"e99bd18e","dfnText":"relevant global object","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-relevant-global"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-concept-relevant-global\u2460"},{"id":"ref-for-concept-relevant-global\u2461"}],"title":"2.2. Availability"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global"},
+"initialize-the-translation-model": {"dfnID":"initialize-the-translation-model","dfnText":"initialize the translation model","external":false,"refSections":[{"refs":[{"id":"ref-for-initialize-the-translation-model"}],"title":"2.1. Creation"}],"url":"#initialize-the-translation-model"},
+"language-arc": {"dfnID":"language-arc","dfnText":"language arc","external":false,"refSections":[{"refs":[{"id":"ref-for-language-arc"},{"id":"ref-for-language-arc\u2460"},{"id":"ref-for-language-arc\u2461"},{"id":"ref-for-language-arc\u2462"},{"id":"ref-for-language-arc\u2463"},{"id":"ref-for-language-arc\u2464"},{"id":"ref-for-language-arc\u2465"},{"id":"ref-for-language-arc\u2466"},{"id":"ref-for-language-arc\u2467"},{"id":"ref-for-language-arc\u2468"},{"id":"ref-for-language-arc\u2460\u24ea"},{"id":"ref-for-language-arc\u2460\u2460"},{"id":"ref-for-language-arc\u2460\u2461"},{"id":"ref-for-language-arc\u2460\u2462"},{"id":"ref-for-language-arc\u2460\u2463"},{"id":"ref-for-language-arc\u2460\u2464"},{"id":"ref-for-language-arc\u2460\u2465"}],"title":"2.2. Availability"}],"url":"#language-arc"},
+"language-arc-can-be-fulfilled-by-the-identity-translation": {"dfnID":"language-arc-can-be-fulfilled-by-the-identity-translation","dfnText":"can be fulfilled by the identity translation","external":false,"refSections":[{"refs":[{"id":"ref-for-language-arc-can-be-fulfilled-by-the-identity-translation"},{"id":"ref-for-language-arc-can-be-fulfilled-by-the-identity-translation\u2460"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-language-arc-can-be-fulfilled-by-the-identity-translation\u2461"}],"title":"2.4.1. The algorithm"}],"url":"#language-arc-can-be-fulfilled-by-the-identity-translation"},
+"language-arc-overlaps": {"dfnID":"language-arc-overlaps","dfnText":"overlaps","external":false,"refSections":[{"refs":[{"id":"ref-for-language-arc-overlaps"},{"id":"ref-for-language-arc-overlaps\u2460"}],"title":"2.2. Availability"}],"url":"#language-arc-overlaps"},
+"language-arc-source-language": {"dfnID":"language-arc-source-language","dfnText":"source language","external":false,"refSections":[{"refs":[{"id":"ref-for-language-arc-source-language"},{"id":"ref-for-language-arc-source-language\u2460"},{"id":"ref-for-language-arc-source-language\u2461"},{"id":"ref-for-language-arc-source-language\u2462"},{"id":"ref-for-language-arc-source-language\u2463"},{"id":"ref-for-language-arc-source-language\u2464"},{"id":"ref-for-language-arc-source-language\u2465"},{"id":"ref-for-language-arc-source-language\u2466"}],"title":"2.2. Availability"}],"url":"#language-arc-source-language"},
+"language-arc-target-language": {"dfnID":"language-arc-target-language","dfnText":"target language","external":false,"refSections":[{"refs":[{"id":"ref-for-language-arc-target-language"},{"id":"ref-for-language-arc-target-language\u2460"},{"id":"ref-for-language-arc-target-language\u2461"},{"id":"ref-for-language-arc-target-language\u2462"},{"id":"ref-for-language-arc-target-language\u2463"},{"id":"ref-for-language-arc-target-language\u2464"},{"id":"ref-for-language-arc-target-language\u2465"},{"id":"ref-for-language-arc-target-language\u2466"}],"title":"2.2. Availability"}],"url":"#language-arc-target-language"},
+"translate": {"dfnID":"translate","dfnText":"translate","external":false,"refSections":[{"refs":[{"id":"ref-for-translate"}],"title":"2.2. Availability"},{"refs":[{"id":"ref-for-translate\u2460"},{"id":"ref-for-translate\u2461"}],"title":"2.3. The AITranslator class"},{"refs":[{"id":"ref-for-translate\u2462"}],"title":"2.4.2. Errors"}],"url":"#translate"},
+"translator-language-arc-availabilities": {"dfnID":"translator-language-arc-availabilities","dfnText":"translator language arc availabilities","external":false,"refSections":[{"refs":[{"id":"ref-for-translator-language-arc-availabilities"},{"id":"ref-for-translator-language-arc-availabilities\u2460"},{"id":"ref-for-translator-language-arc-availabilities\u2461"},{"id":"ref-for-translator-language-arc-availabilities\u2462"},{"id":"ref-for-translator-language-arc-availabilities\u2463"},{"id":"ref-for-translator-language-arc-availabilities\u2464"}],"title":"2.2. Availability"}],"url":"#translator-language-arc-availabilities"},
+"validate-and-canonicalize-translator-options": {"dfnID":"validate-and-canonicalize-translator-options","dfnText":"validate and canonicalize translator options","external":false,"refSections":[{"refs":[{"id":"ref-for-validate-and-canonicalize-translator-options"}],"title":"2.1. Creation"},{"refs":[{"id":"ref-for-validate-and-canonicalize-translator-options\u2460"}],"title":"2.2. Availability"}],"url":"#validate-and-canonicalize-translator-options"},
+};
+
+document.addEventListener("DOMContentLoaded", ()=>{
+    genAllDfnPanels();
+
+    document.body.addEventListener("click", (e) => {
+        // If not handled already, just hide all dfn panels.
+        hideAllDfnPanels();
+    });
+});
+
+window.addEventListener("resize", () => {
+    // Pin any visible dfn panel
+    queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>positionDfnPanel(el));
+});
+
+function genAllDfnPanels() {
+    for(const panelData of Object.values(dfnPanelData)) {
+        const dfnID = panelData.dfnID;
+        const dfn = document.getElementById(dfnID);
+        if(!dfn) {
+            console.log(`Can't find dfn#${dfnID}.`, panelData);
+            continue;
+        }
+        dfn.panelData = panelData;
+        insertDfnPopupAction(dfn);
+    }
+}
+
+function genDfnPanel(dfn, { dfnID, url, dfnText, refSections, external }) {
+    const dfnPanel = mk.aside({
+        class: "dfn-panel on",
+        id: `infopanel-for-${dfnID}`,
+        "data-for": dfnID,
+        "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+        },
+        mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
+            `Info about the '${dfnText}' ${external?"external":""} reference.`),
+        mk.a({href:url, class:"dfn-link"}, url),
+        refSections.length == 0 ? [] :
+            mk.b({}, "Referenced in:"),
+            mk.ul({},
+                ...refSections.map(section=>
+                    mk.li({},
+                        ...section.refs.map((ref, refI)=>
+                            [
+                                mk.a({ href: `#${ref.id}` },
+                                    (refI == 0) ? section.title : `(${refI + 1})`
+                                ),
+                                " ",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+        genLinkingSyntaxes(dfn),
+    );
+
+    dfnPanel.addEventListener('click', (event) => {
+        if (event.target.nodeName == 'A') {
+            scrollToTargetAndHighlight(event);
+            pinDfnPanel(dfnPanel);
+        }
+        event.stopPropagation();
+        refocusOnTarget(event);
+    });
+    dfnPanel.addEventListener('keydown', (event) => {
+        if(event.keyCode == 27) { // Escape key
+            hideDfnPanel({dfnPanel});
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    });
+
+    dfnPanel.dfn = dfn;
+    dfn.dfnPanel = dfnPanel;
+    return dfnPanel;
+}
+
+
+
+function hideAllDfnPanels() {
+    // Delete the currently-active dfn panel.
+    queryAll(".dfn-panel").forEach(dfnPanel=>hideDfnPanel({dfnPanel}));
+}
+
+function showDfnPanel(dfn) {
+    hideAllDfnPanels(); // Only display one at a time.
+
+    dfn.setAttribute("aria-expanded", "true");
+
+    const dfnPanel = genDfnPanel(dfn, dfn.panelData);
+
+    // Give the dfn a unique tabindex, and then
+    // give all the tabbable panel bits successive indexes.
+    let tabIndex = 100;
+    dfn.tabIndex = tabIndex++;
+    const tabbable = dfnPanel.querySelectorAll(":is(a, button)");
+    for (const el of tabbable) {
+        el.tabIndex = tabIndex++;
+    }
+
+    append(document.body, dfnPanel);
+    positionDfnPanel(dfnPanel);
+}
+
+function positionDfnPanel(dfnPanel) {
+    const dfn = dfnPanel.dfn;
+    const dfnPos = getBounds(dfn);
+    dfnPanel.style.top = dfnPos.bottom + "px";
+    dfnPanel.style.left = dfnPos.left + "px";
+
+    const panelPos = dfnPanel.getBoundingClientRect();
+    const panelMargin = 8;
+    const maxRight = document.body.parentNode.clientWidth - panelMargin;
+    if (panelPos.right > maxRight) {
+        const overflowAmount = panelPos.right - maxRight;
+        const newLeft = Math.max(panelMargin, dfnPos.left - overflowAmount);
+        dfnPanel.style.left = newLeft + "px";
+    }
+}
+
+function pinDfnPanel(dfnPanel) {
+    // Switch it to "activated" state, which pins it.
+    dfnPanel.classList.add("activated");
+    dfnPanel.style.position = "fixed";
+    dfnPanel.style.left = null;
+    dfnPanel.style.top = null;
+}
+
+function hideDfnPanel({dfn, dfnPanel}) {
+    if(!dfnPanel) dfnPanel = dfn.dfnPanel;
+    if(!dfn) dfn = dfnPanel.dfn;
+    dfn.dfnPanel = undefined;
+    dfnPanel.dfn = undefined;
+    dfn.setAttribute("aria-expanded", "false");
+    dfn.tabIndex = undefined;
+    dfnPanel.remove()
+}
+
+function toggleDfnPanel(dfn) {
+    if(dfn.dfnPanel) {
+        hideDfnPanel(dfn);
+    } else {
+        showDfnPanel(dfn);
+    }
+}
+
+function insertDfnPopupAction(dfn) {
+    dfn.setAttribute('role', 'button');
+    dfn.setAttribute('aria-expanded', 'false')
+    dfn.tabIndex = 0;
+    dfn.classList.add('has-dfn-panel');
+    dfn.addEventListener('click', (event) => {
+        toggleDfnPanel(dfn);
+        event.stopPropagation();
+    });
+    dfn.addEventListener('keypress', (event) => {
+        const kc = event.keyCode;
+        // 32->Space, 13->Enter
+        if(kc == 32 || kc == 13) {
+            toggleDfnPanel(dfn);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    });
+}
+
+function refocusOnTarget(event) {
+    const target = event.target;
+    setTimeout(() => {
+        // Refocus on the event.target element.
+        // This is needed after browser scrolls to the destination.
+        target.focus();
+    });
+}
+
+// TODO: shared util
+// Returns the root-level absolute position {left and top} of element.
+function getBounds(el, relativeTo=document.body) {
+    const relativeRect = relativeTo.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const top = elRect.top - relativeRect.top;
+    const left = elRect.left - relativeRect.left;
+    return {
+        top,
+        left,
+        bottom: top + elRect.height,
+        right: left + elRect.width,
+    }
+}
+
+function scrollToTargetAndHighlight(event) {
+    let hash = event.target.hash;
+    if (hash) {
+        hash = decodeURIComponent(hash.substring(1));
+        const dest = document.getElementById(hash);
+        if (dest) {
+            dest.classList.add('highlighted');
+            setTimeout(() => dest.classList.remove('highlighted'), 1000);
+        }
+    }
+}
+
+// Functions, divided by link type, that wrap an autolink's
+// contents with the appropriate outer syntax.
+// Alternately, a string naming another type they format
+// the same as.
+function needsFor(type) {
+    switch(type) {
+        case "descriptor":
+        case "value":
+        case "element-attr":
+        case "attr-value":
+        case "element-state":
+        case "method":
+        case "constructor":
+        case "argument":
+        case "attribute":
+        case "const":
+        case "dict-member":
+        case "event":
+        case "enum-value":
+        case "stringifier":
+        case "serializer":
+        case "iterator":
+        case "maplike":
+        case "setlike":
+        case "state":
+        case "mode":
+        case "context":
+        case "facet": return true;
+
+        default: return false;
+    }
+}
+function refusesFor(type) {
+    switch(type) {
+        case "property":
+        case "element":
+        case "interface":
+        case "namespace":
+        case "callback":
+        case "dictionary":
+        case "enum":
+        case "exception":
+        case "typedef":
+        case "http-header":
+        case "permission": return true;
+
+        default: return false;
+    }
+}
+function linkFormatterFromType(type) {
+    switch(type) {
+        case 'scheme':
+        case 'permission':
+        case 'dfn': return (text) => `[=${text}=]`;
+
+        case 'abstract-op': return (text) => `[\$${text}\$]`;
+
+        case 'function':
+        case 'at-rule':
+        case 'selector':
+        case 'value': return (text) => `''${text}''`;
+
+        case 'http-header': return (text) => `[:${text}:]`;
+
+        case 'interface':
+        case 'constructor':
+        case 'method':
+        case 'argument':
+        case 'attribute':
+        case 'callback':
+        case 'dictionary':
+        case 'dict-member':
+        case 'enum':
+        case 'enum-value':
+        case 'exception':
+        case 'const':
+        case 'typedef':
+        case 'stringifier':
+        case 'serializer':
+        case 'iterator':
+        case 'maplike':
+        case 'setlike':
+        case 'extended-attribute':
+        case 'event':
+        case 'idl': return (text) => `{{${text}}}`;
+
+        case 'element-state':
+        case 'element-attr':
+        case 'attr-value':
+        case 'element': return (element) => `<{${element}}>`;
+
+        case 'grammar': return (text) => `${text} (within a <pre class=prod>)`;
+
+        case 'type': return (text)=> `<<${text}>>`;
+
+        case 'descriptor':
+        case 'property': return (text) => `'${text}'`;
+
+        default: return;
+    };
+};
+
+function genLinkingSyntaxes(dfn) {
+    if(dfn.tagName != "DFN") return;
+
+    const type = dfn.getAttribute('data-dfn-type');
+    if(!type) {
+        console.log(`<dfn> doesn't have a data-dfn-type:`, dfn);
+        return [];
+    }
+
+    // Return a function that wraps link text based on the type
+    const linkFormatter = linkFormatterFromType(type);
+    if(!linkFormatter) {
+        console.log(`<dfn> has an unknown data-dfn-type:`, dfn);
+        return [];
+    }
+
+    let ltAlts;
+    if(dfn.hasAttribute('data-lt')) {
+        ltAlts = dfn.getAttribute('data-lt')
+            .split("|")
+            .map(x=>x.trim());
+    } else {
+        ltAlts = [dfn.textContent.trim()];
+    }
+    if(type == "type") {
+        // lt of "<foo>", but "foo" is the interior;
+        // <<foo/bar>> is how you write it with a for,
+        // not <foo/<bar>> or whatever.
+        for(var i = 0; i < ltAlts.length; i++) {
+            const lt = ltAlts[i];
+            const match = /<(.*)>/.exec(lt);
+            if(match) { ltAlts[i] = match[1]; }
+        }
+    }
+
+    let forAlts;
+    if(dfn.hasAttribute('data-dfn-for')) {
+        forAlts = dfn.getAttribute('data-dfn-for')
+            .split(",")
+            .map(x=>x.trim());
+    } else {
+        forAlts = [''];
+    }
+
+    let linkingSyntaxes = [];
+    if(!needsFor(type)) {
+        for(const lt of ltAlts) {
+            linkingSyntaxes.push(linkFormatter(lt));
+        }
+    }
+    if(!refusesFor(type)) {
+        for(const f of forAlts) {
+            linkingSyntaxes.push(linkFormatter(`${f}/${ltAlts[0]}`))
+        }
+    }
+    return [
+        mk.b({}, 'Possible linking syntaxes:'),
+        mk.ul({},
+            ...linkingSyntaxes.map(link => {
+                const copyLink = async () =>
+                    await navigator.clipboard.writeText(link);
+                return mk.li({},
+                    mk.div({ class: 'link-item' },
+                        mk.button({
+                            class: 'copy-icon', title: 'Copy',
+                            type: 'button',
+                            _onclick: copyLink,
+                            tabindex: 0,
+                        }, mk.span({ class: 'icon' }) ),
+                        mk.span({}, link)
+                    )
+                );
+            })
+        )
+    ];
+}
+}
+</script>
+<script>/* Boilerplate: script-ref-hints */
+"use strict";
+{
+let refsData = {
+"#ai-translator-factory": {"displayText":"translator factory","export":true,"for_":["AI"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"translator factory","type":"dfn","url":"#ai-translator-factory"},
+"#aitranslator": {"displayText":"AITranslator","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"AITranslator","type":"interface","url":"#aitranslator"},
+"#aitranslator-source-language": {"displayText":"source language","export":true,"for_":["AITranslator"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"source language","type":"dfn","url":"#aitranslator-source-language"},
+"#aitranslator-target-language": {"displayText":"target language","export":true,"for_":["AITranslator"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"target language","type":"dfn","url":"#aitranslator-target-language"},
+"#aitranslatorfactory": {"displayText":"AITranslatorFactory","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"AITranslatorFactory","type":"interface","url":"#aitranslatorfactory"},
+"#compute-translator-options-availability": {"displayText":"compute translator options availability","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"compute translator options availability","type":"dfn","url":"#compute-translator-options-availability"},
+"#create-a-translator-object": {"displayText":"create a translator object","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"create a translator object","type":"dfn","url":"#create-a-translator-object"},
+"#dictdef-aitranslatorcreatecoreoptions": {"displayText":"AITranslatorCreateCoreOptions","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"AITranslatorCreateCoreOptions","type":"dictionary","url":"#dictdef-aitranslatorcreatecoreoptions"},
+"#dictdef-aitranslatorcreateoptions": {"displayText":"AITranslatorCreateOptions","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"AITranslatorCreateOptions","type":"dictionary","url":"#dictdef-aitranslatorcreateoptions"},
+"#dictdef-aitranslatortranslateoptions": {"displayText":"AITranslatorTranslateOptions","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"AITranslatorTranslateOptions","type":"dictionary","url":"#dictdef-aitranslatortranslateoptions"},
+"#dom-aitranslator-sourcelanguage": {"displayText":"sourceLanguage","export":true,"for_":["AITranslator"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"sourceLanguage","type":"attribute","url":"#dom-aitranslator-sourcelanguage"},
+"#dom-aitranslator-targetlanguage": {"displayText":"targetLanguage","export":true,"for_":["AITranslator"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"targetLanguage","type":"attribute","url":"#dom-aitranslator-targetlanguage"},
+"#dom-aitranslator-translate": {"displayText":"translate(input, options)","export":true,"for_":["AITranslator"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"translate(input, options)","type":"method","url":"#dom-aitranslator-translate"},
+"#dom-aitranslator-translatestreaming": {"displayText":"translateStreaming(input, options)","export":true,"for_":["AITranslator"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"translateStreaming(input, options)","type":"method","url":"#dom-aitranslator-translatestreaming"},
+"#dom-aitranslatorcreatecoreoptions-sourcelanguage": {"displayText":"sourceLanguage","export":true,"for_":["AITranslatorCreateCoreOptions"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"sourceLanguage","type":"dict-member","url":"#dom-aitranslatorcreatecoreoptions-sourcelanguage"},
+"#dom-aitranslatorcreatecoreoptions-targetlanguage": {"displayText":"targetLanguage","export":true,"for_":["AITranslatorCreateCoreOptions"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"targetLanguage","type":"dict-member","url":"#dom-aitranslatorcreatecoreoptions-targetlanguage"},
+"#dom-aitranslatorcreateoptions-signal": {"displayText":"signal","export":true,"for_":["AITranslatorCreateOptions"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"signal","type":"dict-member","url":"#dom-aitranslatorcreateoptions-signal"},
+"#dom-aitranslatorfactory-availability": {"displayText":"availability(options)","export":true,"for_":["AITranslatorFactory"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"availability(options)","type":"method","url":"#dom-aitranslatorfactory-availability"},
+"#dom-aitranslatorfactory-create": {"displayText":"create(options)","export":true,"for_":["AITranslatorFactory"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"create(options)","type":"method","url":"#dom-aitranslatorfactory-create"},
+"#download-the-translation-model": {"displayText":"download the translation model","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"download the translation model","type":"dfn","url":"#download-the-translation-model"},
+"#initialize-the-translation-model": {"displayText":"initialize the translation model","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"initialize the translation model","type":"dfn","url":"#initialize-the-translation-model"},
+"#language-arc": {"displayText":"language arc","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"language arc","type":"dfn","url":"#language-arc"},
+"#language-arc-can-be-fulfilled-by-the-identity-translation": {"displayText":"can be fulfilled by the identity translation","export":true,"for_":["language arc"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"can be fulfilled by the identity translation","type":"dfn","url":"#language-arc-can-be-fulfilled-by-the-identity-translation"},
+"#language-arc-overlaps": {"displayText":"overlaps","export":true,"for_":["language arc"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"overlaps","type":"dfn","url":"#language-arc-overlaps"},
+"#language-arc-source-language": {"displayText":"source language","export":true,"for_":["language arc"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"source language","type":"dfn","url":"#language-arc-source-language"},
+"#language-arc-target-language": {"displayText":"target language","export":true,"for_":["language arc"],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"target language","type":"dfn","url":"#language-arc-target-language"},
+"#translate": {"displayText":"translate","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"translate","type":"dfn","url":"#translate"},
+"#translator-language-arc-availabilities": {"displayText":"translator language arc availabilities","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"translator language arc availabilities","type":"dfn","url":"#translator-language-arc-availabilities"},
+"#validate-and-canonicalize-translator-options": {"displayText":"validate and canonicalize translator options","export":true,"for_":[],"level":"","normative":true,"shortname":"translation","spec":"translation","status":"local","text":"validate and canonicalize translator options","type":"dfn","url":"#validate-and-canonicalize-translator-options"},
+"https://dom.spec.whatwg.org/#abortsignal": {"displayText":"AbortSignal","export":true,"for_":[],"level":"1","normative":true,"shortname":"dom","spec":"dom","status":"current","text":"AbortSignal","type":"interface","url":"https://dom.spec.whatwg.org/#abortsignal"},
+"https://dom.spec.whatwg.org/#abortsignal-abort-reason": {"displayText":"abort reason","export":true,"for_":["AbortSignal"],"level":"1","normative":true,"shortname":"dom","spec":"dom","status":"current","text":"abort reason","type":"dfn","url":"https://dom.spec.whatwg.org/#abortsignal-abort-reason"},
+"https://dom.spec.whatwg.org/#abortsignal-aborted": {"displayText":"aborted","export":true,"for_":["AbortSignal"],"level":"1","normative":true,"shortname":"dom","spec":"dom","status":"current","text":"aborted","type":"dfn","url":"https://dom.spec.whatwg.org/#abortsignal-aborted"},
+"https://html.spec.whatwg.org/multipage/document-sequences.html#fully-active": {"displayText":"fully active","export":true,"for_":["Document"],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"fully active","type":"dfn","url":"https://html.spec.whatwg.org/multipage/document-sequences.html#fully-active"},
+"https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel": {"displayText":"in parallel","export":true,"for_":[],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"in parallel","type":"dfn","url":"https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel"},
+"https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window": {"displayText":"associated Document","export":true,"for_":[],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"associated document","type":"dfn","url":"https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window"},
+"https://html.spec.whatwg.org/multipage/nav-history-apis.html#window": {"displayText":"Window","export":true,"for_":[],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"Window","type":"interface","url":"https://html.spec.whatwg.org/multipage/nav-history-apis.html#window"},
+"https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop": {"displayText":"event loop","export":true,"for_":["agent"],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"event loop","type":"dfn","url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop"},
+"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global": {"displayText":"relevant global object","export":true,"for_":[],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"relevant global object","type":"dfn","url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global"},
+"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm": {"displayText":"relevant realm","export":true,"for_":[],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"relevant realm","type":"dfn","url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm"},
+"https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task": {"displayText":"queue a global task","export":true,"for_":[],"level":"1","normative":true,"shortname":"html","spec":"html","status":"current","text":"queue a global task","type":"dfn","url":"https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task"},
+"https://infra.spec.whatwg.org/#assert": {"displayText":"assert","export":true,"for_":[],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"assert","type":"dfn","url":"https://infra.spec.whatwg.org/#assert"},
+"https://infra.spec.whatwg.org/#implementation-defined": {"displayText":"implementation-defined","export":true,"for_":[],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"implementation-defined","type":"dfn","url":"https://infra.spec.whatwg.org/#implementation-defined"},
+"https://infra.spec.whatwg.org/#iteration-break": {"displayText":"break","export":true,"for_":["iteration"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"break","type":"dfn","url":"https://infra.spec.whatwg.org/#iteration-break"},
+"https://infra.spec.whatwg.org/#list-item": {"displayText":"item","export":true,"for_":["list","stack","queue","set"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"item","type":"dfn","url":"https://infra.spec.whatwg.org/#list-item"},
+"https://infra.spec.whatwg.org/#map-entry": {"displayText":"entry","export":true,"for_":["map"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"entry","type":"dfn","url":"https://infra.spec.whatwg.org/#map-entry"},
+"https://infra.spec.whatwg.org/#map-exists": {"displayText":"exist","export":true,"for_":["map"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"exist","type":"dfn","url":"https://infra.spec.whatwg.org/#map-exists"},
+"https://infra.spec.whatwg.org/#map-getting-the-keys": {"displayText":"keys","export":true,"for_":["map"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"keys","type":"dfn","url":"https://infra.spec.whatwg.org/#map-getting-the-keys"},
+"https://infra.spec.whatwg.org/#map-iterate": {"displayText":"for each","export":true,"for_":["map"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"for each","type":"dfn","url":"https://infra.spec.whatwg.org/#map-iterate"},
+"https://infra.spec.whatwg.org/#map-key": {"displayText":"key","export":true,"for_":["map"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"key","type":"dfn","url":"https://infra.spec.whatwg.org/#map-key"},
+"https://infra.spec.whatwg.org/#map-value": {"displayText":"value","export":true,"for_":["map"],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"value","type":"dfn","url":"https://infra.spec.whatwg.org/#map-value"},
+"https://infra.spec.whatwg.org/#ordered-map": {"displayText":"map","export":true,"for_":[],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"map","type":"dfn","url":"https://infra.spec.whatwg.org/#ordered-map"},
+"https://infra.spec.whatwg.org/#ordered-set": {"displayText":"set","export":true,"for_":[],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"set","type":"dfn","url":"https://infra.spec.whatwg.org/#ordered-set"},
+"https://infra.spec.whatwg.org/#string": {"displayText":"string","export":true,"for_":[],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"string","type":"dfn","url":"https://infra.spec.whatwg.org/#string"},
+"https://infra.spec.whatwg.org/#tuple": {"displayText":"tuple","export":true,"for_":[],"level":"1","normative":true,"shortname":"infra","spec":"infra","status":"current","text":"tuple","type":"dfn","url":"https://infra.spec.whatwg.org/#tuple"},
+"https://streams.spec.whatwg.org/#readablestream": {"displayText":"ReadableStream","export":true,"for_":[],"level":"1","normative":true,"shortname":"streams","spec":"streams","status":"current","text":"ReadableStream","type":"interface","url":"https://streams.spec.whatwg.org/#readablestream"},
+"https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm": {"displayText":"realm","export":true,"for_":["ECMAScript"],"level":"1","normative":true,"shortname":"ecmascript","spec":"ecmascript","status":"current","text":"realm","type":"dfn","url":"https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm"},
+"https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent": {"displayText":"surrounding agent","export":true,"for_":["ECMAScript"],"level":"1","normative":true,"shortname":"ecmascript","spec":"ecmascript","status":"current","text":"surrounding agent","type":"dfn","url":"https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent"},
+"https://tc39.es/ecma402/#sec-language-tags": {"displayText":"Unicode canonicalized locale identifier","export":true,"for_":[],"level":"402","normative":true,"shortname":"ecma","spec":"ecma-402","status":"anchor-block","text":"unicode canonicalized locale identifier","type":"dfn","url":"https://tc39.es/ecma402/#sec-language-tags"},
+"https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit": {"displayText":"LookupMatchingLocaleByBestFit","export":true,"for_":[],"level":"402","normative":true,"shortname":"ecma","spec":"ecma-402","status":"anchor-block","text":"LookupMatchingLocaleByBestFit","type":"abstract-op","url":"https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit"},
+"https://webidl.spec.whatwg.org/#Exposed": {"displayText":"Exposed","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"Exposed","type":"extended-attribute","url":"https://webidl.spec.whatwg.org/#Exposed"},
+"https://webidl.spec.whatwg.org/#SecureContext": {"displayText":"SecureContext","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"SecureContext","type":"extended-attribute","url":"https://webidl.spec.whatwg.org/#SecureContext"},
+"https://webidl.spec.whatwg.org/#a-new-promise": {"displayText":"a new promise","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"a new promise","type":"dfn","url":"https://webidl.spec.whatwg.org/#a-new-promise"},
+"https://webidl.spec.whatwg.org/#a-promise-rejected-with": {"displayText":"a promise rejected with","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"a promise rejected with","type":"dfn","url":"https://webidl.spec.whatwg.org/#a-promise-rejected-with"},
+"https://webidl.spec.whatwg.org/#domexception-name": {"displayText":"name","export":true,"for_":["DOMException"],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"name","type":"dfn","url":"https://webidl.spec.whatwg.org/#domexception-name"},
+"https://webidl.spec.whatwg.org/#exceptiondef-typeerror": {"displayText":"TypeError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"TypeError","type":"exception","url":"https://webidl.spec.whatwg.org/#exceptiondef-typeerror"},
+"https://webidl.spec.whatwg.org/#idl-DOMException": {"displayText":"DOMException","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"DOMException","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-DOMException"},
+"https://webidl.spec.whatwg.org/#idl-DOMString": {"displayText":"DOMString","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"DOMString","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-DOMString"},
+"https://webidl.spec.whatwg.org/#idl-promise": {"displayText":"Promise","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"Promise","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-promise"},
+"https://webidl.spec.whatwg.org/#invalidstateerror": {"displayText":"InvalidStateError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"InvalidStateError","type":"exception","url":"https://webidl.spec.whatwg.org/#invalidstateerror"},
+"https://webidl.spec.whatwg.org/#new": {"displayText":"new","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"new","type":"dfn","url":"https://webidl.spec.whatwg.org/#new"},
+"https://webidl.spec.whatwg.org/#notallowederror": {"displayText":"NotAllowedError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"NotAllowedError","type":"exception","url":"https://webidl.spec.whatwg.org/#notallowederror"},
+"https://webidl.spec.whatwg.org/#notreadableerror": {"displayText":"NotReadableError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"NotReadableError","type":"exception","url":"https://webidl.spec.whatwg.org/#notreadableerror"},
+"https://webidl.spec.whatwg.org/#quotaexceedederror": {"displayText":"QuotaExceededError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"QuotaExceededError","type":"exception","url":"https://webidl.spec.whatwg.org/#quotaexceedederror"},
+"https://webidl.spec.whatwg.org/#reject": {"displayText":"reject","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"reject","type":"dfn","url":"https://webidl.spec.whatwg.org/#reject"},
+"https://webidl.spec.whatwg.org/#resolve": {"displayText":"resolve","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"resolve","type":"dfn","url":"https://webidl.spec.whatwg.org/#resolve"},
+"https://webidl.spec.whatwg.org/#this": {"displayText":"this","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"this","type":"dfn","url":"https://webidl.spec.whatwg.org/#this"},
+"https://webidl.spec.whatwg.org/#unknownerror": {"displayText":"UnknownError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"UnknownError","type":"exception","url":"https://webidl.spec.whatwg.org/#unknownerror"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#ai": {"displayText":"AI","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"AI","type":"interface","url":"https://webmachinelearning.github.io/writing-assistance-apis/#ai"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#ai-task-source": {"displayText":"AI task source","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"ai task source","type":"dfn","url":"https://webmachinelearning.github.io/writing-assistance-apis/#ai-task-source"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#aidestroyable": {"displayText":"AIDestroyable","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"AIDestroyable","type":"interface","url":"https://webmachinelearning.github.io/writing-assistance-apis/#aidestroyable"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#callbackdef-aicreatemonitorcallback": {"displayText":"AICreateMonitorCallback","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"AICreateMonitorCallback","type":"callback","url":"https://webmachinelearning.github.io/writing-assistance-apis/#callbackdef-aicreatemonitorcallback"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#create-an-ai-model-object": {"displayText":"create an AI model object","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"create an ai model object","type":"dfn","url":"https://webmachinelearning.github.io/writing-assistance-apis/#create-an-ai-model-object"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available": {"displayText":"\"available\"","export":true,"for_":["AIAvailability"],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"\"available\"","type":"enum-value","url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-available"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloadable": {"displayText":"\"downloadable\"","export":true,"for_":["AIAvailability"],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"\"downloadable\"","type":"enum-value","url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloadable"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloading": {"displayText":"\"downloading\"","export":true,"for_":["AIAvailability"],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"\"downloading\"","type":"enum-value","url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-downloading"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-unavailable": {"displayText":"\"unavailable\"","export":true,"for_":["AIAvailability"],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"\"unavailable\"","type":"enum-value","url":"https://webmachinelearning.github.io/writing-assistance-apis/#dom-aiavailability-unavailable"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability": {"displayText":"AIAvailability","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"AIAvailability","type":"enum","url":"https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-aiavailability"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#error-information": {"displayText":"error information","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"error information","type":"dfn","url":"https://webmachinelearning.github.io/writing-assistance-apis/#error-information"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#get-a-streaming-ai-model-result": {"displayText":"get a streaming AI model result","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"get a streaming ai model result","type":"dfn","url":"https://webmachinelearning.github.io/writing-assistance-apis/#get-a-streaming-ai-model-result"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#get-an-aggregated-ai-model-result": {"displayText":"get an aggregated AI model result","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"get an aggregated ai model result","type":"dfn","url":"https://webmachinelearning.github.io/writing-assistance-apis/#get-an-aggregated-ai-model-result"},
+"https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags": {"displayText":"validate and canonicalize language tags","export":true,"for_":[],"level":"1","normative":true,"shortname":"writing-assistance-apis","spec":"writing-assistance-apis","status":"current","text":"validate and canonicalize language tags","type":"dfn","url":"https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags"},
+};
+
+function mkRefHint(link, ref) {
+    const linkText = link.textContent;
+    let dfnTextElements = '';
+    if (ref.displayText.toLowerCase() != linkText.toLowerCase()) {
+        // Give the original term if it's being displayed in a different way.
+        // But allow casing differences, they're insignificant.
+        dfnTextElements =
+            mk.li({},
+                mk.b({}, "Term: "),
+                mk.span({}, ref.displayText)
+            );
+    }
+    const forList = ref.for_;
+    let forListElements;
+    if(forList.length == 0) {
+        forListElements = [];
+    } else if(forList.length == 1) {
+        forListElements = mk.li({},
+            mk.b({}, "For: "),
+            mk.span({}, forList[0]),
+        );
+    } else {
+        forListElements = mk.li({},
+            mk.b({}, "For: "),
+            mk.ul({},
+                ...forList.map(forItem =>
+                    mk.li({},
+                        mk.span({}, forItem)
+                    ),
+                ),
+            ),
+        );
+    }
+    const url = ref.url;
+    const safeUrl = encodeURIComponent(url);
+    const hintPanel = mk.aside({
+        class: "ref-hint",
+        id: `ref-hint-for-${safeUrl}`,
+        "data-for": url,
+        "aria-labelled-by": `ref-hint-for-${safeUrl}`,
+    },
+        mk.ul({},
+            dfnTextElements,
+            mk.li({},
+                mk.b({}, "URL: "),
+                mk.a({ href: url, class: "ref" }, url),
+            ),
+            mk.li({},
+                mk.b({}, "Type: "),
+                mk.span({}, `${ref.type}`),
+            ),
+            mk.li({},
+                mk.b({}, "Spec: "),
+                mk.span({}, `${ref.spec ? ref.spec : ''}`),
+            ),
+            forListElements
+        ),
+    );
+    hintPanel.forLink = link;
+    setupRefHintEventListeners(link, hintPanel);
+    return hintPanel;
+}
+
+function hideAllRefHints() {
+    queryAll(".ref-hint").forEach(el=>hideRefHint(el));
+}
+
+function hideRefHint(refHint) {
+    const link = refHint.forLink;
+    link.setAttribute("aria-expanded", "false");
+    if(refHint.teardownEventListeners) {
+        refHint.teardownEventListeners();
+    }
+    refHint.remove();
+}
+
+function showRefHint(link) {
+    if(link.classList.contains("dfn-link")) return;
+    const url = link.getAttribute("href");
+    const ref = refsData[url];
+    if(!ref) return;
+
+    hideAllRefHints(); // Only display one at this time.
+
+    const refHint = mkRefHint(link, ref);
+    append(document.body, refHint);
+    link.setAttribute("aria-expanded", "true");
+    positionRefHint(refHint);
+}
+
+function setupRefHintEventListeners(link, refHint) {
+    if (refHint.teardownEventListeners) return;
+    // Add event handlers to hide the refHint after the user moves away
+    // from both the link and refHint, if not hovering either within one second.
+    let timeout = null;
+    const startHidingRefHint = (event) => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            hideRefHint(refHint);
+        }, 1000);
+    }
+    const resetHidingRefHint = (event) => {
+        if (timeout) clearTimeout(timeout);
+        timeout = null;
+    };
+    link.addEventListener("mouseleave", startHidingRefHint);
+    link.addEventListener("mouseenter", resetHidingRefHint);
+    link.addEventListener("blur", startHidingRefHint);
+    link.addEventListener("focus", resetHidingRefHint);
+    refHint.addEventListener("mouseleave", startHidingRefHint);
+    refHint.addEventListener("mouseenter", resetHidingRefHint);
+    refHint.addEventListener("blur", startHidingRefHint);
+    refHint.addEventListener("focus", resetHidingRefHint);
+
+    refHint.teardownEventListeners = () => {
+        // remove event listeners
+        resetHidingRefHint();
+        link.removeEventListener("mouseleave", startHidingRefHint);
+        link.removeEventListener("mouseenter", resetHidingRefHint);
+        link.removeEventListener("blur", startHidingRefHint);
+        link.removeEventListener("focus", resetHidingRefHint);
+        refHint.removeEventListener("mouseleave", startHidingRefHint);
+        refHint.removeEventListener("mouseenter", resetHidingRefHint);
+        refHint.removeEventListener("blur", startHidingRefHint);
+        refHint.removeEventListener("focus", resetHidingRefHint);
+    };
+}
+
+function positionRefHint(refHint) {
+    const link = refHint.forLink;
+    const linkPos = getBounds(link);
+    refHint.style.top = linkPos.bottom + "px";
+    refHint.style.left = linkPos.left + "px";
+
+    const panelPos = refHint.getBoundingClientRect();
+    const panelMargin = 8;
+    const maxRight = document.body.parentNode.clientWidth - panelMargin;
+    if (panelPos.right > maxRight) {
+        const overflowAmount = panelPos.right - maxRight;
+        const newLeft = Math.max(panelMargin, linkPos.left - overflowAmount);
+        refHint.style.left = newLeft + "px";
+    }
+}
+
+// TODO: shared util
+// Returns the root-level absolute position {left and top} of element.
+function getBounds(el, relativeTo=document.body) {
+    const relativeRect = relativeTo.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const top = elRect.top - relativeRect.top;
+    const left = elRect.left - relativeRect.left;
+    return {
+        top,
+        left,
+        bottom: top + elRect.height,
+        right: left + elRect.width,
+    }
+}
+
+function showRefHintListener(e) {
+    // If the target isn't in a link (or is a link),
+    // just ignore it.
+    let link = e.target.closest("a");
+    if(!link) return;
+
+    // If the target is in a ref-hint panel
+    // (aka a link in the already-open one),
+    // also just ignore it.
+    if(link.closest(".ref-hint")) return;
+
+    // Otherwise, show the panel for the link.
+    showRefHint(link);
+}
+
+function hideAllHintsListener(e) {
+    // If the click is inside a ref-hint panel, ignore it.
+    if(e.target.closest(".ref-hint")) return;
+    // Otherwise, close all the current panels.
+    hideAllRefHints();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("mousedown", showRefHintListener);
+    document.body.addEventListener("focus", showRefHintListener);
+
+    document.body.addEventListener("click", hideAllHintsListener);
+});
+
+window.addEventListener("resize", () => {
+    // Hide any open ref hint.
+    hideAllRefHints();
+});
+}
+</script>
+<script>/* Boilerplate: script-var-click-highlighting */
+"use strict";
+{
+/*
+Color-choosing design:
+
+* Colors are ordered by goodness.
+* On clicking a var, give it the earliest color
+    with the lowest usage in the algorithm.
+* On re-clicking, re-use the var's most recent color
+    if that's not currently being used elsewhere.
+*/
+
+const COLOR_COUNT = 7;
+
+document.addEventListener("click", e=>{
+    if(e.target.nodeName == "VAR") {
+        highlightSameAlgoVars(e.target);
+    }
+});
+
+function highlightSameAlgoVars(v) {
+    // Find the algorithm container.
+    let algoContainer = findAlgoContainer(v);
+
+    // Not highlighting document-global vars,
+    // too likely to be unrelated.
+    if(algoContainer == null) return;
+
+    const varName = nameFromVar(v);
+    if(!v.hasAttribute("data-var-color")) {
+        const newColor = chooseHighlightColor(algoContainer, v);
+        for(const el of algoContainer.querySelectorAll("var")) {
+            if(nameFromVar(el) == varName) {
+                el.setAttribute("data-var-color", newColor);
+                el.setAttribute("data-var-last-color", newColor);
+            }
+        }
+    } else {
+        for(const el of algoContainer.querySelectorAll("var")) {
+            if(nameFromVar(el) == varName) {
+                el.removeAttribute("data-var-color");
+            }
+        }
+    }
+}
+function findAlgoContainer(el) {
+    while(el != document.body) {
+        if(el.hasAttribute("data-algorithm")) return el;
+        el = el.parentNode;
+    }
+    return null;
+}
+function nameFromVar(el) {
+    return el.textContent.replace(/(\s|\xa0)+/g, " ").trim();
+}
+function colorCountsFromContainer(container) {
+    const namesFromColor = Array.from({length:COLOR_COUNT}, x=>new Set());
+    for(let v of container.querySelectorAll("var[data-var-color]")) {
+        let color = +v.getAttribute("data-var-color");
+        namesFromColor[color].add(nameFromVar(v));
+    }
+
+    return namesFromColor.map(x=>x.size);
+}
+function leastUsedColor(colors) {
+    // Find the earliest color with the lowest count.
+    let minCount = Infinity;
+    let minColor = null;
+    for(var i = 0; i < colors.length; i++) {
+        if(colors[i] < minCount) {
+            minColor = i;
+            minCount = colors[i];
+        }
+    }
+    return minColor;
+}
+function chooseHighlightColor(container, v) {
+    const colorCounts = colorCountsFromContainer(container);
+    if(v.hasAttribute("data-var-last-color")) {
+        let color = +v.getAttribute("data-var-last-color");
+        if(colorCounts[color] == 0) return color;
+    }
+    return leastUsedColor(colorCounts);
+}
+}
+</script>
