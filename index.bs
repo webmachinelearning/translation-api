@@ -91,7 +91,7 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
      <p class="note">This can mutate |options|.
 
-  1. Return the result of [=create an AI model=] given [=this=]'s [=relevant realm=], |options|, [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create a translator object=].
+  1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create a translator object=].
 </div>
 
 <div algorithm>
