@@ -102,7 +102,7 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
   1. [=Validate and canonicalize language tags=] given |options| and "{{AITranslatorCreateCoreOptions/targetLanguage}}".
 </div>
 
-<div algoriothm>
+<div algorithm>
   To <dfn>download the translation model</dfn>, given an {{AITranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
