@@ -17,7 +17,384 @@ Indent: 2
 Die On: warning
 </pre>
 
-Introduction {#intro}
-=====================
+<pre class="anchors">
+urlPrefix: https://tc39.es/ecma402/; spec: ECMA-402
+  type: dfn
+    text: Unicode canonicalized locale identifier; url: sec-language-tags
+  type: abstract-op
+    text: LookupMatchingLocaleByBestFit; url: sec-lookupmatchinglocalebybestfit
+</pre>
 
-For now, see the [explainer](https://github.com/webmachinelearning/translation-api).
+<h2 id="intro">Introduction</h2>
+
+For now, see the [explainer](https://github.com/webmachinelearning/translation-api/blob/main/README.md).
+
+<h2 id="translator-api">The translator API</h2>
+
+<xmp class="idl">
+// TODO FIX: workaround for https://github.com/speced/bikeshed/issues/3023
+// partial interface AI {
+//   readonly attribute AITranslatorFactory translator;
+// };
+
+[Exposed=(Window,Worker), SecureContext]
+interface AITranslatorFactory {
+  Promise<AITranslator> create(AITranslatorCreateOptions options);
+  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface AITranslator {
+  Promise<DOMString> translate(
+    DOMString input,
+    optional AITranslatorTranslateOptions options = {}
+  );
+  ReadableStream translateStreaming(
+    DOMString input,
+    optional AITranslatorTranslateOptions options = {}
+  );
+
+  readonly attribute DOMString sourceLanguage;
+  readonly attribute DOMString targetLanguage;
+};
+AITranslator includes AIDestroyable;
+
+dictionary AITranslatorCreateCoreOptions {
+  required DOMString sourceLanguage;
+  required DOMString targetLanguage;
+};
+
+dictionary AITranslatorCreateOptions : AITranslatorCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+};
+
+dictionary AITranslatorTranslateOptions {
+  AbortSignal signal;
+};
+</xmp>
+
+Every {{AI}} has a <dfn for="AI">translator factory</dfn>, an {{AITranslatorFactory}} object. Upon creation of the {{AI}} object, its [=AI/translator factory=] must be set to a [=new=] {{AITranslatorFactory}} object created in the {{AI}} object's [=relevant realm=].
+
+The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]'s [=AI/translator factory=].
+
+<h3 id="translator-creation">Creation</h3>
+
+<div algorithm>
+  The <dfn method for="AITranslatorFactory">create(|options|)</dfn> method steps are:
+
+  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If |options|["{{AITranslatorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AITranslatorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
+
+  1. [=Validate and canonicalize translator options=] given |options|.
+
+     <p class="note">This can mutate |options|.
+
+  1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create a translator object=].
+</div>
+
+<div algorithm>
+  To <dfn>validate and canonicalize translator options</dfn> given an {{AITranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+
+  1. [=Validate and canonicalize language tags=] given |options| and "{{AITranslatorCreateCoreOptions/sourceLanguage}}".
+
+  1. [=Validate and canonicalize language tags=] given |options| and "{{AITranslatorCreateCoreOptions/targetLanguage}}".
+</div>
+
+<div algorithm>
+  To <dfn>download the translation model</dfn>, given an {{AITranslatorCreateCoreOptions}} |options|:
+
+  1. [=Assert=]: these steps are running [=in parallel=].
+
+  1. Initiate the download process for everything the user agent needs to translate text from |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]. This could include both a base translation model and specific language arc material, or perhaps material for multiple language arcs if an intermediate language is used.
+
+  1. If the download process cannot be started for any reason, then return false.
+
+  1. Return true.
+</div>
+
+<div algorithm>
+  To <dfn>initialize the translation model</dfn>, given an {{AITranslatorCreateCoreOptions}} |options|:
+
+  1. [=Assert=]: these steps are running [=in parallel=].
+
+  1. Perform any necessary initialization operations for the AI model backing the user agent's capabilities for translating from |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"].
+
+    This could include loading the model into memory, or loading any fine-tunings necessary to support the specific options in question.
+
+  1. If initialization failed for any reason, then return false.
+
+  1. Return true.
+</div>
+
+<div algorithm>
+  To <dfn>create a translator object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{AITranslatorCreateCoreOptions}} |options|:
+
+  1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
+
+  1. Return a new {{AITranslator}} object, created in |realm|, with
+
+    <dl class="props">
+      : [=AITranslator/source language=]
+      :: |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"]
+
+      : [=AITranslator/target language=]
+      :: |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]
+    </dl>
+</div>
+
+<h3 id="translator-availability">Availability</h3>
+
+<div algorithm>
+  The <dfn method for="AITranslatorFactory">availability(|options|)</dfn> method steps are:
+
+  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. [=Validate and canonicalize translator options=] given |options|.
+
+  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
+
+  1. [=In parallel=]:
+
+    1. Let |availability| be the result of [=computing translator options availability=] given |options|.
+
+    1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
+
+      1. If |availability| is null, then [=reject=] |promise| with an "{{UnknownError}}" {{DOMException}}.
+
+      1. Otherwise, [=resolve=] |promise| with |availability|.
+</div>
+
+<div algorithm>
+  To <dfn>compute translator options availability</dfn> given an {{AITranslatorCreateCoreOptions}} |options|, perform the following steps. They return either an {{AIAvailability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. Let |availabilities| be the user agent's [=translator language arc availabilities=].
+
+  1. If |availabilities| is null, then return null.
+
+  1. [=map/For each=] |languageArc| → |availability| in |availabilities|:
+
+    1. Let |sourceLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/source language=] », « |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] »).
+
+    1. Let |targetLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/target language=] », « |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] »).
+
+    1. If |sourceLanguageBestFit| and |targetLanguageBestFit| are both not undefined, then:
+
+      1. Set |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |sourceLanguageBestFit|.\[[locale]].
+
+      1. Set |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] to |targetLanguageBestFit|.\[[locale]].
+
+      1. Return |availability|.
+
+  1. If (|options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"], |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]) [=language arc/can be fulfilled by the identity translation=], then return "{{AIAvailability/available}}".
+
+     <p class="note">Such cases could also return "{{AIAvailability/downloadable}}", "{{AIAvailability/downloading}}", or "{{AIAvailability/available}}" because of the above steps, if the user agent has specific entries in its [=translator language arc availabilities=] for the given language arc. However, the identity translation is always available, so this step ensures that we never return "{{AIAvailability/unavailable}}" for such cases.
+
+     <div class="example" id="example-identity-translation">
+      <p>One [=language arc=] that [=language arc/can be fulfilled by the identity translation=] is (`"en-US"`, `"en-GB"`). It is conceivable that an implementation might support a specialized model for this translation, which would show up in the [=translator language arc availabilities=].
+
+      <p>On the other hand, it's pretty unlikely that an implementation has any specialized model for the [=language arc=] ("`en-x-asdf`", "`en-x-xyzw`"). In such a case, this step takes over, and later calls to the [=translate=] algorithm will use the identity translation.
+
+      <p>Note that when this step takes over, |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] and |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] are not modified, so if this algorithm is being called from {{AITranslatorFactory/create()}}, that means the resulting {{AITranslator}} object's {{AITranslator/sourceLanguage}} and {{AITranslator/targetLanguage}} properties will return the original inputs, and not some canonicalized form.
+     </div>
+
+  1. Return "{{AIAvailability/unavailable}}".
+</div>
+
+A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language arc">source language</dfn> and a <dfn for="language arc">target language</dfn>. Each item is a [=Unicode canonicalized locale identifier=].
+
+<div algorithm>
+  The <dfn>translator language arc availabilities</dfn> are given by the following steps. They return a [=map=] from [=language arcs=] to {{AIAvailability}} values, or null.
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. If there is some error attempting to determine what language arcs the user agent supports translating text between, which the user agent believes to be transient (such that re-querying the [=translator language arc availabilities=] could stop producing such an error), then return null.
+
+  1. Return a [=map=] from [=language arcs=] to {{AIAvailability}} values, where each key is a [=language arc=] that the user agent supports translating text between, filled according to the following constraints:
+
+    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=] without performing any downloading operations, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/available}}".
+
+    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after finishing a currently-ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/downloading}}".
+
+    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after performing a not-currently ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/downloadable}}".
+
+    * The [=map/keys=] must not include any [=language arcs=] that [=language arc/overlap=] with the other [=map/keys=].
+</div>
+
+<div class="example" id="example-language-arc-support">
+  Let's suppose that the user agent's [=translator language arc availabilities=] are as follows:
+
+  * ("`en`", "`zh-Hans`") → "{{AIAvailability/available}}"
+  * ("`en`", "`zh-Hant`") → "{{AIAvailability/downloadable}}"
+
+  The use of [$LookupMatchingLocaleByBestFit$] means that {{AITranslatorFactory/availability()}} will probably give the following answers:
+
+    <xmp class="language-js">
+    function a(sourceLanguage, targetLanguage) {
+      return ai.translator.availability({ sourceLanguage, targetLanguage }):
+    }
+
+    await a("en", "zh-Hans") === "available";
+    await a("en", "zh-Hant") === "downloadable";
+
+    await a("en", "zh") === "available";            // zh will best-fit to zh-Hans
+
+    await a("en", "zh-TW") === "downloadable";      // zh-TW will best-fit to zh-Hant
+    await a("en", "zh-HK") === "available";         // zh-HK will best-fit to zh-Hans
+    await a("en", "zh-CN") === "available";         // zh-CN will best-fit to zh-Hans
+
+    await a("en-US", "zh-Hant") === "downloadable"; // en-US will best-fit to en
+    await a("en-GB", "zh-Hant") === "downloadable"; // en-GB will best-fit to en
+
+    // Even very unexpected subtags will best-fit to en or zh-Hans
+    await a("en-Braille-x-lolcat", "zh-Hant") === "downloadable";
+    await a("en", "zh-BR-Kana") === "available";
+    </xmp>
+</div>
+
+<div algorithm>
+  A [=language arc=] |arc| <dfn for="language arc">overlaps</dfn> with a [=set=] of [=language arcs=] |otherArcs| if the following steps return true:
+
+  1. Let |sourceLanguages| be the [=set=] composed of the [=language arc/source languages=] of each [=set/item=] in |otherArcs|.
+
+  1. If [$LookupMatchingLocaleByBestFit$](|sourceLanguages|, « |arc|'s [=language arc/source language=] ») is not undefined, then return true.
+
+  1. Let |targetLanguages| be the [=set=] composed of the [=language arc/target languages=] of each [=set/item=] in |otherArcs|.
+
+  1. If [$LookupMatchingLocaleByBestFit$](|targetLanguages|, « |arc|'s [=language arc/target language=] ») is not undefined, then return true.
+
+  1. Return false.
+</div>
+
+<div class="example" id="example-language-arc-overlap">
+  The [=language arc=] ("`en`", "`fr`") [=language arc/overlaps=] with « ("`en`", "`fr-CA`") », so the user agent's [=translator language arc availabilities=] cannot contain both of these [=language arcs=] at the same time.
+
+  Instead, a typical user agent will either support only one English-to-French language arc (presumably ("`en`", "`fr`")), or it could support multiple non-overlapping English-to-French language arcs, such as ("`en`", "`fr-FR`"), ("`en`", "`fr-CA`"), and ("`en`", "`fr-CH`").
+
+  In the latter case, if the web developer requested to create a translator using <code highlight="js">ai.translator.create({ sourceLanguage: "en", targetLanguage: "fr" })</code>, the [$LookupMatchingLocaleByBestFit$] algorithm would choose one of the three possible language arcs to use (presumably ("`en`", "`fr-FR`")).
+</div>
+
+<div algorithm>
+  A [=language arc=] |arc| <dfn for="language arc">can be fulfilled by the identity translation</dfn> if the following steps return true:
+
+  1. If [$LookupMatchingLocaleByBestFit$](« |arc|'s [=language arc/source language=] », « |arc|'s [=language arc/target language=] ») is not undefined, then return true.
+
+  1. If [$LookupMatchingLocaleByBestFit$](« |arc|'s [=language arc/target language=] », « |arc|'s [=language arc/source language=] ») is not undefined, then return true.
+
+  1. Return false.
+</div>
+
+<h3 id="the-aitranslator-class">The {{AITranslator}} class</h3>
+
+Every {{AITranslator}} has a <dfn for="AITranslator">source language</dfn>, a [=string=], set during creation.
+
+Every {{AITranslator}} has a <dfn for="AITranslator">target language</dfn>, a [=string=], set during creation.
+
+<hr>
+
+The <dfn attribute for="AITranslator">sourceLanguage</dfn> getter steps are to return [=this=]'s [=AITranslator/source language=].
+
+The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to return [=this=]'s [=AITranslator/target language=].
+
+<hr>
+
+<div algorithm>
+  The <dfn method for="AITranslator">translate(|input|, |options|)</dfn> method steps are:
+
+  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], |chunkProduced|, |done|, |error|, and |stopProducing|.
+
+  1. Return the result of [=getting an aggregated AI model result=] given [=this=], |options|, and |operation|.
+</div>
+
+<div algorithm>
+  The <dfn method for="AITranslator">translateStreaming(|input|, |options|)</dfn> method steps are:
+
+  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], |chunkProduced|, |done|, |error|, and |stopProducing|.
+
+  1. Return the result of [=getting a streaming AI model result=] given [=this=], |options|, and |operation|.
+</div>
+
+<h3 id="translator-translation">Translation</h3>
+
+<h4 id="translator-algorithm">The algorithm</h4>
+
+<div algorithm>
+  To <dfn>translate</dfn> given:
+
+  * a [=string=] |input|,
+  * a [=Unicode canonicalized locale identifier=] |sourceLanguage|,
+  * a [=Unicode canonicalized locale identifier=] |targetLanguage|,
+  * an algorithm |chunkProduced| that takes a string and returns nothing,
+  * an algorithm |done| that takes no arguments and returns nothing,
+  * an algorithm |error| that takes [=error information=] and returns nothing, and
+  * an algorithm |stopProducing| that takes no arguments and returns a boolean,
+
+  perform the following steps:
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. In an [=implementation-defined=] manner, subject to the following guidelines, begin the processs of translating |input| from |sourceLanguage| into |targetLanguage|.
+
+     If |input| is the empty string, or otherwise consists of no translatable content (e.g., only contains whitespace, or control characters), then the resulting translation should be |input|. In such cases, |sourceLanguage| and |targetLanguage| should be ignored.
+
+     If (|sourceLanguage|, |targetLanguage|) [=language arc/can be fulfilled by the identity translation=], then the resulting translation should be |input|.
+
+  1. While true:
+
+    1. Wait for the next chunk of translated text to be produced, for the translation process to finish, or for the result of calling |stopProducing| to become true.
+
+    1. If such a chunk is successfully produced:
+
+      1. Let it be represented as a [=string=] |chunk|.
+
+      1. Perform |chunkProduced| given |chunk|.
+
+    1. Otherwise, if the translation process has finished:
+
+      1. Perform |done|.
+
+      1. [=iteration/Break=].
+
+    1. Otherwise, if |stopProducing| returns true, then [=iteration/break=].
+
+    1. Otherwise, if an error occurred during translation:
+
+      1. Let the error be represented as [=error information=] |errorInfo| according to the guidance in [[#translator-errors]].
+
+      1. Perform |error| given |errorInfo|.
+
+      1. [=iteration/Break=].
+</div>
+
+<h4 id="translator-errors">Errors</h4>
+
+When translation fails, the following possible reasons may be surfaced to the web developer. This table lists the possible {{DOMException}} [=DOMException/names=] and the cases in which an implementation should use them:
+
+<table class="data">
+  <thead>
+    <tr>
+      <th>{{DOMException}} [=DOMException/name=]
+      <th>Scenarios
+  <tbody>
+    <tr>
+      <td>"{{NotAllowedError}}"
+      <td>
+        <p>Translation is disabled by user choice or user agent policy.
+    <tr>
+      <td>"{{NotReadableError}}"
+      <td>
+        <p>The translation output was filtered by the user agent, e.g., because it was detected to be harmful, inaccurate, or nonsensical.
+    <tr>
+      <td>"{{QuotaExceededError}}"
+      <td>
+        <p>The input to be translated was too large for the user agent to handle.
+    <tr>
+      <td>"{{UnknownError}}"
+      <td>
+        <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason.
+</table>
+
+<p class="note">This table does not give the complete list of exceptions that can be surfaced by {{AITranslator/translate()|translator.translate()}} and {{AITranslator/translateStreaming()|translator.translateStreaming()}}. It only contains those which can come from the [=implementation-defined=] [=translate=] algorithm.
