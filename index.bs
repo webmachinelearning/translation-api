@@ -7,7 +7,7 @@ Group: webml
 Repository: webmachinelearning/translation-api
 URL: https://webmachinelearning.github.io/translation-api
 Editor: Domenic Denicola, Google https://google.com, d@domenic.me, https://domenic.me/
-Abstract: The translator and langauge detector APIs gives web pages the ability to translate text between languages, and detect the language of such text.
+Abstract: The translator and language detector APIs gives web pages the ability to translate text between languages, and detect the language of such text.
 Markup Shorthands: markdown yes, css no
 Complain About: accidental-2119 yes, missing-example-ids yes
 Assume Explicit For: yes
@@ -106,7 +106,9 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
-  1. Initiate the download process for everything the user agent needs to translate text from |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]. This could include both a base translation model and specific language arc material, or perhaps material for multiple language arcs if an intermediate language is used.
+  1. Initiate the download process for everything the user agent needs to translate text from |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"].
+
+    This could include both a base translation model and specific language arc material, or perhaps material for multiple language arcs if an intermediate language is used.
 
   1. If the download process cannot be started for any reason, then return false.
 
@@ -145,6 +147,7 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
 <h3 id="translator-availability">Availability</h3>
 
+<!-- TODO: consider deduping this with writing assistance APIs + language detector, as it's very similar. -->
 <div algorithm>
   The <dfn method for="AITranslatorFactory">availability(|options|)</dfn> method steps are:
 
@@ -397,3 +400,315 @@ When translation fails, the following possible reasons may be surfaced to the we
 </table>
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by {{AITranslator/translate()|translator.translate()}} and {{AITranslator/translateStreaming()|translator.translateStreaming()}}. It only contains those which can come from the [=implementation-defined=] [=translate=] algorithm.
+
+<h2 id="language-detector-api">The language detector API</h2>
+
+<xmp class="idl">
+partial interface AI {
+  readonly attribute AILanguageDetectorFactory languageDetector;
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface AILanguageDetectorFactory {
+  Promise<AILanguageDetector> create(
+    optional AILanguageDetectorCreateOptions options = {}
+  );
+  Promise<AIAvailability> availability(
+    optional AILanguageDetectorCreateCoreOptions options = {}
+  );
+};
+
+[Exposed=(Window,Worker), SecureContext]
+interface AILanguageDetector {
+  Promise<sequence<LanguageDetectionResult>> detect(
+    DOMString input,
+    optional AILanguageDetectorDetectOptions options = {}
+  );
+
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+
+  undefined destroy();
+};
+
+dictionary AILanguageDetectorCreateCoreOptions {
+  sequence<DOMString> expectedInputLanguages;
+};
+
+dictionary AILanguageDetectorCreateOptions : AILanguageDetectorCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+};
+
+dictionary AILanguageDetectorDetectOptions {
+  AbortSignal signal;
+};
+
+dictionary LanguageDetectionResult {
+  DOMString detectedLanguage;
+  double confidence;
+};
+</xmp>
+
+Every {{AI}} has a <dfn for="AI">language detector factory</dfn>, an {{AILanguageDetector}} object. Upon creation of the {{AI}} object, its [=AI/language detector factory=] must be set to a [=new=] {{AILanguageDetectorFactory}} object created in the {{AI}} object's [=relevant realm=].
+
+The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=this=]'s [=AI/language detector factory=].
+
+<h3 id="language-detector-creation">Creation</h3>
+
+<div algorithm>
+  The <dfn method for="AILanguageDetectorFactory">create(|options|)</dfn> method steps are:
+
+  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If |options|["{{AILanguageDetectorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AILanguageDetectorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
+
+  1. [=Validate and canonicalize language detector options=] given |options|.
+
+     <p class="note">This can mutate |options|.
+
+  1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute language detector options availability=], [=download the language detector model=], [=initialize the language detector model=], and [=create the language detector object=].
+</div>
+
+<div algorithm>
+  To <dfn>validate and canonicalize language detector options</dfn> given an {{AILanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+
+  1. [=Validate and canonicalize language tags=] given |options| and "{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}".
+</div>
+
+<div algorithm>
+  To <dfn>download the language detector model</dfn>, given an {{AILanguageDetectorCreateCoreOptions}} |options|:
+
+  1. [=Assert=]: these steps are running [=in parallel=].
+
+  1. Initiate the download process for everything the user agent needs to detect the languages of input text, including all the languages in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+
+     This could include both a base language detection model, and specific fine-tunings or other material to help with the languages identified in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+
+  1. If the download process cannot be started for any reason, then return false.
+
+  1. Return true.
+</div>
+
+<div algorithm>
+  To <dfn>initialize the language detector model</dfn>, given an {{AILanguageDetectorCreateCoreOptions}} |options|:
+
+  1. [=Assert=]: these steps are running [=in parallel=].
+
+  1. Perform any necessary initialization operations for the AI model backing the user agent's capabilities for detecting the languages of input text.
+
+     This could include loading the model into memory, or loading any fine-tunings necessary to support the languages identified in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+
+  1. If initialization failed for any reason, then return false.
+
+  1. Return true.
+</div>
+
+<div algorithm>
+  To <dfn>create the language detector object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{AILanguageDetectorCreateCoreOptions}} |options|:
+
+  1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
+
+  1. Return a new {{AILanguageDetector}} object, created in |realm|, with
+
+    <dl class="props">
+      : [=AILanguageDetector/expected input languages=]
+      :: the result of [=creating a frozen array=] given |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"] if it [=set/is empty|is not empty=]; otherwise null
+    </dl>
+</div>
+
+<h3 id="language-detector-availability">Availability</h3>
+
+<!-- TODO: consider deduping this with writing assistance APIs + translator, as it's very similar. -->
+<div algorithm>
+  The <dfn method for="AILanguageDetectorFactory">availability(|options|)</dfn> method steps are:
+
+  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. [=Validate and canonicalize language detector options=] given |options|.
+
+  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
+
+  1. [=In parallel=]:
+
+    1. Let |availability| be the result of [=computing language detector options availability=] given |options|.
+
+    1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
+
+      1. If |availability| is null, then [=reject=] |promise| with an "{{UnknownError}}" {{DOMException}}.
+
+      1. Otherwise, [=resolve=] |promise| with |availability|.
+</div>
+
+<!-- TODO: consider deduping this with writing assistance APIs, as it's very similar. (Not similar to translator though!) -->
+<div algorithm>
+  To <dfn>compute language detector options availability</dfn> given an {{AILanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They return either an {{AIAvailability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. If there is some error attempting to determine what languages the user agent supports detecting, which the user agent believes to be transient (such that re-querying could stop producing such an error), then return null.
+
+  1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
+
+  1. Let |availability| be "{{AIAvailability/available}}".
+
+  1. [=set/For each=] |language| in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"]:
+
+    1. [=list/For each=] |availabilityToCheck| in « "{{AIAvailability/available}}", "{{AIAvailability/downloading}}", "{{AIAvailability/downloadable}}" »:
+
+      1. Let |languagesWithThisAvailability| be |availabilities|[|availabilityToCheck|].
+
+      1. Let |bestMatch| be [$LookupMatchingLocaleByBestFit$](|languagesWithThisAvailability|, « |language| »).
+
+      1. If |bestMatch| is not undefined, then:
+
+        1. [=list/Replace=] |language| with |bestMatch|.\[[locale]] in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+
+        1. Set |availability| to the [=AIAvailability/minimum availability=] given |availability| and |availabilityToCheck|.
+
+        1. [=iteration/Break=].
+
+    1. Return "{{AIAvailability/unavailable}}".
+
+  1. Return |availability|.
+</div>
+
+<h3 id="the-ailanguagedetector-class">The {{AILanguageDetector}} class</h3>
+
+Every {{AILanguageDetector}} has an <dfn for="AILanguageDetector">expected input languages</dfn>, a <code>{{FrozenArray}}&lt;{{DOMString}}></code> or null, set during creation.
+
+<hr>
+
+The <dfn attribute for="AILanguageDetector">expectedInputLanguages</dfn> getter steps are to return [=this=]'s [=AILanguageDetector/expected input languages=].
+
+<hr>
+
+<!-- TODO: consider deduping *SOME* of this with "get an aggregated AI model result", as it's similar. But this case is fundamentally less streaming, so the cut will be tricky. -->
+<div algorithm>
+  The <dfn method for="AILanguageDetector">detect(|input|, |options|)</dfn> method steps are:
+
+  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. Let |signals| be « [=this=]'s [=AIDestroyable/destruction abort controller=]'s [=AbortController/signal=] ».
+
+  1. If |options|["`signal`"] [=map/exists=], then [=set/append=] it to |signals|.
+
+  1. Let |compositeSignal| be the result of [=creating a dependent abort signal=] given |signals| using {{AbortSignal}} and [=this=]'s [=relevant realm=].
+
+  1. If |compositeSignal| is [=AbortSignal/aborted=], then return [=a promise rejected with=] |compositeSignal|'s [=AbortSignal/abort reason=].
+
+  1. Let |abortedDuringOperation| be false.
+
+    <p class="note">This variable will be written to from the [=event loop=], but read from [=in parallel=].
+
+  1. [=AbortSignal/add|Add the following abort steps=] to |compositeSignal|:
+
+    1. Set |abortedDuringOperation| to true.
+
+  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
+
+  1. [=In parallel=]:
+
+    1. Let |stopProducing| be the following steps:
+
+      1. Return |abortedDuringOperation|.
+
+    1. Let |result| be the result of [=detecting languages=] given |input| and |stopProducing|.
+
+    1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
+
+      1. If |abortedDuringOperation| is true, then [=reject=] |promise| with |compositeSignal|'s [=AbortSignal/abort reason=].
+
+      1. Otherwise, if |result| is an [=error information=], then [=reject=] |promise| with the result of [=exception/creating=] a {{DOMException}} with name given by |errorInfo|'s [=error information/error name=], using |errorInfo|'s [=error information/error information=] to populate the message appropriately.
+
+      1. Otherwise:
+
+        1. [=Assert=]: |result| is a [=list=] of {{LanguageDetectionResult}} dictionaries. (It is not null, since in that case |abortedDuringOperation| would have been true.)
+
+        1. [=Resolve=] |promise| with |result|.
+</div>
+
+<h4 id="language-detector-algorithm">The algorithm</h4>
+
+<div algorithm>
+  To <dfn>detect languages</dfn> given a [=string=] |input| and an algorithm |stopProducing| that takes no arguments and returns a boolean, perform the following steps. They will return either null, an [=error information=], or a [=list=] of {{LanguageDetectionResult}} dictionaries.
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
+
+  1. Let |currentlyAvailableLanguages| be |availabilities|["{{AIAvailability/available}}"].
+
+  1. In an [=implementation-defined=] manner, subject to the following guidelines, let |rawResult| and |unknown| be the result of detecting the languages of |input|.
+
+    |rawResult| must be a [=map=] which has a [=map/key=] for each language in |currentlyAvailableLanguages|. The [=map/value=] for each such key must be a number between 0 and 1. This value must represent the implementation's confidence that |input| is written in that language.
+
+    |unknown| must be a number between 0 and 1 that represents the implementation's confidence that |input| is not written in any of the languages in |currentlyAvailableLanguages|.
+
+    The [=map/values=] of |rawResult|, plus |unknown|, must sum to 1. Each such value, or |unknown|, may be 0.
+
+    If the implementation believes |input| to be written in multiple languages, then it should attempt to apportion the values of |rawResult| and |unknown| such that they are proportionate to the amount of |input| written in each detected language. The exact scheme for apportioning |input| is [=implementation-defined=].
+
+    <div class="example" id="example-multilingual-input">
+      <p>If |input| is "`tacosを食べる`", the implementation might split this into "`tacos`" and "`を食べる`", and then detect the languages of each separately. The first part might be detected as English with confidence 0.5 and Spanish with confidence 0.5, and the second part as Japanese with confidence 1. The resulting |rawResult| then might be «[ "`en`" → 0.25, "`es`" → 0.25, "`ja`" → 0.5 ]» (with |unknown| set to 0).
+
+      <p>The decision to split this into two parts, instead of e.g. the three parts "`tacos`", "`を`", and "`食べる`", was an [=implementation-defined=] choice. Similarly, the decision to treat each part as contributing to "half" of the result, instead of e.g. weighting by number of [=code points=], was [=implementation-defined=].
+
+      <p>(Realistically, we expect that implementations will split on larger chunks than this, as generally more than 4-5 [=code points=] are necessary for most language detection models.)
+    </div>
+
+    If |stopProducing| returns true at any point during this process, then return null.
+
+    If an error occurred during language detection, then return an [=error information=] according to the guidance in [[#language-detector-errors]].
+
+  1. [=map/Sort in descending order=] |rawResult| with a less than algorithm which given [=map/entries=] |a| and |b|, returns true if |a|'s [=map/value=] is less than |b|'s [=map/value=].
+
+  1. Let |results| be an empty [=list=].
+
+  1. Let |cumulativeConfidence| be 0.
+
+  1. [=map/For each=] |key| → |value| of |rawResult|:
+
+    1. If |value| is 0, then [=iteration/break=].
+
+    1. If |value| is less than |unknown|, then [=iteration/break=].
+
+    1. [=list/Append=] «[ "{{LanguageDetectionResult/detectedLanguage}}" → |key|, "{{LanguageDetectionResult/confidence}}" → |value| ]» to |results|.
+
+    1. Set |cumulativeConfidence| to |cumulativeConfidence| + |value|.
+
+    1. If |cumulativeConfidence| is greater than or equal to 0.99, then [=iteration/break=].
+
+  1. [=Assert=]: 1 &minus; |cumulativeConfidence| is greater than or equal to |unknown|.
+
+  1. [=list/Append=] «[ "{{LanguageDetectionResult/detectedLanguage}}" → "`und`", "{{LanguageDetectionResult/confidence}}" → 1 &minus; |cumulativeConfidence| ]» to |results|.
+
+  1. Return |results|.
+
+  <p class="note" id="note-language-detection-post-processing">The post-processing of |rawResult| and |unknown| essentially consolidates all languages below a certain threshold into the "`und`" language. Languages which are less than 1% likely, or contribute to less than 1% of the text, are considered more likely to be noise than to be worth detecting. Similarly, if the implementation is less sure about a language than it is about the text not being in any of the languages it knows, that language is probably not worth returning to the web developer.
+</div>
+
+<h4 id="language-detector-errors">Errors</h4>
+
+When language detection fails, the following possible reasons may be surfaced to the web developer. This table lists the possible {{DOMException}} [=DOMException/names=] and the cases in which an implementation should use them:
+
+<table class="data">
+  <thead>
+    <tr>
+      <th>{{DOMException}} [=DOMException/name=]
+      <th>Scenarios
+  <tbody>
+    <tr>
+      <td>"{{NotAllowedError}}"
+      <td>
+        <p>Language detection is disabled by user choice or user agent policy.
+    <tr>
+      <td>"{{QuotaExceededError}}"
+      <td>
+        <p>The input to be detected was too large for the user agent to handle.
+    <tr>
+      <td>"{{UnknownError}}"
+      <td>
+        <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason.
+</table>
+
+<p class="note">This table does not give the complete list of exceptions that can be surfaced by {{AILanguageDetector/detect()|detector.detect()}}. It only contains those which can come from the [=implementation-defined=] [=detect languages=] algorithm.

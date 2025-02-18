@@ -73,9 +73,11 @@ for (const result of results) {
 }
 ```
 
-Here `results` will be an array of `{ detectedLanguage, confidence }` objects, with the `detectedLanguage` field being a BCP 47 language tag and `confidence` beeing a number between 0 and 1. The array will be sorted by descending confidence, and the confidences will be normalized so that all confidences that the underlying model produces sum to 1, but confidences below `0.1` will be omitted. (Thus, the total sum of `confidence` values seen by the developer will sometimes sum to less than 1.)
+Here `results` will be an array of `{ detectedLanguage, confidence }` objects, with the `detectedLanguage` field being a BCP 47 language tag and `confidence` beeing a number between 0 and 1. The array will be sorted by descending confidence, and the confidences will be normalized so that all confidences that the underlying model produces sum to 1, but very low confidences will be lumped together into an [`"und"`](https://www.rfc-editor.org/rfc/rfc5646.html#:~:text=*%20%20The%20'und'%20(Undetermined)%20primary,certain%20situations.) language.
 
-The language being unknown is represented by `detectedLanguage` being null. The array will always contain at least 1 entry, although it could be for the unknown (`null`) language.
+The array will always contain at least 1 entry, although it could be for the undetermined (`"und"`) language.
+
+For more details on the ways low-confidence results are excluded, see [the specification](https://webmachinelearning.github.io/translation-api/#note-language-detection-post-processing) and the discussion in [issue #39](https://github.com/webmachinelearning/translation-api/issues/39).
 
 ### Language detection with expected input languages
 
@@ -115,7 +117,7 @@ async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
     const detector = await ai.languageDetector.create();
     const [bestResult] = await detector.detect(textToTranslate);
 
-    if (bestResult.detectedLangauge ==== null || bestResult.confidence < 0.4) {
+    if (bestResult.detectedLanguage ==== "und" || bestResult.confidence < 0.4) {
       // We'll just return the input text without translating. It's probably mostly punctuation
       // or something.
       return textToTranslate;
@@ -199,112 +201,17 @@ In all cases, the exception used for rejecting promises or erroring `ReadableStr
 
 ## Detailed design
 
-### Full API surface in Web IDL
-
-```webidl
-// Shared self.ai APIs
-
-partial interface WindowOrWorkerGlobalScope {
-  [Replaceable, SecureContext] readonly attribute AI ai;
-};
-
-[Exposed=(Window,Worker), SecureContext]
-interface AI {
-  readonly attribute AITranslatorFactory translator;
-  readonly attribute AILanguageDetectorFactory languageDetector;
-};
-
-[Exposed=(Window,Worker), SecureContext]
-interface AICreateMonitor : EventTarget {
-  attribute EventHandler ondownloadprogress;
-
-  // Might get more stuff in the future, e.g. for
-  // https://github.com/webmachinelearning/prompt-api/issues/4
-};
-
-callback AICreateMonitorCallback = undefined (AICreateMonitor monitor);
-
-enum AIAvailability { "unavailable", "downloadable", "downloading", "available" };
-```
-
-```webidl
-// Translator
-
-[Exposed=(Window,Worker), SecureContext]
-interface AITranslatorFactory {
-  Promise<AITranslator> create(AITranslatorCreateOptions options);
-  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
-};
-
-[Exposed=(Window,Worker), SecureContext]
-interface AITranslator {
-  Promise<DOMString> translate(DOMString input, optional AITranslatorTranslateOptions options = {});
-  ReadableStream translateStreaming(DOMString input, optional AITranslatorTranslateOptions options = {});
-
-  readonly attribute DOMString sourceLanguage;
-  readonly attribute DOMString targetLanguage;
-
-  undefined destroy();
-};
-
-dictionary AITranslatorCreateCoreOptions {
-  required DOMString sourceLanguage;
-  required DOMString targetLanguage;
-};
-
-dictionary AITranslatorCreateOptions : AITranslatorCreateCoreOptions {
-  AbortSignal signal;
-  AICreateMonitorCallback monitor;
-};
-
-dictionary AITranslatorTranslateOptions {
-  AbortSignal signal;
-};
-```
-
-```webidl
-// Language detector
-
-[Exposed=(Window,Worker), SecureContext]
-interface AILanguageDetectorFactory {
-  Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
-  Promise<AIAvailability> availability(optional AILanguageDetectorCreateCoreOptions = {});
-};
-
-[Exposed=(Window,Worker), SecureContext]
-interface AILanguageDetector {
-  Promise<sequence<LanguageDetectionResult>> detect(DOMString input,
-                                                    optional AILanguageDetectorDetectOptions options = {});
-
-  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
-
-  undefined destroy();
-};
-
-dictionary AILanguageDetectorCreateCoreOptions {
-  sequence<DOMString> expectedInputLanguages;
-};
-
-dictionary AILanguageDetectorCreateOptions : AILanguageDetectorCreateCoreOptions {
-  AbortSignal signal;
-  AICreateMonitorCallback monitor;
-};
-
-dictionary AILanguageDetectorDetectOptions {
-  AbortSignal signal;
-};
-
-dictionary LanguageDetectionResult {
-  DOMString? detectedLanguage; // null represents unknown language
-  double confidence;
-};
-```
-
 ### Language tag handling
 
 If a browser supports translating from `ja` to `en`, does it also support translating from `ja` to `en-US`? What about `en-GB`? What about the (discouraged, but valid) `en-Latn`, i.e. English written in the usual Latin script? But translation to `en-Brai`, English written in the Braille script, is different entirely.
 
-We're not clear on what the right model is here, and are discussing it in [issue #11](https://github.com/webmachinelearning/translation-api/issues/11).
+We're proposing that the API use the same model as JavaScript's `Intl` APIs, which tries to do [best-fit matching](https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit) of the requested language tag to the available language tags. The specification contains [a more detailed example](https://webmachinelearning.github.io/translation-api/#example-language-arc-support).
+
+### Multilingual text
+
+For language detection of multilingual text, we return detected language confidences in proportion to the languages detected. The specification gives [an example](https://webmachinelearning.github.io/translation-api#example-multilingual-input) of how this works. See also the discussion in [issue #13](https://github.com/webmachinelearning/translation-api/issues/13).
+
+A future option might be to instead have the API return back the splitting of the text into different-language segments. There is [some precedent](https://github.com/pemistahl/lingua-py?tab=readme-ov-file#116-detection-of-multiple-languages-in-mixed-language-texts) for this, but it does not seem to be common yet. This could be added without backward-compatibility problems by making it a non-default mode.
 
 ### Downloading
 
