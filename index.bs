@@ -32,10 +32,9 @@ For now, see the [explainer](https://github.com/webmachinelearning/translation-a
 <h2 id="translator-api">The translator API</h2>
 
 <xmp class="idl">
-// TODO FIX: workaround for https://github.com/speced/bikeshed/issues/3023
-// partial interface AI {
-//   readonly attribute AITranslatorFactory translator;
-// };
+partial interface AI {
+  readonly attribute AITranslatorFactory translator;
+};
 
 [Exposed=(Window,Worker), SecureContext]
 interface AITranslatorFactory {
