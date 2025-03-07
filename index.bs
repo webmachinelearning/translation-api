@@ -42,13 +42,13 @@ partial interface AI {
   readonly attribute AITranslatorFactory translator;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=Window, SecureContext]
 interface AITranslatorFactory {
   Promise<AITranslator> create(AITranslatorCreateOptions options);
   Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=Window, SecureContext]
 interface AITranslator {
   Promise<DOMString> translate(
     DOMString input,
@@ -94,13 +94,17 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 <div algorithm>
   The <dfn method for="AITranslatorFactory">create(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+  1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated Document=].
 
-  1. If |options|["{{AITranslatorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AITranslatorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
+  1. If |document| is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. [=Validate and canonicalize translator options=] given |options|.
 
      <p class="note">This can mutate |options|.
+
+  1. If |options|["{{AITranslatorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AITranslatorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
+
+  1. If |document| is not [=allowed to use=] "{{translator}}", then return [=a promise rejected with=] a "{{NotAllowedError}}" {{DOMException}}.
 
   1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create a translator object=].
 </div>
@@ -168,9 +172,13 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 <div algorithm>
   The <dfn method for="AITranslatorFactory">availability(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+  1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated Document=].
+
+  1. If |document| is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. [=Validate and canonicalize translator options=] given |options|.
+
+  1. If |document| is not [=allowed to use=] "{{translator}}", then return [=a promise resolved with=] "{{AIAvailability/unavailable}}".
 
   1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
 
@@ -482,6 +490,10 @@ When translation fails, the following possible reasons may be surfaced to the we
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the translator API. It only contains those which can come from certain [=implementation-defined=] steps.
 
+<h3 id="translator-permissions-policy">Permissions policy integration</h3>
+
+Access to the translator API is gated behind the [=policy-controlled feature=] "<dfn permission>translator</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
+
 <h2 id="language-detector-api">The language detector API</h2>
 
 <xmp class="idl">
@@ -489,7 +501,7 @@ partial interface AI {
   readonly attribute AILanguageDetectorFactory languageDetector;
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=Window, SecureContext]
 interface AILanguageDetectorFactory {
   Promise<AILanguageDetector> create(
     optional AILanguageDetectorCreateOptions options = {}
@@ -499,7 +511,7 @@ interface AILanguageDetectorFactory {
   );
 };
 
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=Window, SecureContext]
 interface AILanguageDetector {
   Promise<sequence<LanguageDetectionResult>> detect(
     DOMString input,
@@ -544,13 +556,17 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 <div algorithm>
   The <dfn method for="AILanguageDetectorFactory">create(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+  1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated Document=].
 
-  1. If |options|["{{AILanguageDetectorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AILanguageDetectorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
+  1. If |document| is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. [=Validate and canonicalize language detector options=] given |options|.
 
      <p class="note">This can mutate |options|.
+
+  1. If |options|["{{AILanguageDetectorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AILanguageDetectorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
+
+  1. If |document| is not [=allowed to use=] "{{language-detector}}", then return [=a promise rejected with=] a "{{NotAllowedError}}" {{DOMException}}.
 
   1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute language detector options availability=], [=download the language detector model=], [=initialize the language detector model=], and [=create the language detector object=].
 </div>
@@ -613,9 +629,13 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 <div algorithm>
   The <dfn method for="AILanguageDetectorFactory">availability(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+  1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated Document=].
+
+  1. If |document| is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. [=Validate and canonicalize language detector options=] given |options|.
+
+  1. If |document| is not [=allowed to use=] "{{language-detector}}", then return [=a promise resolved with=] "{{AIAvailability/unavailable}}".
 
   1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
 
@@ -847,3 +867,7 @@ When language detection fails, the following possible reasons may be surfaced to
 </table>
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the language detector API. It only contains those which can come from certain [=implementation-defined=] steps.
+
+<h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
+
+Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
