@@ -175,6 +175,70 @@ It is also nicely future-extensible by adding more events and properties to the 
 Finally, note that there is a sort of precedent in the (never-shipped) [`FetchObserver` design](https://github.com/whatwg/fetch/issues/447#issuecomment-281731850).
 </details>
 
+### Too-large inputs
+
+It's possible that the inputs given for translation or language detection might be too large for the underlying machine learning model to handle. Although there are often techniques that allow implementations to break up the inputs into smaller chunks, and combine the results, the APIs have some facilities to allow browsers to signal such too-large inputs.
+
+Whenever any API call fails due to too-large input, it is rejected with a `QuotaExceededError`. This is a proposed new type of exception, which subclasses `DOMException`, and replaces the web platform's existing `"QuotaExceededError"` `DOMException`. See [whatwg/webidl#1465](https://github.com/whatwg/webidl/pull/1465) for this proposal. For our purposes, the important part is that it has the following properties:
+
+* `requested`: how much "usage" the input consists of
+* `quota`: how much "usage" was available (which will be less than `requested`)
+
+The "usage" concept is specific to the implementation, and could be something like string length, or [language model tokens](https://arxiv.org/abs/2404.08335).
+
+This allows detecting failures due to overlarge inputs and giving clear feedback to the user, with code such as the following:
+
+```js
+const detector = await ai.languageDetector.create();
+
+try {
+  console.log(await detector.detect(potentiallyLargeInput));
+} catch (e) {
+  if (e.name === "QuotaExceededError") {
+    console.error(`Input too large! You tried to detect the language of ${e.requested} tokens, but ${e.quota} is the max supported.`);
+
+    // Or maybe:
+    console.error(`Input too large! It's ${e.requested / e.quota}x as large as the maximum possible input size.`);
+  }
+}
+```
+
+In some cases, instead of providing errors after the fact, the developer needs to be able to communicate to the user how close they are to the limit. For this, they can use the `inputQuota` property and the `measureInputUsage()` method on the translator or language detector objects:
+
+```js
+const translator = await ai.translator.create({
+  sourceLanguage: "en",
+  targetLanguage: "jp"
+});
+meterEl.max = translator.inputQuota;
+
+textbox.addEventListener("input", () => {
+  meterEl.value = await translator.measureInputUsage(textbox.value);
+  submitButton.disabled = meterEl.value > meterEl.max;
+});
+
+submitButton.addEventListener("click", () => {
+  console.log(translator.translate(textbox.value));
+});
+```
+
+Note that if an implementation does not have any limits, e.g. because it uses techniques to split up the input and process it a bit at a time, then `inputQuota` will be `+Infinity` and `measureInputUsage()` will always return 0.
+
+Developers need to be cautious not to over-use this API, however, as it requires a round-trip to the underlying model. That is, the following code is bad, as it performs two round trips with the same input:
+
+```js
+// DO NOT DO THIS
+
+const usage = await translator.measureInputUsage(input);
+if (usage < translator.inputQuota) {
+  console.log(await translator.translate(input));
+} else {
+  console.error(`Input too large!`);
+}
+```
+
+If you're planning to call `translate()` anyway, then using a pattern like the one that opened this section, which catches `QuotaExceededError`s, is more efficient than using `measureInputUsage()` plus a conditional call to `translate()`.
+
 ### Destruction and aborting
 
 The API comes equipped with a couple of `signal` options that accept `AbortSignal`s, to allow aborting the creation of the translator/language detector, or the translation/language detection operations themselves:

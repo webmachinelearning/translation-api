@@ -23,6 +23,12 @@ urlPrefix: https://tc39.es/ecma402/; spec: ECMA-402
     text: Unicode canonicalized locale identifier; url: sec-language-tags
   type: abstract-op
     text: LookupMatchingLocaleByBestFit; url: sec-lookupmatchinglocalebybestfit
+urlPrefix: https://whatpr.org/webidl/1465.html; spec: WEBIDL
+  type: interface
+    text: QuotaExceededError; url: quotaexceedederror
+  type: dfn; for: QuotaExceededError
+    text: requested; url: quotaexceedederror-requested
+    text: quota; url: quotaexceedederror-quota
 </pre>
 
 <h2 id="intro">Introduction</h2>
@@ -55,6 +61,12 @@ interface AITranslator {
 
   readonly attribute DOMString sourceLanguage;
   readonly attribute DOMString targetLanguage;
+
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional AITranslatorTranslateOptions options = {}
+  );
+  readonly attribute unrestricted double inputQuota;
 };
 AITranslator includes AIDestroyable;
 
@@ -124,15 +136,17 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
     This could include loading the model into memory, or loading any fine-tunings necessary to support the specific options in question.
 
-  1. If initialization failed for any reason, then return false.
+  1. If initialization failed for any reason, then return a [=DOMException error information=] whose [=DOMException error information/name=] is "{{OperationError}}" and whose [=DOMException error information/details=] contain appropriate detail.
 
-  1. Return true.
+  1. Return null.
 </div>
 
 <div algorithm>
   To <dfn>create a translator object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{AITranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
+
+  1. Let |inputQuota| be the amount of input quota that is available to the user agent for future [=translate|translation=] operations. (This value is [=implementation-defined=], and may be +∞ if there are no specific limits beyond, e.g., the user's memory, or the limits of JavaScript strings.)
 
   1. Return a new {{AITranslator}} object, created in |realm|, with
 
@@ -142,6 +156,9 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
       : [=AITranslator/target language=]
       :: |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]
+
+      : [=AITranslator/input quota=]
+      :: |inputQuota|
     </dl>
 </div>
 
@@ -295,18 +312,22 @@ Every {{AITranslator}} has a <dfn for="AITranslator">source language</dfn>, a [=
 
 Every {{AITranslator}} has a <dfn for="AITranslator">target language</dfn>, a [=string=], set during creation.
 
+Every {{AITranslator}} has an <dfn for="AITranslator">input quota</dfn>, a [=number=], set during creation.
+
 <hr>
 
 The <dfn attribute for="AITranslator">sourceLanguage</dfn> getter steps are to return [=this=]'s [=AITranslator/source language=].
 
 The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to return [=this=]'s [=AITranslator/target language=].
 
+The <dfn attribute for="AITranslator">inputQuota</dfn> getter steps are to return [=this=]'s [=AITranslator/input quota=].
+
 <hr>
 
 <div algorithm>
   The <dfn method for="AITranslator">translate(|input|, |options|)</dfn> method steps are:
 
-  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], |chunkProduced|, |done|, |error|, and |stopProducing|.
+  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], [=this=]'s [=AITranslator/input quota=], |chunkProduced|, |done|, |error|, and |stopProducing|.
 
   1. Return the result of [=getting an aggregated AI model result=] given [=this=], |options|, and |operation|.
 </div>
@@ -314,9 +335,17 @@ The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to r
 <div algorithm>
   The <dfn method for="AITranslator">translateStreaming(|input|, |options|)</dfn> method steps are:
 
-  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], |chunkProduced|, |done|, |error|, and |stopProducing|.
+  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], [=this=]'s [=AITranslator/input quota=], |chunkProduced|, |done|, |error|, and |stopProducing|.
 
   1. Return the result of [=getting a streaming AI model result=] given [=this=], |options|, and |operation|.
+</div>
+
+<div algorithm>
+  The <dfn method for="AITranslator">measureInputUsage(|input|, |options|)</dfn> method steps are:
+
+  1. Let |measureUsage| be an algorithm step which takes argument |stopMeasuring|, and returns the result of [=measuring translator input usage=] given |input|, [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], and |stopMeasuring|.
+
+  1. Return the result of [=measuring AI model input usage=] given [=this=], |options|, and |measureUsage|.
 </div>
 
 <h3 id="translator-translation">Translation</h3>
@@ -329,6 +358,7 @@ The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to r
   * a [=string=] |input|,
   * a [=Unicode canonicalized locale identifier=] |sourceLanguage|,
   * a [=Unicode canonicalized locale identifier=] |targetLanguage|,
+  * a [=number=] |inputQuota|,
   * an algorithm |chunkProduced| that takes a string and returns nothing,
   * an algorithm |done| that takes no arguments and returns nothing,
   * an algorithm |error| that takes [=error information=] and returns nothing, and
@@ -337,6 +367,28 @@ The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to r
   perform the following steps:
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. Let |requested| be the result of [=measuring translator input usage=] given |input|, |sourceLanguage|, |targetLanguage|, and |stopProducing|.
+
+  1. If |requested| is null, then return.
+
+  1. If |requested| is an [=error information=], then:
+
+    1. Perform |error| given |requested|.
+
+    1. Return.
+
+  1. [=Assert=]: |requested| is a number.
+
+  1. If |requested| is greater than |inputQuota|, then:
+
+    1. Let |errorInfo| be a [=quota exceeded error information=] with a [=quota exceeded error information/requested=] of |requested| and a [=quota exceeded error information/quota=] of |inputQuota|.
+
+    1. Perform |error| given |errorInfo|.
+
+    1. Return.
+
+    <p class="note">In reality, we expect that implementations will check the input usage against the quota as part of the same call into the model as the translation itself. The steps are only separated in the specification for ease of understanding.
 
   1. In an [=implementation-defined=] manner, subject to the following guidelines, begin the processs of translating |input| from |sourceLanguage| into |targetLanguage|.
 
@@ -364,11 +416,44 @@ The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to r
 
     1. Otherwise, if an error occurred during translation:
 
-      1. Let the error be represented as [=error information=] |errorInfo| according to the guidance in [[#translator-errors]].
+      1. Let the error be represented as a [=DOMException error information=] |errorInfo| according to the guidance in [[#translator-errors]].
 
       1. Perform |error| given |errorInfo|.
 
       1. [=iteration/Break=].
+</div>
+
+<h4 id="translator-usage">Usage</h4>
+
+<div algorithm>
+  To <dfn>measure translator input usage</dfn>, given:
+
+  * a [=string=] |input|,
+  * a [=Unicode canonicalized locale identifier=] |sourceLanguage|,
+  * a [=Unicode canonicalized locale identifier=] |targetLanguage|, and
+  * an algorithm |stopMeasuring| that takes no arguments and returns a boolean,
+
+  perform the following steps:
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. Let |inputToModel| be the [=implementation-defined=] string that would be sent to the underlying model in order to [=translate=] |input| from |sourceLanguage| to |targetLanguage|.
+
+    <p class="note" id="note-input-to-language-detector-model">This might be just |input| itself, if |sourceLanguage| and |targetLanguage| were loaded into the model during initialization. Or it might consist of more, e.g. appropriate quota usage for encoding the languages in question, or some sort of wrapper prompt to a language model.
+
+    If during this process |stopMeasuring| starts returning true, then return null.
+
+    If an error occurs during this process, then return an appropriate [=DOMException error information=] according to the guidance in [[#translator-errors]].
+
+  1. Return the amount of input usage needed to represent |inputToModel| when given to the underlying model. The exact calculation procedure is [=implementation-defined=], subject to the following constraints.
+
+    The returned input usage must be nonnegative and finite. It must be 0, if there are no usage quotas for the translation process (i.e., if the [=AITranslator/input quota=] is +∞). Otherwise, it must be positive and should be roughly proportional to the [=string/length=] of |inputToModel|.
+
+    <p class="note" id="note-translator-input-usage">This might be the number of tokens needed to represent |input| in a <a href="https://arxiv.org/abs/2404.08335">language model tokenization scheme</a>, or it might be |input|'s [=string/length=]. It could also be some variation of these which also counts the usage of any prefixes or suffixes necessary to give to the model.
+
+    If during this process |stopMeasuring| starts returning true, then instead return null.
+
+    If an error occurs during this process, then instead return an appropriate [=DOMException error information=] according to the guidance in [[#translator-errors]].
 </div>
 
 <h4 id="translator-errors">Errors</h4>
@@ -390,16 +475,12 @@ When translation fails, the following possible reasons may be surfaced to the we
       <td>
         <p>The translation output was filtered by the user agent, e.g., because it was detected to be harmful, inaccurate, or nonsensical.
     <tr>
-      <td>"{{QuotaExceededError}}"
-      <td>
-        <p>The input to be translated was too large for the user agent to handle.
-    <tr>
       <td>"{{UnknownError}}"
       <td>
         <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason.
 </table>
 
-<p class="note">This table does not give the complete list of exceptions that can be surfaced by {{AITranslator/translate()|translator.translate()}} and {{AITranslator/translateStreaming()|translator.translateStreaming()}}. It only contains those which can come from the [=implementation-defined=] [=translate=] algorithm.
+<p class="note">This table does not give the complete list of exceptions that can be surfaced by the translator API. It only contains those which can come from certain [=implementation-defined=] steps.
 
 <h2 id="language-detector-api">The language detector API</h2>
 
@@ -427,8 +508,13 @@ interface AILanguageDetector {
 
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
 
-  undefined destroy();
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional AITranslatorTranslateOptions options = {}
+  );
+  readonly attribute unrestricted double inputQuota;
 };
+AILanguageDetector includes AIDestroyable;
 
 dictionary AILanguageDetectorCreateCoreOptions {
   sequence<DOMString> expectedInputLanguages;
@@ -498,9 +584,9 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 
      This could include loading the model into memory, or loading any fine-tunings necessary to support the languages identified in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
 
-  1. If initialization failed for any reason, then return false.
+  1. If initialization failed for any reason, then return a [=DOMException error information=] whose [=DOMException error information/name=] is "{{OperationError}}" and whose [=DOMException error information/details=] contain appropriate detail.
 
-  1. Return true.
+  1. Return null.
 </div>
 
 <div algorithm>
@@ -508,11 +594,16 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 
   1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
 
+  1. Let |inputQuota| be the amount of input quota that is available to the user agent for future [=detect languages|language detection=] operations. (This value is [=implementation-defined=], and may be +∞ if there are no specific limits beyond, e.g., the user's memory, or the limits of JavaScript strings.)
+
   1. Return a new {{AILanguageDetector}} object, created in |realm|, with
 
     <dl class="props">
       : [=AILanguageDetector/expected input languages=]
       :: the result of [=creating a frozen array=] given |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"] if it [=set/is empty|is not empty=]; otherwise null
+
+      : [=AILanguageDetector/input quota=]
+      :: |inputQuota|
     </dl>
 </div>
 
@@ -576,9 +667,13 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 
 Every {{AILanguageDetector}} has an <dfn for="AILanguageDetector">expected input languages</dfn>, a <code>{{FrozenArray}}&lt;{{DOMString}}></code> or null, set during creation.
 
+Every {{AILanguageDetector}} has an <dfn for="AILanguageDetector">input quota</dfn>, a [=number=], set during creation.
+
 <hr>
 
 The <dfn attribute for="AILanguageDetector">expectedInputLanguages</dfn> getter steps are to return [=this=]'s [=AILanguageDetector/expected input languages=].
+
+The <dfn attribute for="AILanguageDetector">inputQuota</dfn> getter steps are to return [=this=]'s [=AILanguageDetector/input quota=].
 
 <hr>
 
@@ -612,13 +707,13 @@ The <dfn attribute for="AILanguageDetector">expectedInputLanguages</dfn> getter 
 
       1. Return |abortedDuringOperation|.
 
-    1. Let |result| be the result of [=detecting languages=] given |input| and |stopProducing|.
+    1. Let |result| be the result of [=detecting languages=] given |input|, [=this=]'s [=AILanguageDetector/input quota=], and |stopProducing|.
 
     1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
 
       1. If |abortedDuringOperation| is true, then [=reject=] |promise| with |compositeSignal|'s [=AbortSignal/abort reason=].
 
-      1. Otherwise, if |result| is an [=error information=], then [=reject=] |promise| with the result of [=exception/creating=] a {{DOMException}} with name given by |errorInfo|'s [=error information/error name=], using |errorInfo|'s [=error information/error information=] to populate the message appropriately.
+      1. Otherwise, if |result| is an [=error information=], then [=reject=] |promise| with the result of [=converting error information into an exception object=] given |result|.
 
       1. Otherwise:
 
@@ -627,12 +722,30 @@ The <dfn attribute for="AILanguageDetector">expectedInputLanguages</dfn> getter 
         1. [=Resolve=] |promise| with |result|.
 </div>
 
+<div algorithm>
+  The <dfn method for="AILanguageDetector">measureInputUsage(|input|, |options|)</dfn> method steps are:
+
+  1. Let |measureUsage| be an algorithm step which takes argument |stopMeasuring|, and returns the result of [=measuring language detector input usage=] given |input| and |stopMeasuring|.
+
+  1. Return the result of [=measuring AI model input usage=] given [=this=], |options|, and |measureUsage|.
+</div>
+
 <h4 id="language-detector-algorithm">The algorithm</h4>
 
 <div algorithm>
-  To <dfn>detect languages</dfn> given a [=string=] |input| and an algorithm |stopProducing| that takes no arguments and returns a boolean, perform the following steps. They will return either null, an [=error information=], or a [=list=] of {{LanguageDetectionResult}} dictionaries.
+  To <dfn>detect languages</dfn> given a [=string=] |input|, a [=number=] |inputQuota|, and an algorithm |stopProducing| that takes no arguments and returns a boolean, perform the following steps. They will return either null, an [=error information=], or a [=list=] of {{LanguageDetectionResult}} dictionaries.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. Let |requested| be the result of [=measuring language detector input usage=] given |input| and |stopProducing|.
+
+  1. If |requested| is null or an [=error information=], then return |requested|.
+
+  1. [=Assert=]: |requested| is a number.
+
+  1. If |requested| is greater than |inputQuota|, then return a [=quota exceeded error information=] with a [=quota exceeded error information/requested=] of |requested| and a [=quota exceeded error information/quota=] of |inputQuota|.
+
+    <p class="note">In reality, we expect that implementations will check the input usage against the quota as part of the same call into the model as the language detection itself. The steps are only separated in the specification for ease of understanding.
 
   1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
 
@@ -687,6 +800,32 @@ The <dfn attribute for="AILanguageDetector">expectedInputLanguages</dfn> getter 
   <p class="note" id="note-language-detection-post-processing">The post-processing of |rawResult| and |unknown| essentially consolidates all languages below a certain threshold into the "`und`" language. Languages which are less than 1% likely, or contribute to less than 1% of the text, are considered more likely to be noise than to be worth detecting. Similarly, if the implementation is less sure about a language than it is about the text not being in any of the languages it knows, that language is probably not worth returning to the web developer.
 </div>
 
+<h4 id="language-detector-usage">Usage</h4>
+
+<div algorithm>
+  To <dfn>measure language detector input usage</dfn>, given a [=string=] |input| and an algorithm |stopMeasuring| that takes no arguments and returns a boolean, perform the following steps:
+
+  1. [=Assert=]: this algorithm is running [=in parallel=].
+
+  1. Let |inputToModel| be the [=implementation-defined=] string that would be sent to the underlying model in order to [=detect languages=] given |input|.
+
+    <p class="note" id="note-input-to-translator-model">This might be just |input| itself, or it might include some sort of wrapper prompt to a language model.
+
+    If during this process |stopMeasuring| starts returning true, then return null.
+
+    If an error occurs during this process, then return an appropriate [=DOMException error information=] according to the guidance in [[#language-detector-errors]].
+
+  1. Return the amount of input usage needed to represent |inputToModel| when given to the underlying model. The exact calculation procedure is [=implementation-defined=], subject to the following constraints.
+
+    The returned input usage must be nonnegative and finite. It must be 0, if there are no usage quotas for the translation process (i.e., if the [=AILanguageDetector/input quota=] is +∞). Otherwise, it must be positive and should be roughly proportional to the [=string/length=] of |inputToModel|.
+
+    <p class="note" id="note-language-detector-input-usage">This might be the number of tokens needed to represent |input| in a <a href="https://arxiv.org/abs/2404.08335">language model tokenization scheme</a>, or it might be |input|'s [=string/length=]. It could also be some variation of these which also counts the usage of any prefixes or suffixes necessary to give to the model.
+
+    If during this process |stopMeasuring| starts returning true, then instead return null.
+
+    If an error occurs during this process, then instead return an appropriate [=DOMException error information=] according to the guidance in [[#language-detector-errors]].
+</div>
+
 <h4 id="language-detector-errors">Errors</h4>
 
 When language detection fails, the following possible reasons may be surfaced to the web developer. This table lists the possible {{DOMException}} [=DOMException/names=] and the cases in which an implementation should use them:
@@ -702,13 +841,9 @@ When language detection fails, the following possible reasons may be surfaced to
       <td>
         <p>Language detection is disabled by user choice or user agent policy.
     <tr>
-      <td>"{{QuotaExceededError}}"
-      <td>
-        <p>The input to be detected was too large for the user agent to handle.
-    <tr>
       <td>"{{UnknownError}}"
       <td>
         <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason.
 </table>
 
-<p class="note">This table does not give the complete list of exceptions that can be surfaced by {{AILanguageDetector/detect()|detector.detect()}}. It only contains those which can come from the [=implementation-defined=] [=detect languages=] algorithm.
+<p class="note">This table does not give the complete list of exceptions that can be surfaced by the language detector API. It only contains those which can come from certain [=implementation-defined=] steps.
