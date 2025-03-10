@@ -23,6 +23,9 @@ urlPrefix: https://tc39.es/ecma402/; spec: ECMA-402
     text: Unicode canonicalized locale identifier; url: sec-language-tags
   type: abstract-op
     text: LookupMatchingLocaleByBestFit; url: sec-lookupmatchinglocalebybestfit
+urlPrefix: https://tc39.es/ecma262/; spec: ECMA-262
+  type: dfn
+    text: current realm; url: current-realm
 urlPrefix: https://whatpr.org/webidl/1465.html; spec: WEBIDL
   type: interface
     text: QuotaExceededError; url: quotaexceedederror
@@ -38,25 +41,18 @@ For now, see the [explainer](https://github.com/webmachinelearning/translation-a
 <h2 id="translator-api">The translator API</h2>
 
 <xmp class="idl">
-partial interface AI {
-  readonly attribute AITranslatorFactory translator;
-};
-
 [Exposed=(Window,Worker), SecureContext]
-interface AITranslatorFactory {
-  Promise<AITranslator> create(AITranslatorCreateOptions options);
-  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
-};
+interface Translator {
+  static Promise<Translator> create(TranslatorCreateOptions options);
+  static Promise<Availability> availability(TranslatorCreateCoreOptions options);
 
-[Exposed=(Window,Worker), SecureContext]
-interface AITranslator {
   Promise<DOMString> translate(
     DOMString input,
-    optional AITranslatorTranslateOptions options = {}
+    optional TranslatorTranslateOptions options = {}
   );
   ReadableStream translateStreaming(
     DOMString input,
-    optional AITranslatorTranslateOptions options = {}
+    optional TranslatorTranslateOptions options = {}
   );
 
   readonly attribute DOMString sourceLanguage;
@@ -64,61 +60,49 @@ interface AITranslator {
 
   Promise<double> measureInputUsage(
     DOMString input,
-    optional AITranslatorTranslateOptions options = {}
+    optional TranslatorTranslateOptions options = {}
   );
   readonly attribute unrestricted double inputQuota;
 };
-AITranslator includes AIDestroyable;
+Translator includes DestroyableModel;
 
-dictionary AITranslatorCreateCoreOptions {
+dictionary TranslatorCreateCoreOptions {
   required DOMString sourceLanguage;
   required DOMString targetLanguage;
 };
 
-dictionary AITranslatorCreateOptions : AITranslatorCreateCoreOptions {
+dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
 };
 
-dictionary AITranslatorTranslateOptions {
+dictionary TranslatorTranslateOptions {
   AbortSignal signal;
 };
 </xmp>
 
-Every {{AI}} has a <dfn for="AI">translator factory</dfn>, an {{AITranslatorFactory}} object. Upon creation of the {{AI}} object, its [=AI/translator factory=] must be set to a [=new=] {{AITranslatorFactory}} object created in the {{AI}} object's [=relevant realm=].
-
-The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]'s [=AI/translator factory=].
-
 <h3 id="translator-creation">Creation</h3>
 
 <div algorithm>
-  The <dfn method for="AITranslatorFactory">create(|options|)</dfn> method steps are:
+  The static <dfn method for="Translator">create(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If |options|["{{AITranslatorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AITranslatorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
-
-  1. [=Validate and canonicalize translator options=] given |options|.
-
-     <p class="note">This can mutate |options|.
-
-  1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create a translator object=].
+  1. Return the result of [=creating an AI model object=] given |options|, [=validate and canonicalize translator options=], [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create the translator object=].
 </div>
 
 <div algorithm>
-  To <dfn>validate and canonicalize translator options</dfn> given an {{AITranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+  To <dfn>validate and canonicalize translator options</dfn> given an {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
 
-  1. [=Validate and canonicalize language tags=] given |options| and "{{AITranslatorCreateCoreOptions/sourceLanguage}}".
+  1. [=Validate and canonicalize language tags=] given |options| and "{{TranslatorCreateCoreOptions/sourceLanguage}}".
 
-  1. [=Validate and canonicalize language tags=] given |options| and "{{AITranslatorCreateCoreOptions/targetLanguage}}".
+  1. [=Validate and canonicalize language tags=] given |options| and "{{TranslatorCreateCoreOptions/targetLanguage}}".
 </div>
 
 <div algorithm>
-  To <dfn>download the translation model</dfn>, given an {{AITranslatorCreateCoreOptions}} |options|:
+  To <dfn>download the translation model</dfn>, given an {{TranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
-  1. Initiate the download process for everything the user agent needs to translate text from |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"].
+  1. Initiate the download process for everything the user agent needs to translate text from |options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"].
 
     This could include both a base translation model and specific language arc material, or perhaps material for multiple language arcs if an intermediate language is used.
 
@@ -128,11 +112,11 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 </div>
 
 <div algorithm>
-  To <dfn>initialize the translation model</dfn>, given an {{AITranslatorCreateCoreOptions}} |options|:
+  To <dfn>initialize the translation model</dfn>, given an {{TranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
-  1. Perform any necessary initialization operations for the AI model backing the user agent's capabilities for translating from |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"].
+  1. Perform any necessary initialization operations for the AI model backing the user agent's capabilities for translating from |options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"] to |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"].
 
     This could include loading the model into memory, or loading any fine-tunings necessary to support the specific options in question.
 
@@ -142,51 +126,36 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 </div>
 
 <div algorithm>
-  To <dfn>create a translator object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{AITranslatorCreateCoreOptions}} |options|:
+  To <dfn>create the translator object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{TranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
 
   1. Let |inputQuota| be the amount of input quota that is available to the user agent for future [=translate|translation=] operations. (This value is [=implementation-defined=], and may be +∞ if there are no specific limits beyond, e.g., the user's memory, or the limits of JavaScript strings.)
 
-  1. Return a new {{AITranslator}} object, created in |realm|, with
+  1. Return a new {{Translator}} object, created in |realm|, with
 
     <dl class="props">
-      : [=AITranslator/source language=]
-      :: |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"]
+      : [=Translator/source language=]
+      :: |options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"]
 
-      : [=AITranslator/target language=]
-      :: |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]
+      : [=Translator/target language=]
+      :: |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"]
 
-      : [=AITranslator/input quota=]
+      : [=Translator/input quota=]
       :: |inputQuota|
     </dl>
 </div>
 
 <h3 id="translator-availability">Availability</h3>
 
-<!-- TODO: consider deduping this with writing assistance APIs + language detector, as it's very similar. -->
 <div algorithm>
-  The <dfn method for="AITranslatorFactory">availability(|options|)</dfn> method steps are:
+  The static <dfn method for="Translator">availability(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. [=Validate and canonicalize translator options=] given |options|.
-
-  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
-
-  1. [=In parallel=]:
-
-    1. Let |availability| be the result of [=computing translator options availability=] given |options|.
-
-    1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
-
-      1. If |availability| is null, then [=reject=] |promise| with an "{{UnknownError}}" {{DOMException}}.
-
-      1. Otherwise, [=resolve=] |promise| with |availability|.
+  1. Return the result of [=computing AI model availability=] given |options|, [=validate and canonicalize translator options=], and [=compute translator options availability=].
 </div>
 
 <div algorithm>
-  To <dfn>compute translator options availability</dfn> given an {{AITranslatorCreateCoreOptions}} |options|, perform the following steps. They return either an {{AIAvailability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
+  To <dfn>compute translator options availability</dfn> given an {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
@@ -196,49 +165,49 @@ The <dfn attribute for="AI">translator</dfn> getter steps are to return [=this=]
 
   1. [=map/For each=] |languageArc| → |availability| in |availabilities|:
 
-    1. Let |sourceLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/source language=] », « |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] »).
+    1. Let |sourceLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/source language=] », « |options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"] »).
 
-    1. Let |targetLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/target language=] », « |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] »).
+    1. Let |targetLanguageBestFit| be [$LookupMatchingLocaleByBestFit$](« |languageArc|'s [=language arc/target language=] », « |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"] »).
 
     1. If |sourceLanguageBestFit| and |targetLanguageBestFit| are both not undefined, then:
 
-      1. Set |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] to |sourceLanguageBestFit|.\[[locale]].
+      1. Set |options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"] to |sourceLanguageBestFit|.\[[locale]].
 
-      1. Set |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] to |targetLanguageBestFit|.\[[locale]].
+      1. Set |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"] to |targetLanguageBestFit|.\[[locale]].
 
       1. Return |availability|.
 
-  1. If (|options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"], |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"]) [=language arc/can be fulfilled by the identity translation=], then return "{{AIAvailability/available}}".
+  1. If (|options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"], |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"]) [=language arc/can be fulfilled by the identity translation=], then return "{{Availability/available}}".
 
-     <p class="note">Such cases could also return "{{AIAvailability/downloadable}}", "{{AIAvailability/downloading}}", or "{{AIAvailability/available}}" because of the above steps, if the user agent has specific entries in its [=translator language arc availabilities=] for the given language arc. However, the identity translation is always available, so this step ensures that we never return "{{AIAvailability/unavailable}}" for such cases.
+     <p class="note">Such cases could also return "{{Availability/downloadable}}", "{{Availability/downloading}}", or "{{Availability/available}}" because of the above steps, if the user agent has specific entries in its [=translator language arc availabilities=] for the given language arc. However, the identity translation is always available, so this step ensures that we never return "{{Availability/unavailable}}" for such cases.
 
      <div class="example" id="example-identity-translation">
       <p>One [=language arc=] that [=language arc/can be fulfilled by the identity translation=] is (`"en-US"`, `"en-GB"`). It is conceivable that an implementation might support a specialized model for this translation, which would show up in the [=translator language arc availabilities=].
 
       <p>On the other hand, it's pretty unlikely that an implementation has any specialized model for the [=language arc=] ("`en-x-asdf`", "`en-x-xyzw`"). In such a case, this step takes over, and later calls to the [=translate=] algorithm will use the identity translation.
 
-      <p>Note that when this step takes over, |options|["{{AITranslatorCreateCoreOptions/sourceLanguage}}"] and |options|["{{AITranslatorCreateCoreOptions/targetLanguage}}"] are not modified, so if this algorithm is being called from {{AITranslatorFactory/create()}}, that means the resulting {{AITranslator}} object's {{AITranslator/sourceLanguage}} and {{AITranslator/targetLanguage}} properties will return the original inputs, and not some canonicalized form.
+      <p>Note that when this step takes over, |options|["{{TranslatorCreateCoreOptions/sourceLanguage}}"] and |options|["{{TranslatorCreateCoreOptions/targetLanguage}}"] are not modified, so if this algorithm is being called from {{Translator/create()}}, that means the resulting {{Translator}} object's {{Translator/sourceLanguage}} and {{Translator/targetLanguage}} properties will return the original inputs, and not some canonicalized form.
      </div>
 
-  1. Return "{{AIAvailability/unavailable}}".
+  1. Return "{{Availability/unavailable}}".
 </div>
 
 A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language arc">source language</dfn> and a <dfn for="language arc">target language</dfn>. Each item is a [=Unicode canonicalized locale identifier=].
 
 <div algorithm>
-  The <dfn>translator language arc availabilities</dfn> are given by the following steps. They return a [=map=] from [=language arcs=] to {{AIAvailability}} values, or null.
+  The <dfn>translator language arc availabilities</dfn> are given by the following steps. They return a [=map=] from [=language arcs=] to {{Availability}} values, or null.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
   1. If there is some error attempting to determine what language arcs the user agent supports translating text between, which the user agent believes to be transient (such that re-querying the [=translator language arc availabilities=] could stop producing such an error), then return null.
 
-  1. Return a [=map=] from [=language arcs=] to {{AIAvailability}} values, where each key is a [=language arc=] that the user agent supports translating text between, filled according to the following constraints:
+  1. Return a [=map=] from [=language arcs=] to {{Availability}} values, where each key is a [=language arc=] that the user agent supports translating text between, filled according to the following constraints:
 
-    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=] without performing any downloading operations, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/available}}".
+    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=] without performing any downloading operations, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/available}}".
 
-    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after finishing a currently-ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/downloading}}".
+    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after finishing a currently-ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/downloading}}".
 
-    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after performing a not-currently ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{AIAvailability/downloadable}}".
+    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after performing a not-currently ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/downloadable}}".
 
     * The [=map/keys=] must not include any [=language arcs=] that [=language arc/overlap=] with the other [=map/keys=].
 </div>
@@ -246,10 +215,10 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
 <div class="example" id="example-language-arc-support">
   Let's suppose that the user agent's [=translator language arc availabilities=] are as follows:
 
-  * ("`en`", "`zh-Hans`") → "{{AIAvailability/available}}"
-  * ("`en`", "`zh-Hant`") → "{{AIAvailability/downloadable}}"
+  * ("`en`", "`zh-Hans`") → "{{Availability/available}}"
+  * ("`en`", "`zh-Hant`") → "{{Availability/downloadable}}"
 
-  The use of [$LookupMatchingLocaleByBestFit$] means that {{AITranslatorFactory/availability()}} will probably give the following answers:
+  The use of [$LookupMatchingLocaleByBestFit$] means that {{Translator/availability()}} will probably give the following answers:
 
     <xmp class="language-js">
     function a(sourceLanguage, targetLanguage) {
@@ -306,44 +275,44 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
   1. Return false.
 </div>
 
-<h3 id="the-aitranslator-class">The {{AITranslator}} class</h3>
+<h3 id="the-Translator-class">The {{Translator}} class</h3>
 
-Every {{AITranslator}} has a <dfn for="AITranslator">source language</dfn>, a [=string=], set during creation.
+Every {{Translator}} has a <dfn for="Translator">source language</dfn>, a [=string=], set during creation.
 
-Every {{AITranslator}} has a <dfn for="AITranslator">target language</dfn>, a [=string=], set during creation.
+Every {{Translator}} has a <dfn for="Translator">target language</dfn>, a [=string=], set during creation.
 
-Every {{AITranslator}} has an <dfn for="AITranslator">input quota</dfn>, a [=number=], set during creation.
+Every {{Translator}} has an <dfn for="Translator">input quota</dfn>, a number, set during creation.
 
 <hr>
 
-The <dfn attribute for="AITranslator">sourceLanguage</dfn> getter steps are to return [=this=]'s [=AITranslator/source language=].
+The <dfn attribute for="Translator">sourceLanguage</dfn> getter steps are to return [=this=]'s [=Translator/source language=].
 
-The <dfn attribute for="AITranslator">targetLanguage</dfn> getter steps are to return [=this=]'s [=AITranslator/target language=].
+The <dfn attribute for="Translator">targetLanguage</dfn> getter steps are to return [=this=]'s [=Translator/target language=].
 
-The <dfn attribute for="AITranslator">inputQuota</dfn> getter steps are to return [=this=]'s [=AITranslator/input quota=].
+The <dfn attribute for="Translator">inputQuota</dfn> getter steps are to return [=this=]'s [=Translator/input quota=].
 
 <hr>
 
 <div algorithm>
-  The <dfn method for="AITranslator">translate(|input|, |options|)</dfn> method steps are:
+  The <dfn method for="Translator">translate(|input|, |options|)</dfn> method steps are:
 
-  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], [=this=]'s [=AITranslator/input quota=], |chunkProduced|, |done|, |error|, and |stopProducing|.
+  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=Translator/source language=], [=this=]'s [=Translator/target language=], [=this=]'s [=Translator/input quota=], |chunkProduced|, |done|, |error|, and |stopProducing|.
 
   1. Return the result of [=getting an aggregated AI model result=] given [=this=], |options|, and |operation|.
 </div>
 
 <div algorithm>
-  The <dfn method for="AITranslator">translateStreaming(|input|, |options|)</dfn> method steps are:
+  The <dfn method for="Translator">translateStreaming(|input|, |options|)</dfn> method steps are:
 
-  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], [=this=]'s [=AITranslator/input quota=], |chunkProduced|, |done|, |error|, and |stopProducing|.
+  1. Let |operation| be an algorithm step which takes arguments |chunkProduced|, |done|, |error|, and |stopProducing|, and [=translates=] |input| given [=this=]'s [=Translator/source language=], [=this=]'s [=Translator/target language=], [=this=]'s [=Translator/input quota=], |chunkProduced|, |done|, |error|, and |stopProducing|.
 
   1. Return the result of [=getting a streaming AI model result=] given [=this=], |options|, and |operation|.
 </div>
 
 <div algorithm>
-  The <dfn method for="AITranslator">measureInputUsage(|input|, |options|)</dfn> method steps are:
+  The <dfn method for="Translator">measureInputUsage(|input|, |options|)</dfn> method steps are:
 
-  1. Let |measureUsage| be an algorithm step which takes argument |stopMeasuring|, and returns the result of [=measuring translator input usage=] given |input|, [=this=]'s [=AITranslator/source language=], [=this=]'s [=AITranslator/target language=], and |stopMeasuring|.
+  1. Let |measureUsage| be an algorithm step which takes argument |stopMeasuring|, and returns the result of [=measuring translator input usage=] given |input|, [=this=]'s [=Translator/source language=], [=this=]'s [=Translator/target language=], and |stopMeasuring|.
 
   1. Return the result of [=measuring AI model input usage=] given [=this=], |options|, and |measureUsage|.
 </div>
@@ -358,7 +327,7 @@ The <dfn attribute for="AITranslator">inputQuota</dfn> getter steps are to retur
   * a [=string=] |input|,
   * a [=Unicode canonicalized locale identifier=] |sourceLanguage|,
   * a [=Unicode canonicalized locale identifier=] |targetLanguage|,
-  * a [=number=] |inputQuota|,
+  * a number |inputQuota|,
   * an algorithm |chunkProduced| that takes a string and returns nothing,
   * an algorithm |done| that takes no arguments and returns nothing,
   * an algorithm |error| that takes [=error information=] and returns nothing, and
@@ -447,7 +416,7 @@ The <dfn attribute for="AITranslator">inputQuota</dfn> getter steps are to retur
 
   1. Return the amount of input usage needed to represent |inputToModel| when given to the underlying model. The exact calculation procedure is [=implementation-defined=], subject to the following constraints.
 
-    The returned input usage must be nonnegative and finite. It must be 0, if there are no usage quotas for the translation process (i.e., if the [=AITranslator/input quota=] is +∞). Otherwise, it must be positive and should be roughly proportional to the [=string/length=] of |inputToModel|.
+    The returned input usage must be nonnegative and finite. It must be 0, if there are no usage quotas for the translation process (i.e., if the [=Translator/input quota=] is +∞). Otherwise, it must be positive and should be roughly proportional to the [=string/length=] of |inputToModel|.
 
     <p class="note" id="note-translator-input-usage">This might be the number of tokens needed to represent |input| in a <a href="https://arxiv.org/abs/2404.08335">language model tokenization scheme</a>, or it might be |input|'s [=string/length=]. It could also be some variation of these which also counts the usage of any prefixes or suffixes necessary to give to the model.
 
@@ -485,47 +454,40 @@ When translation fails, the following possible reasons may be surfaced to the we
 <h2 id="language-detector-api">The language detector API</h2>
 
 <xmp class="idl">
-partial interface AI {
-  readonly attribute AILanguageDetectorFactory languageDetector;
-};
-
 [Exposed=(Window,Worker), SecureContext]
-interface AILanguageDetectorFactory {
-  Promise<AILanguageDetector> create(
-    optional AILanguageDetectorCreateOptions options = {}
+interface LanguageDetector {
+  Promise<LanguageDetector> create(
+    optional LanguageDetectorCreateOptions options = {}
   );
-  Promise<AIAvailability> availability(
-    optional AILanguageDetectorCreateCoreOptions options = {}
+  Promise<Availability> availability(
+    optional LanguageDetectorCreateCoreOptions options = {}
   );
-};
 
-[Exposed=(Window,Worker), SecureContext]
-interface AILanguageDetector {
   Promise<sequence<LanguageDetectionResult>> detect(
     DOMString input,
-    optional AILanguageDetectorDetectOptions options = {}
+    optional LanguageDetectorDetectOptions options = {}
   );
 
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
 
   Promise<double> measureInputUsage(
     DOMString input,
-    optional AITranslatorTranslateOptions options = {}
+    optional TranslatorTranslateOptions options = {}
   );
   readonly attribute unrestricted double inputQuota;
 };
-AILanguageDetector includes AIDestroyable;
+LanguageDetector includes DestroyableModel;
 
-dictionary AILanguageDetectorCreateCoreOptions {
+dictionary LanguageDetectorCreateCoreOptions {
   sequence<DOMString> expectedInputLanguages;
 };
 
-dictionary AILanguageDetectorCreateOptions : AILanguageDetectorCreateCoreOptions {
+dictionary LanguageDetectorCreateOptions : LanguageDetectorCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
 };
 
-dictionary AILanguageDetectorDetectOptions {
+dictionary LanguageDetectorDetectOptions {
   AbortSignal signal;
 };
 
@@ -535,40 +497,28 @@ dictionary LanguageDetectionResult {
 };
 </xmp>
 
-Every {{AI}} has a <dfn for="AI">language detector factory</dfn>, an {{AILanguageDetector}} object. Upon creation of the {{AI}} object, its [=AI/language detector factory=] must be set to a [=new=] {{AILanguageDetectorFactory}} object created in the {{AI}} object's [=relevant realm=].
-
-The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=this=]'s [=AI/language detector factory=].
-
 <h3 id="language-detector-creation">Creation</h3>
 
 <div algorithm>
-  The <dfn method for="AILanguageDetectorFactory">create(|options|)</dfn> method steps are:
+  The static <dfn method for="LanguageDetector">create(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If |options|["{{AILanguageDetectorCreateOptions/signal}}"] [=map/exists=] and is [=AbortSignal/aborted=], then return [=a promise rejected with=] |options|["{{AILanguageDetectorCreateOptions/signal}}"]'s [=AbortSignal/abort reason=].
-
-  1. [=Validate and canonicalize language detector options=] given |options|.
-
-     <p class="note">This can mutate |options|.
-
-  1. Return the result of [=creating an AI model object=] given [=this=]'s [=relevant realm=], |options|, [=compute language detector options availability=], [=download the language detector model=], [=initialize the language detector model=], and [=create the language detector object=].
+  1. Return the result of [=creating an AI model object=] given |options|, [=validate and canonicalize language detector options=], [=compute language detector options availability=], [=download the language detector model=], [=initialize the language detector model=], and [=create the language detector object=].
 </div>
 
 <div algorithm>
-  To <dfn>validate and canonicalize language detector options</dfn> given an {{AILanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+  To <dfn>validate and canonicalize language detector options</dfn> given an {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
 
-  1. [=Validate and canonicalize language tags=] given |options| and "{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}".
+  1. [=Validate and canonicalize language tags=] given |options| and "{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}".
 </div>
 
 <div algorithm>
-  To <dfn>download the language detector model</dfn>, given an {{AILanguageDetectorCreateCoreOptions}} |options|:
+  To <dfn>download the language detector model</dfn>, given an {{LanguageDetectorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
-  1. Initiate the download process for everything the user agent needs to detect the languages of input text, including all the languages in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+  1. Initiate the download process for everything the user agent needs to detect the languages of input text, including all the languages in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
 
-     This could include both a base language detection model, and specific fine-tunings or other material to help with the languages identified in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+     This could include both a base language detection model, and specific fine-tunings or other material to help with the languages identified in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
 
   1. If the download process cannot be started for any reason, then return false.
 
@@ -576,13 +526,13 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 </div>
 
 <div algorithm>
-  To <dfn>initialize the language detector model</dfn>, given an {{AILanguageDetectorCreateCoreOptions}} |options|:
+  To <dfn>initialize the language detector model</dfn>, given an {{LanguageDetectorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
   1. Perform any necessary initialization operations for the AI model backing the user agent's capabilities for detecting the languages of input text.
 
-     This could include loading the model into memory, or loading any fine-tunings necessary to support the languages identified in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+     This could include loading the model into memory, or loading any fine-tunings necessary to support the languages identified in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
 
   1. If initialization failed for any reason, then return a [=DOMException error information=] whose [=DOMException error information/name=] is "{{OperationError}}" and whose [=DOMException error information/details=] contain appropriate detail.
 
@@ -590,49 +540,34 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 </div>
 
 <div algorithm>
-  To <dfn>create the language detector object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{AILanguageDetectorCreateCoreOptions}} |options|:
+  To <dfn>create the language detector object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{LanguageDetectorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
 
   1. Let |inputQuota| be the amount of input quota that is available to the user agent for future [=detect languages|language detection=] operations. (This value is [=implementation-defined=], and may be +∞ if there are no specific limits beyond, e.g., the user's memory, or the limits of JavaScript strings.)
 
-  1. Return a new {{AILanguageDetector}} object, created in |realm|, with
+  1. Return a new {{LanguageDetector}} object, created in |realm|, with
 
     <dl class="props">
-      : [=AILanguageDetector/expected input languages=]
-      :: the result of [=creating a frozen array=] given |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"] if it [=set/is empty|is not empty=]; otherwise null
+      : [=LanguageDetector/expected input languages=]
+      :: the result of [=creating a frozen array=] given |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"] if it [=set/is empty|is not empty=]; otherwise null
 
-      : [=AILanguageDetector/input quota=]
+      : [=LanguageDetector/input quota=]
       :: |inputQuota|
     </dl>
 </div>
 
 <h3 id="language-detector-availability">Availability</h3>
 
-<!-- TODO: consider deduping this with writing assistance APIs + translator, as it's very similar. -->
 <div algorithm>
-  The <dfn method for="AILanguageDetectorFactory">availability(|options|)</dfn> method steps are:
+  The static <dfn method for="LanguageDetector">availability(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. [=Validate and canonicalize language detector options=] given |options|.
-
-  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
-
-  1. [=In parallel=]:
-
-    1. Let |availability| be the result of [=computing language detector options availability=] given |options|.
-
-    1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
-
-      1. If |availability| is null, then [=reject=] |promise| with an "{{UnknownError}}" {{DOMException}}.
-
-      1. Otherwise, [=resolve=] |promise| with |availability|.
+  1. Return the result of [=computing AI model availability=] given |options|, [=validate and canonicalize language detector options=], and [=compute language detector options availability=].
 </div>
 
 <!-- TODO: consider deduping this with writing assistance APIs, as it's very similar. (Not similar to translator though!) -->
 <div algorithm>
-  To <dfn>compute language detector options availability</dfn> given an {{AILanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They return either an {{AIAvailability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
+  To <dfn>compute language detector options availability</dfn> given an {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
@@ -640,11 +575,11 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 
   1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
 
-  1. Let |availability| be "{{AIAvailability/available}}".
+  1. Let |availability| be "{{Availability/available}}".
 
-  1. [=set/For each=] |language| in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"]:
+  1. [=set/For each=] |language| in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"]:
 
-    1. [=list/For each=] |availabilityToCheck| in « "{{AIAvailability/available}}", "{{AIAvailability/downloading}}", "{{AIAvailability/downloadable}}" »:
+    1. [=list/For each=] |availabilityToCheck| in « "{{Availability/available}}", "{{Availability/downloading}}", "{{Availability/downloadable}}" »:
 
       1. Let |languagesWithThisAvailability| be |availabilities|[|availabilityToCheck|].
 
@@ -652,38 +587,38 @@ The <dfn attribute for="AI">languageDetector</dfn> getter steps are to return [=
 
       1. If |bestMatch| is not undefined, then:
 
-        1. [=list/Replace=] |language| with |bestMatch|.\[[locale]] in |options|["{{AILanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
+        1. [=list/Replace=] |language| with |bestMatch|.\[[locale]] in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
 
-        1. Set |availability| to the [=AIAvailability/minimum availability=] given |availability| and |availabilityToCheck|.
+        1. Set |availability| to the [=Availability/minimum availability=] given |availability| and |availabilityToCheck|.
 
         1. [=iteration/Break=].
 
-    1. Return "{{AIAvailability/unavailable}}".
+    1. Return "{{Availability/unavailable}}".
 
   1. Return |availability|.
 </div>
 
-<h3 id="the-ailanguagedetector-class">The {{AILanguageDetector}} class</h3>
+<h3 id="the-LanguageDetector-class">The {{LanguageDetector}} class</h3>
 
-Every {{AILanguageDetector}} has an <dfn for="AILanguageDetector">expected input languages</dfn>, a <code>{{FrozenArray}}&lt;{{DOMString}}></code> or null, set during creation.
+Every {{LanguageDetector}} has an <dfn for="LanguageDetector">expected input languages</dfn>, a <code>{{FrozenArray}}&lt;{{DOMString}}></code> or null, set during creation.
 
-Every {{AILanguageDetector}} has an <dfn for="AILanguageDetector">input quota</dfn>, a [=number=], set during creation.
+Every {{LanguageDetector}} has an <dfn for="LanguageDetector">input quota</dfn>, a number, set during creation.
 
 <hr>
 
-The <dfn attribute for="AILanguageDetector">expectedInputLanguages</dfn> getter steps are to return [=this=]'s [=AILanguageDetector/expected input languages=].
+The <dfn attribute for="LanguageDetector">expectedInputLanguages</dfn> getter steps are to return [=this=]'s [=LanguageDetector/expected input languages=].
 
-The <dfn attribute for="AILanguageDetector">inputQuota</dfn> getter steps are to return [=this=]'s [=AILanguageDetector/input quota=].
+The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to return [=this=]'s [=LanguageDetector/input quota=].
 
 <hr>
 
 <!-- TODO: consider deduping *SOME* of this with "get an aggregated AI model result", as it's similar. But this case is fundamentally less streaming, so the cut will be tricky. -->
 <div algorithm>
-  The <dfn method for="AILanguageDetector">detect(|input|, |options|)</dfn> method steps are:
+  The <dfn method for="LanguageDetector">detect(|input|, |options|)</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. Let |signals| be « [=this=]'s [=AIDestroyable/destruction abort controller=]'s [=AbortController/signal=] ».
+  1. Let |signals| be « [=this=]'s [=DestroyableModel/destruction abort controller=]'s [=AbortController/signal=] ».
 
   1. If |options|["`signal`"] [=map/exists=], then [=set/append=] it to |signals|.
 
@@ -707,7 +642,7 @@ The <dfn attribute for="AILanguageDetector">inputQuota</dfn> getter steps are to
 
       1. Return |abortedDuringOperation|.
 
-    1. Let |result| be the result of [=detecting languages=] given |input|, [=this=]'s [=AILanguageDetector/input quota=], and |stopProducing|.
+    1. Let |result| be the result of [=detecting languages=] given |input|, [=this=]'s [=LanguageDetector/input quota=], and |stopProducing|.
 
     1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
 
@@ -723,17 +658,19 @@ The <dfn attribute for="AILanguageDetector">inputQuota</dfn> getter steps are to
 </div>
 
 <div algorithm>
-  The <dfn method for="AILanguageDetector">measureInputUsage(|input|, |options|)</dfn> method steps are:
+  The <dfn method for="LanguageDetector">measureInputUsage(|input|, |options|)</dfn> method steps are:
 
   1. Let |measureUsage| be an algorithm step which takes argument |stopMeasuring|, and returns the result of [=measuring language detector input usage=] given |input| and |stopMeasuring|.
 
   1. Return the result of [=measuring AI model input usage=] given [=this=], |options|, and |measureUsage|.
 </div>
 
+<h3 id="language-detector-language-detection">Language detection</h3>
+
 <h4 id="language-detector-algorithm">The algorithm</h4>
 
 <div algorithm>
-  To <dfn>detect languages</dfn> given a [=string=] |input|, a [=number=] |inputQuota|, and an algorithm |stopProducing| that takes no arguments and returns a boolean, perform the following steps. They will return either null, an [=error information=], or a [=list=] of {{LanguageDetectionResult}} dictionaries.
+  To <dfn>detect languages</dfn> given a [=string=] |input|, a number |inputQuota|, and an algorithm |stopProducing| that takes no arguments and returns a boolean, perform the following steps. They will return either null, an [=error information=], or a [=list=] of {{LanguageDetectionResult}} dictionaries.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
@@ -749,7 +686,7 @@ The <dfn attribute for="AILanguageDetector">inputQuota</dfn> getter steps are to
 
   1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
 
-  1. Let |currentlyAvailableLanguages| be |availabilities|["{{AIAvailability/available}}"].
+  1. Let |currentlyAvailableLanguages| be |availabilities|["{{Availability/available}}"].
 
   1. In an [=implementation-defined=] manner, subject to the following guidelines, let |rawResult| and |unknown| be the result of detecting the languages of |input|.
 
@@ -817,7 +754,7 @@ The <dfn attribute for="AILanguageDetector">inputQuota</dfn> getter steps are to
 
   1. Return the amount of input usage needed to represent |inputToModel| when given to the underlying model. The exact calculation procedure is [=implementation-defined=], subject to the following constraints.
 
-    The returned input usage must be nonnegative and finite. It must be 0, if there are no usage quotas for the translation process (i.e., if the [=AILanguageDetector/input quota=] is +∞). Otherwise, it must be positive and should be roughly proportional to the [=string/length=] of |inputToModel|.
+    The returned input usage must be nonnegative and finite. It must be 0, if there are no usage quotas for the translation process (i.e., if the [=LanguageDetector/input quota=] is +∞). Otherwise, it must be positive and should be roughly proportional to the [=string/length=] of |inputToModel|.
 
     <p class="note" id="note-language-detector-input-usage">This might be the number of tokens needed to represent |input| in a <a href="https://arxiv.org/abs/2404.08335">language model tokenization scheme</a>, or it might be |input|'s [=string/length=]. It could also be some variation of these which also counts the usage of any prefixes or suffixes necessary to give to the model.
 

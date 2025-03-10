@@ -47,7 +47,7 @@ See [below](#language-tag-handling) for more on the details of how language tags
 Here is the basic usage of the translator API, with no error handling:
 
 ```js
-const translator = await ai.translator.create({
+const translator = await Translator.create({
   sourceLanguage: "en",
   targetLanguage: "ja"
 });
@@ -65,7 +65,7 @@ Note that the `create()` method call here might cause the download of a translat
 A similar simplified example of the language detector API:
 
 ```js
-const detector = await ai.languageDetector.create();
+const detector = await LanguageDetector.create();
 
 const results = await detector.detect(someUserText);
 for (const result of results) {
@@ -84,7 +84,7 @@ For more details on the ways low-confidence results are excluded, see [the speci
 If there are certain languages you need to be able to detect for your use case, you can include them in the `expectedInputLanguages` option when creating a language detector:
 
 ```js
-const detector = await ai.languageDetector.create({ expectedInputLanguages: ["en", "ja"] });
+const detector = await LanguageDetector.create({ expectedInputLanguages: ["en", "ja"] });
 ```
 
 This will allow the implementation to download additional resources like language detection models if necessary, and will ensure that the promise is rejected with a `"NotSupportedError"` `DOMException` if the browser is unable to detect the given input languages.
@@ -102,7 +102,7 @@ Here is an example that adds capability checking to log more information and fal
 
 ```js
 async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
-  const detectorAvailability = await ai.languageDetector.availability();
+  const detectorAvailability = await LanguageDetector.availability();
 
   // If there is no language detector, then assume the source language is the
   // same as the document language.
@@ -114,7 +114,7 @@ async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
       console.log("Language detection is available, but something will have to be downloaded. Hold tight!");
     }
 
-    const detector = await ai.languageDetector.create();
+    const detector = await LanguageDetector.create();
     const [bestResult] = await detector.detect(textToTranslate);
 
     if (bestResult.detectedLanguage ==== "und" || bestResult.confidence < 0.4) {
@@ -126,7 +126,7 @@ async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
   }
 
   // Now we've figured out the source language. Let's translate it!
-  const translatorAvailability = await ai.translator.availability({ sourceLanguage, targetLanguage });
+  const translatorAvailability = await Translator.availability({ sourceLanguage, targetLanguage });
   if (translatorAvailability === "unavailable") {
     console.warn("Translation is not available. Falling back to cloud API.");
     return await useSomeCloudAPIToTranslate(textToTranslate, { sourceLanguage, targetLanguage });
@@ -136,7 +136,7 @@ async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
     console.log("Translation is available, but something will have to be downloaded. Hold tight!");
   }
 
-  const translator = await ai.translator.create({ sourceLanguage, targetLanguage });
+  const translator = await Translator.create({ sourceLanguage, targetLanguage });
   return await translator.translate(textToTranslate);
 }
 ```
@@ -146,7 +146,7 @@ async function translateUnknownCustomerInput(textToTranslate, targetLanguage) {
 For cases where using the API is only possible after a download, you can monitor the download progress (e.g. in order to show your users a progress bar) using code such as the following:
 
 ```js
-const translator = await ai.translator.create({
+const translator = await Translator.create({
   sourceLanguage,
   targetLanguage,
   monitor(m) {
@@ -189,7 +189,7 @@ The "usage" concept is specific to the implementation, and could be something li
 This allows detecting failures due to overlarge inputs and giving clear feedback to the user, with code such as the following:
 
 ```js
-const detector = await ai.languageDetector.create();
+const detector = await LanguageDetector.create();
 
 try {
   console.log(await detector.detect(potentiallyLargeInput));
@@ -206,7 +206,7 @@ try {
 In some cases, instead of providing errors after the fact, the developer needs to be able to communicate to the user how close they are to the limit. For this, they can use the `inputQuota` property and the `measureInputUsage()` method on the translator or language detector objects:
 
 ```js
-const translator = await ai.translator.create({
+const translator = await Translator.create({
   sourceLanguage: "en",
   targetLanguage: "jp"
 });
@@ -247,7 +247,7 @@ The API comes equipped with a couple of `signal` options that accept `AbortSigna
 const controller = new AbortController();
 stopButton.onclick = () => controller.abort();
 
-const languageDetector = await ai.languageDetector.create({ signal: controller.signal });
+const languageDetector = await LanguageDetector.create({ signal: controller.signal });
 await languageDetector.detect(document.body.textContent, { signal: controller.signal });
 ```
 
@@ -281,7 +281,7 @@ A future option might be to instead have the API return back the splitting of th
 
 The current design envisions that `availability()` methods will _not_ cause downloads of language packs or other material like a language detection model. Whereas, the `create()` methods _can_ cause downloads. In all cases, whether or not creation will initiate a download can be detected beforehand by the corresponding `availability()` method.
 
-After a developer has a `AITranslator` or `AILanguageDetector` object, further calls are not expected to cause any downloads. (Although they might require internet access, if the implementation is not entirely on-device.)
+After a developer has a `Translator` or `LanguageDetector` object, further calls are not expected to cause any downloads. (Although they might require internet access, if the implementation is not entirely on-device.)
 
 This design means that the implementation must have all information about the capabilities of its translation and language detection models available beforehand, i.e. "shipped with the browser". (Either as part of the browser binary, or through some out-of-band update mechanism that eagerly pushes updates.)
 
@@ -297,7 +297,7 @@ Some sort of mitigation may be necessary here. We believe this is adjacent to ot
 * Partitioning download status by top-level site, introducing a fake download (which takes time but does not actually download anything) for the second-onward site to download a language pack.
 * Only exposing a fixed set of languages to this API, e.g. based on the user's locale or the document's main language.
 
-As a first step, we require that detecting the availability of translation/detection be done via individual calls to `ai.translator.availability()` and `ai.languageDetector.availability()`. This allows browsers to implement possible mitigation techniques, such as detecting excessive calls to these methods and starting to return `"unavailable"`.
+As a first step, we require that detecting the availability of translation/detection be done via individual calls to `Translator.availability()` and `LanguageDetector.availability()`. This allows browsers to implement possible mitigation techniques, such as detecting excessive calls to these methods and starting to return `"unavailable"`.
 
 Another way in which this API might enhance the web's fingerprinting surface is if translation and language detection models are updated separately from browser versions. In that case, differing results from different versions of the model provide additional fingerprinting bits beyond those already provided by the browser's major version number. Mandating that older browser versions not receive updates or be able to download models from too far into the future might be a possible remediation for this.
 
@@ -320,10 +320,10 @@ That said, we are aware of [research](https://arxiv.org/abs/2005.08595) on trans
 The current design requires multiple async steps to do useful things:
 
 ```js
-const translator = await ai.translator.create(options);
+const translator = await Translator.create(options);
 const text = await translator.translate(sourceText);
 
-const detector = await ai.languageDetector.create();
+const detector = await LanguageDetector.create();
 const results = await detector.detect(sourceText);
 ```
 
