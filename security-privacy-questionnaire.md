@@ -94,9 +94,9 @@ No.
 >      (instead of getting destroyed) after navigation, and potentially gets reused
 >      on future navigations back to the document?
 
-Ideally, nothing special should happen. In particular, `AITranslator` and `AILanguageDetector` objects should still be usable without interruption after navigating back. We'll need to add web platform tests to confirm this, as it's easy to imagine implementation architectures in which keeping these objects alive while the `Document` is in the back/forward cache is difficult.
+Ideally, nothing special should happen. In particular, `Translator` and `LanguageDetector` objects should still be usable without interruption after navigating back. We'll need to add web platform tests to confirm this, as it's easy to imagine implementation architectures in which keeping these objects alive while the `Document` is in the back/forward cache is difficult.
 
-(For such implementations, failing to bfcache `Document`s with active `AITranslator` or `AILanguageDetector` objects would a simple way of being spec-compliant.)
+(For such implementations, failing to bfcache `Document`s with active `Translator` or `LanguageDetector` objects would a simple way of being spec-compliant.)
 
 > 18.  What happens when a document that uses your feature gets disconnected?
 
