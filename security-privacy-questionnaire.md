@@ -67,9 +67,9 @@ None.
 > 13.  How does this specification distinguish between behavior in first-party and
 >      third-party contexts?
 
-We are not yet sure. Our default course of action is to give the same capabilities to both first- and third-party contexts. It is easy to imagine use cases where this could be useful, e.g. a third party customer-support widget that provides translation functionality.
+We use permissions policy to disallow the usage of these features by default in third-party (cross-origin) contexts. However, the top-level site can delegate to cross-origin iframes.
 
-However, it seems likely that some of the mitigations for the [anti-fingerprinting considerations](./README.md#privacy-considerations) will require some sort of distinction between first- and third-party contexts. For example, partitioning download status, or only using the top-level site's detected language, or similar.
+It's also possible that the [anti-fingerprinting considerations](./README.md#privacy-considerations) will require some sort of distinction between first- and third-party contexts. For example, partitioning download status, or only using the top-level site's detected language, or similar.
 
 > 14.  How do the features in this specification work in the context of a browser’s
 >      Private Browsing or Incognito mode?
