@@ -303,6 +303,18 @@ Another way in which this API might enhance the web's fingerprinting surface is 
 
 Finally, we intend to prohibit (in the specification) any use of user-specific information in producing the results. For example, it would not be permissible to fine-tune the translation model based on information the user has entered into the browser in the past.
 
+### Permissions policy, iframes, and workers
+
+By default, these APIs are only available to top-level `Window`s, and to their same-origin iframes. Access to the APIs can be delegated to cross-origin iframes using the [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Permissions_Policy) `allow=""` attribute:
+
+```html
+<iframe src="https://example.com/" allow="translator language-detector"></iframe>
+```
+
+These APIs are currently not available in workers, due to the complexity of establishing a responsible document for each worker in order to check the permissions policy status. See [this discussion](https://github.com/webmachinelearning/translation-api/issues/18#issuecomment-2705630392) for more. It may be possible to loosen this restriction over time, if use cases arise.
+
+Note that although the APIs are not exposed to web platform workers, a browser could expose them to extension service workers, which are outside the scope of web platform specifications and have a different permissions model.
+
 ## Alternatives considered and under consideration
 
 ### Streaming input support

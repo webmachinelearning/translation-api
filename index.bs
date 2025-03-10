@@ -41,7 +41,7 @@ For now, see the [explainer](https://github.com/webmachinelearning/translation-a
 <h2 id="translator-api">The translator API</h2>
 
 <xmp class="idl">
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=Window, SecureContext]
 interface Translator {
   static Promise<Translator> create(TranslatorCreateOptions options);
   static Promise<Availability> availability(TranslatorCreateCoreOptions options);
@@ -86,7 +86,7 @@ dictionary TranslatorTranslateOptions {
 <div algorithm>
   The static <dfn method for="Translator">create(|options|)</dfn> method steps are:
 
-  1. Return the result of [=creating an AI model object=] given |options|, [=validate and canonicalize translator options=], [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create the translator object=].
+  1. Return the result of [=creating an AI model object=] given |options|, "{{translator}}", [=validate and canonicalize translator options=], [=compute translator options availability=], [=download the translation model=], [=initialize the translation model=], and [=create the translator object=].
 </div>
 
 <div algorithm>
@@ -151,7 +151,7 @@ dictionary TranslatorTranslateOptions {
 <div algorithm>
   The static <dfn method for="Translator">availability(|options|)</dfn> method steps are:
 
-  1. Return the result of [=computing AI model availability=] given |options|, [=validate and canonicalize translator options=], and [=compute translator options availability=].
+  1. Return the result of [=computing AI model availability=] given |options|, "{{translator}}", [=validate and canonicalize translator options=], and [=compute translator options availability=].
 </div>
 
 <div algorithm>
@@ -451,10 +451,14 @@ When translation fails, the following possible reasons may be surfaced to the we
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the translator API. It only contains those which can come from certain [=implementation-defined=] steps.
 
+<h3 id="translator-permissions-policy">Permissions policy integration</h3>
+
+Access to the translator API is gated behind the [=policy-controlled feature=] "<dfn permission>translator</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
+
 <h2 id="language-detector-api">The language detector API</h2>
 
 <xmp class="idl">
-[Exposed=(Window,Worker), SecureContext]
+[Exposed=Window, SecureContext]
 interface LanguageDetector {
   Promise<LanguageDetector> create(
     optional LanguageDetectorCreateOptions options = {}
@@ -502,7 +506,7 @@ dictionary LanguageDetectionResult {
 <div algorithm>
   The static <dfn method for="LanguageDetector">create(|options|)</dfn> method steps are:
 
-  1. Return the result of [=creating an AI model object=] given |options|, [=validate and canonicalize language detector options=], [=compute language detector options availability=], [=download the language detector model=], [=initialize the language detector model=], and [=create the language detector object=].
+  1. Return the result of [=creating an AI model object=] given |options|, "{{language-detector}}", [=validate and canonicalize language detector options=], [=compute language detector options availability=], [=download the language detector model=], [=initialize the language detector model=], and [=create the language detector object=].
 </div>
 
 <div algorithm>
@@ -562,7 +566,7 @@ dictionary LanguageDetectionResult {
 <div algorithm>
   The static <dfn method for="LanguageDetector">availability(|options|)</dfn> method steps are:
 
-  1. Return the result of [=computing AI model availability=] given |options|, [=validate and canonicalize language detector options=], and [=compute language detector options availability=].
+  1. Return the result of [=computing AI model availability=] given |options|, "{{language-detector}}", [=validate and canonicalize language detector options=], and [=compute language detector options availability=].
 </div>
 
 <!-- TODO: consider deduping this with writing assistance APIs, as it's very similar. (Not similar to translator though!) -->
@@ -784,3 +788,7 @@ When language detection fails, the following possible reasons may be surfaced to
 </table>
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the language detector API. It only contains those which can come from certain [=implementation-defined=] steps.
+
+<h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
+
+Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
