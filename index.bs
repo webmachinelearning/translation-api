@@ -569,7 +569,6 @@ dictionary LanguageDetectionResult {
   1. Return the result of [=computing AI model availability=] given |options|, "{{language-detector}}", [=validate and canonicalize language detector options=], and [=compute language detector options availability=].
 </div>
 
-<!-- TODO: consider deduping this with writing assistance APIs, as it's very similar. (Not similar to translator though!) -->
 <div algorithm>
   To <dfn>compute language detector options availability</dfn> given a {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
 
@@ -577,29 +576,9 @@ dictionary LanguageDetectionResult {
 
   1. If there is some error attempting to determine what languages the user agent supports detecting, which the user agent believes to be transient (such that re-querying could stop producing such an error), then return null.
 
-  1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
+  1. Let |partition| be the result of [=getting the language availabilities partition=] given the purpose of detecting text written in that language.
 
-  1. Let |availability| be "{{Availability/available}}".
-
-  1. [=set/For each=] |language| in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"]:
-
-    1. [=list/For each=] |availabilityToCheck| in « "{{Availability/available}}", "{{Availability/downloading}}", "{{Availability/downloadable}}" »:
-
-      1. Let |languagesWithThisAvailability| be |availabilities|[|availabilityToCheck|].
-
-      1. Let |bestMatch| be [$LookupMatchingLocaleByBestFit$](|languagesWithThisAvailability|, « |language| »).
-
-      1. If |bestMatch| is not undefined, then:
-
-        1. [=list/Replace=] |language| with |bestMatch|.\[[locale]] in |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"].
-
-        1. Set |availability| to the [=Availability/minimum availability=] given |availability| and |availabilityToCheck|.
-
-        1. [=iteration/Break=].
-
-    1. Return "{{Availability/unavailable}}".
-
-  1. Return |availability|.
+  1. Return the result of [=computing language availability=] given |options|["{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}"] and |partition|.
 </div>
 
 <h3 id="the-LanguageDetector-class">The {{LanguageDetector}} class</h3>
@@ -616,7 +595,6 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
 <hr>
 
-<!-- TODO: consider deduping *SOME* of this with "get an aggregated AI model result", as it's similar. But this case is fundamentally less streaming, so the cut will be tricky. -->
 <div algorithm>
   The <dfn method for="LanguageDetector">detect(|input|, |options|)</dfn> method steps are:
 
@@ -688,9 +666,9 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
     <p class="note">In reality, we expect that implementations will check the input usage against the quota as part of the same call into the model as the language detection itself. The steps are only separated in the specification for ease of understanding.
 
-  1. Let |availabilities| be the result of [=getting language availabilities=] given the purpose of detecting text written in that language.
+  1. Let |partition| be the result of [=getting the language availabilities partition=] given the purpose of detecting text written in that language.
 
-  1. Let |currentlyAvailableLanguages| be |availabilities|["{{Availability/available}}"].
+  1. Let |currentlyAvailableLanguages| be |partition|["{{Availability/available}}"].
 
   1. In an [=implementation-defined=] manner, subject to the following guidelines, let |rawResult| and |unknown| be the result of detecting the languages of |input|.
 
