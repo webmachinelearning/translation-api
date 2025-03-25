@@ -5,10 +5,10 @@
   <title>Translator and Language Detector APIs</title>
   <meta content="CG-DRAFT" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 4b8aed3f7, updated Thu Mar 6 12:35:01 2025 -0800" name="generator">
+  <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://webmachinelearning.github.io/translation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="045f0839079ad9a3614516a93d14c8b4d27236e4" name="revision">
+  <meta content="300eec809440970d0d757749de369fa725928cf3" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -739,7 +739,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://webmachinelearning.github.io/"> <img alt="Logo" height="100" src="https://webmachinelearning.github.io/webmachinelearning-logo.png" width="100"> </a> </p>
    <h1 class="p-name no-ref" id="title">Translator and Language Detector APIs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-03-13">13 March 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-03-25">25 March 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -873,7 +873,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="validate and canonicalize translator options">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-translator-options">validate and canonicalize translator options</dfn> given an <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions②">TranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code> if any are invalid. 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-translator-options">validate and canonicalize translator options</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions②">TranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code> if any are invalid. 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags" id="ref-for-validate-and-canonicalize-language-tags">Validate and canonicalize language tags</a> given <var>options</var> and "<code class="idl"><a data-link-type="idl" href="#dom-translatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-translatorcreatecoreoptions-sourcelanguage">sourceLanguage</a></code>".</p>
@@ -882,7 +882,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="download the translation model">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="download-the-translation-model">download the translation model</dfn>, given an <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions③">TranslatorCreateCoreOptions</a></code> <var>options</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="download-the-translation-model">download the translation model</dfn>, given a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions③">TranslatorCreateCoreOptions</a></code> <var>options</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a>: these steps are running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in parallel</a>.</p>
@@ -896,7 +896,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="initialize the translation model">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="initialize-the-translation-model">initialize the translation model</dfn>, given an <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions④">TranslatorCreateCoreOptions</a></code> <var>options</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="initialize-the-translation-model">initialize the translation model</dfn>, given a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions④">TranslatorCreateCoreOptions</a></code> <var>options</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: these steps are running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel①">in parallel</a>.</p>
@@ -910,7 +910,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="create the translator object">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="create-the-translator-object">create the translator object</dfn>, given a <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm" id="ref-for-realm">realm</a> <var>realm</var> and an <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions⑤">TranslatorCreateCoreOptions</a></code> <var>options</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="create-the-translator-object">create the translator object</dfn>, given a <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm" id="ref-for-realm">realm</a> <var>realm</var> and a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions⑤">TranslatorCreateCoreOptions</a></code> <var>options</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: these steps are running on <var>realm</var>’s <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent">surrounding agent</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop" id="ref-for-concept-agent-event-loop">event loop</a>.</p>
@@ -940,7 +940,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="compute translator options availability">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compute-translator-options-availability">compute translator options availability</dfn> given an <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions⑥">TranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They return either an <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability" id="ref-for-enumdef-availability①">Availability</a></code> value or null, and they mutate <var>options</var> in place to update language tags to their best-fit matches. 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compute-translator-options-availability">compute translator options availability</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions⑥">TranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They return either an <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability" id="ref-for-enumdef-availability①">Availability</a></code> value or null, and they mutate <var>options</var> in place to update language tags to their best-fit matches. 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: this algorithm is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel②">in parallel</a>.</p>
@@ -1295,14 +1295,14 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="validate and canonicalize language detector options">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-language-detector-options">validate and canonicalize language detector options</dfn> given an <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions②">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code> if any are invalid. 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-language-detector-options">validate and canonicalize language detector options</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions②">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code> if any are invalid. 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags" id="ref-for-validate-and-canonicalize-language-tags②">Validate and canonicalize language tags</a> given <var>options</var> and "<code class="idl"><a data-link-type="idl" href="#dom-languagedetectorcreatecoreoptions-expectedinputlanguages" id="ref-for-dom-languagedetectorcreatecoreoptions-expectedinputlanguages">expectedInputLanguages</a></code>".</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="download the language detector model">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="download-the-language-detector-model">download the language detector model</dfn>, given an <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions③">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="download-the-language-detector-model">download the language detector model</dfn>, given a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions③">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑧">Assert</a>: these steps are running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel⑥">in parallel</a>.</p>
@@ -1316,7 +1316,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="initialize the language detector model">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="initialize-the-language-detector-model">initialize the language detector model</dfn>, given an <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions④">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="initialize-the-language-detector-model">initialize the language detector model</dfn>, given a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions④">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑨">Assert</a>: these steps are running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel⑦">in parallel</a>.</p>
@@ -1330,7 +1330,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="create the language detector object">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="create-the-language-detector-object">create the language detector object</dfn>, given a <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm" id="ref-for-realm①">realm</a> <var>realm</var> and an <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions⑤">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="create-the-language-detector-object">create the language detector object</dfn>, given a <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#realm" id="ref-for-realm①">realm</a> <var>realm</var> and a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions⑤">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①⓪">Assert</a>: these steps are running on <var>realm</var>’s <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent①">surrounding agent</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop" id="ref-for-concept-agent-event-loop①">event loop</a>.</p>
@@ -1357,7 +1357,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="compute language detector options availability">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compute-language-detector-options-availability">compute language detector options availability</dfn> given an <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions⑥">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They return either an <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability" id="ref-for-enumdef-availability⑤">Availability</a></code> value or null, and they mutate <var>options</var> in place to update language tags to their best-fit matches. 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compute-language-detector-options-availability">compute language detector options availability</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions⑥">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They return either an <code class="idl"><a data-link-type="idl" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability" id="ref-for-enumdef-availability⑤">Availability</a></code> value or null, and they mutate <var>options</var> in place to update language tags to their best-fit matches. 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①①">Assert</a>: this algorithm is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel⑧">in parallel</a>.</p>
