@@ -90,7 +90,7 @@ dictionary TranslatorTranslateOptions {
 </div>
 
 <div algorithm>
-  To <dfn>validate and canonicalize translator options</dfn> given an {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+  To <dfn>validate and canonicalize translator options</dfn> given a {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
 
   1. [=Validate and canonicalize language tags=] given |options| and "{{TranslatorCreateCoreOptions/sourceLanguage}}".
 
@@ -98,7 +98,7 @@ dictionary TranslatorTranslateOptions {
 </div>
 
 <div algorithm>
-  To <dfn>download the translation model</dfn>, given an {{TranslatorCreateCoreOptions}} |options|:
+  To <dfn>download the translation model</dfn>, given a {{TranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
@@ -112,7 +112,7 @@ dictionary TranslatorTranslateOptions {
 </div>
 
 <div algorithm>
-  To <dfn>initialize the translation model</dfn>, given an {{TranslatorCreateCoreOptions}} |options|:
+  To <dfn>initialize the translation model</dfn>, given a {{TranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
@@ -126,7 +126,7 @@ dictionary TranslatorTranslateOptions {
 </div>
 
 <div algorithm>
-  To <dfn>create the translator object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{TranslatorCreateCoreOptions}} |options|:
+  To <dfn>create the translator object</dfn>, given a [=ECMAScript/realm=] |realm| and a {{TranslatorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
 
@@ -155,7 +155,7 @@ dictionary TranslatorTranslateOptions {
 </div>
 
 <div algorithm>
-  To <dfn>compute translator options availability</dfn> given an {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
+  To <dfn>compute translator options availability</dfn> given a {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
@@ -510,13 +510,13 @@ dictionary LanguageDetectionResult {
 </div>
 
 <div algorithm>
-  To <dfn>validate and canonicalize language detector options</dfn> given an {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+  To <dfn>validate and canonicalize language detector options</dfn> given a {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
 
   1. [=Validate and canonicalize language tags=] given |options| and "{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}".
 </div>
 
 <div algorithm>
-  To <dfn>download the language detector model</dfn>, given an {{LanguageDetectorCreateCoreOptions}} |options|:
+  To <dfn>download the language detector model</dfn>, given a {{LanguageDetectorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
@@ -530,7 +530,7 @@ dictionary LanguageDetectionResult {
 </div>
 
 <div algorithm>
-  To <dfn>initialize the language detector model</dfn>, given an {{LanguageDetectorCreateCoreOptions}} |options|:
+  To <dfn>initialize the language detector model</dfn>, given a {{LanguageDetectorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running [=in parallel=].
 
@@ -544,7 +544,7 @@ dictionary LanguageDetectionResult {
 </div>
 
 <div algorithm>
-  To <dfn>create the language detector object</dfn>, given a [=ECMAScript/realm=] |realm| and an {{LanguageDetectorCreateCoreOptions}} |options|:
+  To <dfn>create the language detector object</dfn>, given a [=ECMAScript/realm=] |realm| and a {{LanguageDetectorCreateCoreOptions}} |options|:
 
   1. [=Assert=]: these steps are running on |realm|'s [=ECMAScript/surrounding agent=]'s [=agent/event loop=].
 
@@ -571,7 +571,7 @@ dictionary LanguageDetectionResult {
 
 <!-- TODO: consider deduping this with writing assistance APIs, as it's very similar. (Not similar to translator though!) -->
 <div algorithm>
-  To <dfn>compute language detector options availability</dfn> given an {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
+  To <dfn>compute language detector options availability</dfn> given a {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They return either an {{Availability}} value or null, and they mutate |options| in place to update language tags to their best-fit matches.
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
