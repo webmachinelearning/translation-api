@@ -8,7 +8,7 @@
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://webmachinelearning.github.io/translation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="2e7864207f4277d4fdf7159fa14864a806d9e7d1" name="revision">
+  <meta content="e5a50375345cd26ddda553b9ce86c457ed7c92dc" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -739,7 +739,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://webmachinelearning.github.io/"> <img alt="Logo" height="100" src="https://webmachinelearning.github.io/webmachinelearning-logo.png" width="100"> </a> </p>
    <h1 class="p-name no-ref" id="title">Translator and Language Detector APIs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-03-25">25 March 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-03-27">27 March 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1246,10 +1246,10 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <h2 class="heading settled" data-level="3" id="language-detector-api"><span class="secno">3. </span><span class="content">The language detector API</span><a class="self-link" href="#language-detector-api"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed①"><c- g>Exposed</c-></a>=<c- n>Window</c->, <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext" id="ref-for-SecureContext①"><c- g>SecureContext</c-></a>]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="languagedetector"><code><c- g>LanguageDetector</c-></code></dfn> {
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise④"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#languagedetector" id="ref-for-languagedetector"><c- n>LanguageDetector</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-create" id="ref-for-dom-languagedetector-create"><c- g>create</c-></a>(
+  <c- b>static</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise④"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#languagedetector" id="ref-for-languagedetector"><c- n>LanguageDetector</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-create" id="ref-for-dom-languagedetector-create"><c- g>create</c-></a>(
     <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-languagedetectorcreateoptions" id="ref-for-dictdef-languagedetectorcreateoptions"><c- n>LanguageDetectorCreateOptions</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="LanguageDetector/create(options), LanguageDetector/create()" data-dfn-type="argument" data-export id="dom-languagedetector-create-options-options"><code><c- g>options</c-></code></dfn> = {}
   );
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑤"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability" id="ref-for-enumdef-availability④"><c- n>Availability</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-availability" id="ref-for-dom-languagedetector-availability"><c- g>availability</c-></a>(
+  <c- b>static</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑤"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability" id="ref-for-enumdef-availability④"><c- n>Availability</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-availability" id="ref-for-dom-languagedetector-availability"><c- g>availability</c-></a>(
     <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions"><c- n>LanguageDetectorCreateCoreOptions</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="LanguageDetector/availability(options), LanguageDetector/availability()" data-dfn-type="argument" data-export id="dom-languagedetector-availability-options-options"><code><c- g>options</c-></code></dfn> = {}
   );
 
@@ -1862,10 +1862,10 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->, <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext"><c- g>SecureContext</c-></a>]
 <c- b>interface</c-> <a href="#languagedetector"><code><c- g>LanguageDetector</c-></code></a> {
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#languagedetector"><c- n>LanguageDetector</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-create"><c- g>create</c-></a>(
+  <c- b>static</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#languagedetector"><c- n>LanguageDetector</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-create"><c- g>create</c-></a>(
     <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-languagedetectorcreateoptions"><c- n>LanguageDetectorCreateOptions</c-></a> <a href="#dom-languagedetector-create-options-options"><code><c- g>options</c-></code></a> = {}
   );
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability"><c- n>Availability</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-availability"><c- g>availability</c-></a>(
+  <c- b>static</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="https://webmachinelearning.github.io/writing-assistance-apis/#enumdef-availability"><c- n>Availability</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-languagedetector-availability"><c- g>availability</c-></a>(
     <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-languagedetectorcreatecoreoptions"><c- n>LanguageDetectorCreateCoreOptions</c-></a> <a href="#dom-languagedetector-availability-options-options"><code><c- g>options</c-></code></a> = {}
   );
 
