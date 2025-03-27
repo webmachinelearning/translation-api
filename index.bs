@@ -460,10 +460,10 @@ Access to the translator API is gated behind the [=policy-controlled feature=] "
 <xmp class="idl">
 [Exposed=Window, SecureContext]
 interface LanguageDetector {
-  Promise<LanguageDetector> create(
+  static Promise<LanguageDetector> create(
     optional LanguageDetectorCreateOptions options = {}
   );
-  Promise<Availability> availability(
+  static Promise<Availability> availability(
     optional LanguageDetectorCreateCoreOptions options = {}
   );
 
