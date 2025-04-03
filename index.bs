@@ -36,7 +36,17 @@ urlPrefix: https://whatpr.org/webidl/1465.html; spec: WEBIDL
 
 <h2 id="intro">Introduction</h2>
 
-For now, see the [explainer](https://github.com/webmachinelearning/translation-api/blob/main/README.md).
+The translator and language detector APIs expose the ability to translate text between human languages, and detect the language of such text. They are complementary to any built-in browser UI features for these purposes, giving web developers the ability to trigger these operations programmatically and integrate them into their applications. This can be especially useful for operating on user input, or text retrieved from the network.
+
+These APIs are designed to provide a high-level interface for translation and language detection, abstracting away the complexities of underlying machine learning models and their management. To deal with possible interoperability issues arising from different implementation strategies or language support, the API design guides developers toward checking the availability of languages their applications are dependent on, and including appropriate error-handling.
+
+<h2 id="dependencies">Dependencies</h2>
+
+This specification depends on the Infra Standard. [[!INFRA]]
+
+As with the rest of the web platform, human languages are identified in these APIs by BCP 47 language tags, such as "`ja`", "`en-US`", "`sr-Cyrl`", or "`de-CH-1901-x-phonebk-extended`". The specific algorithms used for validation, canonicalization, and language tag matching are those from the <cite>ECMAScript Internationalization API Specification</cite>, which in turn defers some of its processing to <cite>Unicode Locale Data Markup Language (LDML)</cite>. [[BCP47]] [[!ECMA-402]] [[UTS35]].
+
+These APIs are part of a family of APIs expected to be powered by machine learning models, which share common API surface idioms and specification patterns. Currently, the specification text for these shared parts lives in [[WRITING-ASSISTANCE-APIS#supporting]]. Implementing these APIs requires implementing that shared infrastructure, but does not require implementing or exposing the actual writing assistance APIs. [[!WRITING-ASSISTANCE-APIS]]
 
 <h2 id="translator-api">The translator API</h2>
 
