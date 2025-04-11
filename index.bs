@@ -486,7 +486,7 @@ interface LanguageDetector {
 
   Promise<double> measureInputUsage(
     DOMString input,
-    optional TranslatorTranslateOptions options = {}
+    optional LanguageDetectorDetectOptions options = {}
   );
   readonly attribute unrestricted double inputQuota;
 };
