@@ -608,7 +608,11 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 <div algorithm>
   The <dfn method for="LanguageDetector">detect(|input|, |options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=] is a {{Window}} whose [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+    1. Let |global| be [=this=]'s [=relevant global object=].
+
+  1. [=Assert=]: |global| is a {{Window}} object.
+
+  1. If |global|'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |signals| be « [=this=]'s [=DestroyableModel/destruction abort controller=]'s [=AbortController/signal=] ».
 
@@ -626,6 +630,8 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
     1. Set |abortedDuringOperation| to true.
 
+  1. Let |inputQuota| be [=this=]'s [=LanguageDetector/input quota=].
+
   1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
 
   1. [=In parallel=]:
@@ -634,9 +640,9 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
       1. Return |abortedDuringOperation|.
 
-    1. Let |result| be the result of [=detecting languages=] given |input|, [=this=]'s [=LanguageDetector/input quota=], and |stopProducing|.
+    1. Let |result| be the result of [=detecting languages=] given |input|, |inputQuota|, and |stopProducing|.
 
-    1. [=Queue a global task=] on the [=AI task source=] given [=this=]'s [=relevant global object=] to perform the following steps:
+    1. [=Queue a global task=] on the [=AI task source=] given |global| to perform the following steps:
 
       1. If |abortedDuringOperation| is true, then [=reject=] |promise| with |compositeSignal|'s [=AbortSignal/abort reason=].
 
