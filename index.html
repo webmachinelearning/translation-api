@@ -8,7 +8,7 @@
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://webmachinelearning.github.io/translation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="ba47464f546c28f45e43554b41e3e62d680527b2" name="revision">
+  <meta content="a1caf652fcad7f4d7b6b67cbfb86e27a72e6c01a" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -739,7 +739,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://webmachinelearning.github.io/"> <img alt="Logo" height="100" src="https://webmachinelearning.github.io/webmachinelearning-logo.png" width="100"> </a> </p>
    <h1 class="p-name no-ref" id="title">Translator and Language Detector APIs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-04-15">15 April 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-04-21">21 April 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -880,7 +880,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="validate and canonicalize translator options">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-translator-options">validate and canonicalize translator options</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions②">TranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code> if any are invalid. 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-translator-options">validate and canonicalize translator options</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-translatorcreatecoreoptions" id="ref-for-dictdef-translatorcreatecoreoptions②">TranslatorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw an exception if any are invalid. 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags" id="ref-for-validate-and-canonicalize-language-tags">Validate and canonicalize language tags</a> given <var>options</var> and "<code class="idl"><a data-link-type="idl" href="#dom-translatorcreatecoreoptions-sourcelanguage" id="ref-for-dom-translatorcreatecoreoptions-sourcelanguage">sourceLanguage</a></code>".</p>
@@ -1302,7 +1302,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     </ol>
    </div>
    <div class="algorithm" data-algorithm="validate and canonicalize language detector options">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-language-detector-options">validate and canonicalize language detector options</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions②">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code> if any are invalid. 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="validate-and-canonicalize-language-detector-options">validate and canonicalize language detector options</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-languagedetectorcreatecoreoptions" id="ref-for-dictdef-languagedetectorcreatecoreoptions②">LanguageDetectorCreateCoreOptions</a></code> <var>options</var>, perform the following steps. They mutate <var>options</var> in place to canonicalize language tags, and throw an exception if any are invalid. 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags" id="ref-for-validate-and-canonicalize-language-tags②">Validate and canonicalize language tags</a> given <var>options</var> and "<code class="idl"><a data-link-type="idl" href="#dom-languagedetectorcreatecoreoptions-expectedinputlanguages" id="ref-for-dom-languagedetectorcreatecoreoptions-expectedinputlanguages">expectedInputLanguages</a></code>".</p>
@@ -1770,7 +1770,6 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li><span class="dfn-paneled" id="34443090">OperationError</span>
      <li><span class="dfn-paneled" id="bdbd19d1">Promise</span>
      <li><span class="dfn-paneled" id="b75bb3bd">SecureContext</span>
-     <li><span class="dfn-paneled" id="82ca3efc">TypeError</span>
      <li><span class="dfn-paneled" id="81dd847b">UnknownError</span>
      <li><span class="dfn-paneled" id="dacde8b5">a new promise</span>
      <li><span class="dfn-paneled" id="d0b4a948">a promise rejected with</span>
@@ -2177,7 +2176,6 @@ let dfnPanelData = {
 "802b0fdd": {"dfnID":"802b0fdd","dfnText":"value","external":true,"refSections":[{"refs":[{"id":"ref-for-map-value"},{"id":"ref-for-map-value\u2460"},{"id":"ref-for-map-value\u2461"}],"title":"3.2. Availability"},{"refs":[{"id":"ref-for-map-value\u2462"},{"id":"ref-for-map-value\u2463"},{"id":"ref-for-map-value\u2464"}],"title":"4.4.1. The algorithm"}],"url":"https://infra.spec.whatwg.org/#map-value"},
 "814c5352": {"dfnID":"814c5352","dfnText":"validate and canonicalize language tags","external":true,"refSections":[{"refs":[{"id":"ref-for-validate-and-canonicalize-language-tags"},{"id":"ref-for-validate-and-canonicalize-language-tags\u2460"}],"title":"3.1. Creation"},{"refs":[{"id":"ref-for-validate-and-canonicalize-language-tags\u2461"}],"title":"4.1. Creation"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#validate-and-canonicalize-language-tags"},
 "81dd847b": {"dfnID":"81dd847b","dfnText":"UnknownError","external":true,"refSections":[{"refs":[{"id":"ref-for-unknownerror"}],"title":"3.4.3. Errors"},{"refs":[{"id":"ref-for-unknownerror\u2460"}],"title":"4.4.3. Errors"}],"url":"https://webidl.spec.whatwg.org/#unknownerror"},
-"82ca3efc": {"dfnID":"82ca3efc","dfnText":"TypeError","external":true,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-typeerror"}],"title":"3.1. Creation"},{"refs":[{"id":"ref-for-exceptiondef-typeerror\u2460"}],"title":"4.1. Creation"}],"url":"https://webidl.spec.whatwg.org/#exceptiondef-typeerror"},
 "842d5baf": {"dfnID":"842d5baf","dfnText":"sort in descending order","external":true,"refSections":[{"refs":[{"id":"ref-for-map-sort-in-descending-order"}],"title":"4.4.1. The algorithm"}],"url":"https://infra.spec.whatwg.org/#map-sort-in-descending-order"},
 "860300d4": {"dfnID":"860300d4","dfnText":"implementation-defined","external":true,"refSections":[{"refs":[{"id":"ref-for-implementation-defined"}],"title":"3.1. Creation"},{"refs":[{"id":"ref-for-implementation-defined\u2460"}],"title":"3.4.1. The algorithm"},{"refs":[{"id":"ref-for-implementation-defined\u2461"},{"id":"ref-for-implementation-defined\u2462"}],"title":"3.4.2. Usage"},{"refs":[{"id":"ref-for-implementation-defined\u2463"}],"title":"3.4.3. Errors"},{"refs":[{"id":"ref-for-implementation-defined\u2464"}],"title":"4.1. Creation"},{"refs":[{"id":"ref-for-implementation-defined\u2465"},{"id":"ref-for-implementation-defined\u2466"},{"id":"ref-for-implementation-defined\u2467"},{"id":"ref-for-implementation-defined\u2468"}],"title":"4.4.1. The algorithm"},{"refs":[{"id":"ref-for-implementation-defined\u2460\u24ea"},{"id":"ref-for-implementation-defined\u2460\u2460"}],"title":"4.4.2. Usage"},{"refs":[{"id":"ref-for-implementation-defined\u2460\u2461"}],"title":"4.4.3. Errors"}],"url":"https://infra.spec.whatwg.org/#implementation-defined"},
 "86e73a86": {"dfnID":"86e73a86","dfnText":"CreateMonitorCallback","external":true,"refSections":[{"refs":[{"id":"ref-for-callbackdef-createmonitorcallback"}],"title":"3. The translator API"},{"refs":[{"id":"ref-for-callbackdef-createmonitorcallback\u2460"}],"title":"4. The language detector API"}],"url":"https://webmachinelearning.github.io/writing-assistance-apis/#callbackdef-createmonitorcallback"},
@@ -2786,7 +2784,6 @@ let refsData = {
 "https://webidl.spec.whatwg.org/#a-promise-rejected-with": {"displayText":"a promise rejected with","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"a promise rejected with","type":"dfn","url":"https://webidl.spec.whatwg.org/#a-promise-rejected-with"},
 "https://webidl.spec.whatwg.org/#dfn-create-frozen-array": {"displayText":"creating a frozen array","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"creating a frozen array","type":"dfn","url":"https://webidl.spec.whatwg.org/#dfn-create-frozen-array"},
 "https://webidl.spec.whatwg.org/#domexception-name": {"displayText":"name","export":true,"for_":["DOMException"],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"name","type":"dfn","url":"https://webidl.spec.whatwg.org/#domexception-name"},
-"https://webidl.spec.whatwg.org/#exceptiondef-typeerror": {"displayText":"TypeError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"TypeError","type":"exception","url":"https://webidl.spec.whatwg.org/#exceptiondef-typeerror"},
 "https://webidl.spec.whatwg.org/#idl-DOMException": {"displayText":"DOMException","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"DOMException","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-DOMException"},
 "https://webidl.spec.whatwg.org/#idl-DOMString": {"displayText":"DOMString","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"DOMString","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-DOMString"},
 "https://webidl.spec.whatwg.org/#idl-double": {"displayText":"double","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"double","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-double"},
