@@ -100,7 +100,7 @@ dictionary TranslatorTranslateOptions {
 </div>
 
 <div algorithm>
-  To <dfn>validate and canonicalize translator options</dfn> given a {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+  To <dfn>validate and canonicalize translator options</dfn> given a {{TranslatorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw an exception if any are invalid.
 
   1. [=Validate and canonicalize language tags=] given |options| and "{{TranslatorCreateCoreOptions/sourceLanguage}}".
 
@@ -520,7 +520,7 @@ dictionary LanguageDetectionResult {
 </div>
 
 <div algorithm>
-  To <dfn>validate and canonicalize language detector options</dfn> given a {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw a {{TypeError}} if any are invalid.
+  To <dfn>validate and canonicalize language detector options</dfn> given a {{LanguageDetectorCreateCoreOptions}} |options|, perform the following steps. They mutate |options| in place to canonicalize language tags, and throw an exception if any are invalid.
 
   1. [=Validate and canonicalize language tags=] given |options| and "{{LanguageDetectorCreateCoreOptions/expectedInputLanguages}}".
 </div>
