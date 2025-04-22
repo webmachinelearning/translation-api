@@ -728,11 +728,15 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
   1. [=Assert=]: 1 &minus; |cumulativeConfidence| is greater than or equal to |unknown|.
 
-  1. [=list/Append=] «[ "{{LanguageDetectionResult/detectedLanguage}}" → "`und`", "{{LanguageDetectionResult/confidence}}" → 1 &minus; |cumulativeConfidence| ]» to |results|.
+  1. [=Assert=]: If |results|'s [=list/size=] is greater than 0, then |results|[|results|'s [=list/size=] - 1]["{{LanguageDetectionResult/confidence}}"] is greater than or equal to |unknown|.
+
+  1. [=list/Append=] «[ "{{LanguageDetectionResult/detectedLanguage}}" → "`und`", "{{LanguageDetectionResult/confidence}}" → |unknown| ]» to |results|.
 
   1. Return |results|.
 
-  <p class="note" id="note-language-detection-post-processing">The post-processing of |rawResult| and |unknown| essentially consolidates all languages below a certain threshold into the "`und`" language. Languages which are less than 1% likely, or contribute to less than 1% of the text, are considered more likely to be noise than to be worth detecting. Similarly, if the implementation is less sure about a language than it is about the text not being in any of the languages it knows, that language is probably not worth returning to the web developer.
+  <p class="note" id="note-language-detection-post-processing">Languages which are less than 1% likely, or contribute to less than 1% of the text, are considered more likely to be noise and so not worth returning to the web developer. Similarly, if the implementation is less sure about a language than it is about the text not being in any of the languages it knows, that language is probably not worth returning to the web developer.
+
+  <p class="advisement" id="warning-language-detection-sum">Because of such omitted low-probability results, the sum of all confidence values returned to the web developer could be less than 1.
 </div>
 
 <h4 id="language-detector-usage">Usage</h4>
