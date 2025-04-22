@@ -622,6 +622,8 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
   1. If |compositeSignal| is [=AbortSignal/aborted=], then return [=a promise rejected with=] |compositeSignal|'s [=AbortSignal/abort reason=].
 
+  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
+
   1. Let |abortedDuringOperation| be false.
 
     <p class="note">This variable will be written to from the [=event loop=], but read from [=in parallel=].
@@ -630,9 +632,9 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
     1. Set |abortedDuringOperation| to true.
 
-  1. Let |inputQuota| be [=this=]'s [=LanguageDetector/input quota=].
+    1. [=Reject=] |promise| with |compositeSignal|'s [=AbortSignal/abort reason=].
 
-  1. Let |promise| be [=a new promise=] created in [=this=]'s [=relevant realm=].
+  1. Let |inputQuota| be [=this=]'s [=LanguageDetector/input quota=].
 
   1. [=In parallel=]:
 
@@ -644,7 +646,7 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
     1. [=Queue a global task=] on the [=AI task source=] given |global| to perform the following steps:
 
-      1. If |abortedDuringOperation| is true, then [=reject=] |promise| with |compositeSignal|'s [=AbortSignal/abort reason=].
+      1. If |abortedDuringOperation| is true, then abort these steps.
 
       1. Otherwise, if |result| is an [=error information=], then [=reject=] |promise| with the result of [=converting error information into an exception object=] given |result|.
 
