@@ -46,7 +46,7 @@ This specification depends on the Infra Standard. [[!INFRA]]
 
 As with the rest of the web platform, human languages are identified in these APIs by BCP 47 language tags, such as "`ja`", "`en-US`", "`sr-Cyrl`", or "`de-CH-1901-x-phonebk-extended`". The specific algorithms used for validation, canonicalization, and language tag matching are those from the <cite>ECMAScript Internationalization API Specification</cite>, which in turn defers some of its processing to <cite>Unicode Locale Data Markup Language (LDML)</cite>. [[BCP47]] [[!ECMA-402]] [[UTS35]].
 
-These APIs are part of a family of APIs expected to be powered by machine learning models, which share common API surface idioms and specification patterns. Currently, the specification text for these shared parts lives in [[WRITING-ASSISTANCE-APIS#supporting]]. Implementing these APIs requires implementing that shared infrastructure, but does not require implementing or exposing the actual writing assistance APIs. [[!WRITING-ASSISTANCE-APIS]]
+These APIs are part of a family of APIs expected to be powered by machine learning models, which share common API surface idioms and specification patterns. Currently, the specification text for these shared parts lives in [[WRITING-ASSISTANCE-APIS#supporting]], and the common privacy and security considerations are discussed in [[WRITING-ASSISTANCE-APIS#privacy]] and [[WRITING-ASSISTANCE-APIS#security]]. Implementing these APIs requires implementing that shared infrastructure, and conforming to those privacy and security considerations. But it does not require implementing or exposing the actual writing assistance APIs. [[!WRITING-ASSISTANCE-APIS]]
 
 <h2 id="translator-api">The translator API</h2>
 
@@ -209,15 +209,15 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
-  1. If there is some error attempting to determine what language arcs the user agent supports translating text between, which the user agent believes to be transient (such that re-querying the [=translator language arc availabilities=] could stop producing such an error), then return null.
+  1. If there is some error attempting to determine what language arcs the user agent [=model availability/can support=] translating text between, which the user agent believes to be transient (such that re-querying could stop producing such an error), then return null.
 
   1. Return a [=map=] from [=language arcs=] to {{Availability}} values, where each key is a [=language arc=] that the user agent supports translating text between, filled according to the following constraints:
 
-    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=] without performing any downloading operations, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/available}}".
+    * If the user agent [=model availability/currently supports=] translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/available}}".
 
-    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after finishing a currently-ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/downloading}}".
+    * If the user agent believes it will be able to [=model availability/support=] translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after finishing a download that is already ongoing, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/downloading}}".
 
-    * If the user agent supports translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after performing a not-currently ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/downloadable}}".
+    * If the user agent believes it will be able to [=model availability/support=] translating text from the [=language arc/source language=] to the [=language arc/target language=] of the [=language arc=], but only after performing a not-currently ongoing download, then the map must contain an [=map/entry=] whose [=map/key=] is that [=language arc=] and whose [=map/value=] is "{{Availability/downloadable}}".
 
     * The [=map/keys=] must not include any [=language arcs=] that [=language arc/overlap=] with the other [=map/keys=].
 </div>
@@ -375,6 +375,8 @@ The <dfn attribute for="Translator">inputQuota</dfn> getter steps are to return 
 
      If (|sourceLanguage|, |targetLanguage|) [=language arc/can be fulfilled by the identity translation=], then the resulting translation should be |input|.
 
+     The translation process must conform to the guidance given in [[WRITING-ASSISTANCE-APIS#privacy]] and [[WRITING-ASSISTANCE-APIS#security]], notably including (but not limited to) [[WRITING-ASSISTANCE-APIS#privacy-user-input]] and [[WRITING-ASSISTANCE-APIS#security-runtime]].
+
   1. While true:
 
     1. Wait for the next chunk of translated text to be produced, for the translation process to finish, or for the result of calling |stopProducing| to become true.
@@ -456,7 +458,7 @@ When translation fails, the following possible reasons may be surfaced to the we
     <tr>
       <td>"{{UnknownError}}"
       <td>
-        <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason.
+        <p>All other scenarios, including if the user agent believes it cannot translate and also meet the requirements given in [[WRITING-ASSISTANCE-APIS#privacy]] and [[WRITING-ASSISTANCE-APIS#security]]. Or, if the user agent would prefer not to disclose the failure reason.
 </table>
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the translator API. It only contains those which can come from certain [=implementation-defined=] steps.
@@ -584,7 +586,7 @@ dictionary LanguageDetectionResult {
 
   1. [=Assert=]: this algorithm is running [=in parallel=].
 
-  1. If there is some error attempting to determine what languages the user agent supports detecting, which the user agent believes to be transient (such that re-querying could stop producing such an error), then return null.
+  1. If there is some error attempting to determine what language detection capabilities the user agent [=model availability/can support=], which the user agent believes to be transient (such that re-querying could stop producing such an error), then return null.
 
   1. Let |partition| be the result of [=getting the language availabilities partition=] given the purpose of detecting text written in that language.
 
@@ -710,6 +712,8 @@ The <dfn attribute for="LanguageDetector">inputQuota</dfn> getter steps are to r
 
     If an error occurred during language detection, then return an [=error information=] according to the guidance in [[#language-detector-errors]].
 
+    The detection process must conform to the guidance given in [[WRITING-ASSISTANCE-APIS#privacy]] and [[WRITING-ASSISTANCE-APIS#security]], notably including (but not limited to) [[WRITING-ASSISTANCE-APIS#privacy-user-input]] and [[WRITING-ASSISTANCE-APIS#security-runtime]].
+
   1. [=map/Sort in descending order=] |rawResult| with a less than algorithm which given [=map/entries=] |a| and |b|, returns true if |a|'s [=map/value=] is less than |b|'s [=map/value=].
 
   1. Let |results| be an empty [=list=].
@@ -784,7 +788,7 @@ When language detection fails, the following possible reasons may be surfaced to
     <tr>
       <td>"{{UnknownError}}"
       <td>
-        <p>All other scenarios, or if the user agent would prefer not to disclose the failure reason.
+        <p>All other scenarios, including if the user agent believes it cannot detect and also meet the requirements given in [[WRITING-ASSISTANCE-APIS#privacy]] and [[WRITING-ASSISTANCE-APIS#security]]. Or, if the user agent would prefer not to disclose the failure reason.
 </table>
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the language detector API. It only contains those which can come from certain [=implementation-defined=] steps.
@@ -792,3 +796,11 @@ When language detection fails, the following possible reasons may be surfaced to
 <h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
 
 Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
+
+<h2 id="privacy">Privacy considerations</h2>
+
+Please see [[WRITING-ASSISTANCE-APIS#privacy]] for a discussion of privacy considerations for the translator and language detector APIs. That text was written to apply to all APIs sharing the same infrastructure, as noted in [[#dependencies]].
+
+<h2 id="security">Security considerations</h2>
+
+Please see [[WRITING-ASSISTANCE-APIS#security]] for a discussion of security considerations for the translator and language detector APIs. That text was written to apply to all APIs sharing the same infrastructure, as noted in [[#dependencies]].
