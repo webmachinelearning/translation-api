@@ -8,7 +8,7 @@
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://webmachinelearning.github.io/translation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="a1caf652fcad7f4d7b6b67cbfb86e27a72e6c01a" name="revision">
+  <meta content="296aae2f75e5445684aa26288aa2a570cb24365a" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -739,7 +739,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://webmachinelearning.github.io/"> <img alt="Logo" height="100" src="https://webmachinelearning.github.io/webmachinelearning-logo.png" width="100"> </a> </p>
    <h1 class="p-name no-ref" id="title">Translator and Language Detector APIs</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-04-21">21 April 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-04-23">23 April 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1403,6 +1403,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>If <var>compositeSignal</var> is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted">aborted</a>, then return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①">a promise rejected with</a> <var>compositeSignal</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-abort-reason" id="ref-for-abortsignal-abort-reason">abort reason</a>.</p>
      <li data-md>
+      <p>Let <var>promise</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise">a new promise</a> created in <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①⑨">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①">relevant realm</a>.</p>
+     <li data-md>
       <p>Let <var>abortedDuringOperation</var> be false.</p>
       <p class="note" role="note">This variable will be written to from the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-loop" id="ref-for-event-loop">event loop</a>, but read from <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel⑨">in parallel</a>. </p>
      <li data-md>
@@ -1410,11 +1412,11 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <ol>
        <li data-md>
         <p>Set <var>abortedDuringOperation</var> to true.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject">Reject</a> <var>promise</var> with <var>compositeSignal</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-abort-reason" id="ref-for-abortsignal-abort-reason①">abort reason</a>.</p>
       </ol>
      <li data-md>
-      <p>Let <var>inputQuota</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①⑨">this</a>’s <a data-link-type="dfn" href="#languagedetector-input-quota" id="ref-for-languagedetector-input-quota②">input quota</a>.</p>
-     <li data-md>
-      <p>Let <var>promise</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise">a new promise</a> created in <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②⓪">this</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①">relevant realm</a>.</p>
+      <p>Let <var>inputQuota</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②⓪">this</a>’s <a data-link-type="dfn" href="#languagedetector-input-quota" id="ref-for-languagedetector-input-quota②">input quota</a>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel①⓪">In parallel</a>:</p>
       <ol>
@@ -1430,7 +1432,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task" id="ref-for-queue-a-global-task">Queue a global task</a> on the <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#ai-task-source" id="ref-for-ai-task-source">AI task source</a> given <var>global</var> to perform the following steps:</p>
         <ol>
          <li data-md>
-          <p>If <var>abortedDuringOperation</var> is true, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject">reject</a> <var>promise</var> with <var>compositeSignal</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-abort-reason" id="ref-for-abortsignal-abort-reason①">abort reason</a>.</p>
+          <p>If <var>abortedDuringOperation</var> is true, then abort these steps.</p>
          <li data-md>
           <p>Otherwise, if <var>result</var> is an <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#error-information" id="ref-for-error-information②">error information</a>, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject①">reject</a> <var>promise</var> with the result of <a data-link-type="dfn" href="https://webmachinelearning.github.io/writing-assistance-apis/#convert-error-information-into-an-exception-object" id="ref-for-convert-error-information-into-an-exception-object">converting error information into an exception object</a> given <var>result</var>.</p>
          <li data-md>
