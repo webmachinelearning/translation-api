@@ -287,23 +287,9 @@ After a developer has a `Translator` or `LanguageDetector` object, further calls
 
 This design means that the implementation must have all information about the capabilities of its translation and language detection models available beforehand, i.e. "shipped with the browser". (Either as part of the browser binary, or through some out-of-band update mechanism that eagerly pushes updates.)
 
-## Privacy considerations
+## Privacy and security considerations
 
-This proposal as-is has privacy issues, which we are actively thinking about how to address. They are all centered around how sites that use this API might be able to uniquely fingerprint the user.
-
-The most obvious identifier in the current API design is the list of supported languages, and especially their availability status (`"unavailable"`, `"downloadable"`, `"downloading"`, and `"available"`). For example, as of the time of this writing [Firefox supports 9 languages](https://www.mozilla.org/firefox/features/translate/), which can each be [independently downloaded](https://support.mozilla.org/kb/website-translation#w_configure-installed-languages). With a naive implementation, this gives 9 bits of identifying information, which various sites can all correlate.
-
-Some sort of mitigation may be necessary here. We believe this is adjacent to other areas that have seen similar mitigation, such as the [Local Font Access API](https://github.com/WICG/local-font-access/blob/main/README.md). Possible techniques are:
-
-* Grouping language packs to reduce the number of bits, so that downloading one language also downloads others in its group.
-* Partitioning download status by top-level site, introducing a fake download (which takes time but does not actually download anything) for the second-onward site to download a language pack.
-* Only exposing a fixed set of languages to this API, e.g. based on the user's locale or the document's main language.
-
-As a first step, we require that detecting the availability of translation/detection be done via individual calls to `Translator.availability()` and `LanguageDetector.availability()`. This allows browsers to implement possible mitigation techniques, such as detecting excessive calls to these methods and starting to return `"unavailable"`.
-
-Another way in which this API might enhance the web's fingerprinting surface is if translation and language detection models are updated separately from browser versions. In that case, differing results from different versions of the model provide additional fingerprinting bits beyond those already provided by the browser's major version number. Mandating that older browser versions not receive updates or be able to download models from too far into the future might be a possible remediation for this.
-
-Finally, we intend to prohibit (in the specification) any use of user-specific information in producing the results. For example, it would not be permissible to fine-tune the translation model based on information the user has entered into the browser in the past.
+Please see [the Writing Assistance APIs specification](https://webmachinelearning.github.io/writing-assistance-apis/#privacy), where we have centralized the normative privacy and security considerations that apply to these APIs as well as the writing assistance APIs.
 
 ### Permissions policy, iframes, and workers
 

@@ -11,10 +11,12 @@ This feature exposes two main pieces of information:
 
 - The actual results of translations and language detections, which can be dependent on the AI models in use.
 
+The privacy implications of both of these are discussed, in general terms, [in the _Writing Assistance APIs_ specification](https://webmachinelearning.github.io/writing-assistance-apis/#privacy), which was written to cover all APIs with similar concerns.
+
 > 02.  Do features in your specification expose the minimum amount of information
 >      necessary to implement the intended functionality?
 
-We believe so. It's possible that we could remove the exposure of the availability information. However, it would almost certainly be inferrable via timing side-channels. (I.e., if downloading a language pack is required, then the web developer can observe the first translation taking longer.)
+We believe so. It's possible that we could remove the exposure of the download status information. However, it would almost certainly be inferrable via timing side-channels. (I.e., if downloading a language pack is required, then the web developer can observe the first translation taking longer.)
 
 > 03.  Do the features in your specification expose personal information,
 >      personally-identifiable information (PII), or information derived from
@@ -69,7 +71,7 @@ None.
 
 We use permissions policy to disallow the usage of these features by default in third-party (cross-origin) contexts. However, the top-level site can delegate to cross-origin iframes.
 
-It's also possible that the [anti-fingerprinting considerations](./README.md#privacy-considerations) will require some sort of distinction between first- and third-party contexts. For example, partitioning download status, or only using the top-level site's detected language, or similar.
+Otherwise, some of the possible [anti-fingerprinting mitigations](https://webmachinelearning.github.io/writing-assistance-apis/#privacy-availability) involve partitioning information across sites, which is kind of like distinguishing between first- and third-party contexts.
 
 > 14.  How do the features in this specification work in the context of a browser’s
 >      Private Browsing or Incognito mode?
@@ -81,9 +83,10 @@ Another possible area of discussion here is whether cloud-based translation APIs
 > 15.  Does this specification have both "Security Considerations" and "Privacy
 >      Considerations" sections?
 
-There is no specification yet, but there is a [privacy considerations](./README.md#privacy-considerations) section in the explainer.
+Yes:
 
-We do not anticipate significant security risks for this feature at this time.
+* [Privacy considerations](https://webmachinelearning.github.io/translation-api/#privacy) (delegates to [the corresponding section in _Writing Assistance APIs_](https://webmachinelearning.github.io/writing-assistance-apis/#privacy))
+* [Security considerations](https://webmachinelearning.github.io/translation-api/#security) (delegates to [the corresponding section in _Writing Assistance APIs_](https://webmachinelearning.github.io/writing-assistance-apis/#security))
 
 > 16.  Do features in your specification enable origins to downgrade default
 >      security protections?
