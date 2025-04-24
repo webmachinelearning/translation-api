@@ -73,11 +73,13 @@ for (const result of results) {
 }
 ```
 
-Here `results` will be an array of `{ detectedLanguage, confidence }` objects, with the `detectedLanguage` field being a BCP 47 language tag and `confidence` beeing a number between 0 and 1. The array will be sorted by descending confidence, and the confidences will be normalized so that all confidences that the underlying model produces sum to 1, but very low confidences will be lumped together into an [`"und"`](https://www.rfc-editor.org/rfc/rfc5646.html#:~:text=*%20%20The%20'und'%20(Undetermined)%20primary,certain%20situations.) language.
+Here `results` will be an array of `{ detectedLanguage, confidence }` objects, with the `detectedLanguage` field being a BCP 47 language tag and `confidence` beeing a number between 0 and 1. The array will be sorted by descending confidence. The final entry in the array will always be [`"und"`](https://www.rfc-editor.org/rfc/rfc5646.html#:~:text=*%20%20The%20'und'%20(Undetermined)%20primary,certain%20situations.), representing the probability that the text is not written in any language the model knows.
 
 The array will always contain at least 1 entry, although it could be for the undetermined (`"und"`) language.
 
-For more details on the ways low-confidence results are excluded, see [the specification](https://webmachinelearning.github.io/translation-api/#note-language-detection-post-processing) and the discussion in [issue #39](https://github.com/webmachinelearning/translation-api/issues/39).
+Very low-confidence results are excluded. See [the specification](https://webmachinelearning.github.io/translation-api/#note-language-detection-post-processing) for more details, as well as the discussions in [issue #39](https://github.com/webmachinelearning/translation-api/issues/39) and [issue #51](https://github.com/webmachinelearning/translation-api/issues/51).
+
+Because of how very low-confidence results are excluded, the sum of all confidence values could be less than 1.
 
 ### Language detection with expected input languages
 
