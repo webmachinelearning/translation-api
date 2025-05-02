@@ -53,7 +53,7 @@ const translator = await Translator.create({
 });
 
 const text = await translator.translate("Hello, world!");
-const readableStreamOfText = await translator.translateStreaming(`
+const readableStreamOfText = translator.translateStreaming(`
   Four score and seven years ago our fathers brought forth, upon this...
 `);
 ```
