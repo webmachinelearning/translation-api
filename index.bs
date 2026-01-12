@@ -6,7 +6,7 @@ Status: CG-DRAFT
 Group: webml
 Repository: webmachinelearning/translation-api
 URL: https://webmachinelearning.github.io/translation-api
-Editor: Domenic Denicola, Google https://google.com, d@domenic.me, https://domenic.me/
+Former Editor: Domenic Denicola, Google https://google.com, d@domenic.me, https://domenic.me/
 Editor: Ehsan Toreini, Samsung https://samsung.com/, e.toreini@samsung.com, https://toreini.github.io
 Abstract: The translator and language detector APIs gives web pages the ability to translate text between languages, and detect the language of such text.
 Markup Shorthands: markdown yes, css no
