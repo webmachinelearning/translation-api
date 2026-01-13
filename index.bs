@@ -7,7 +7,8 @@ Group: webml
 Repository: webmachinelearning/translation-api
 URL: https://webmachinelearning.github.io/translation-api
 Former Editor: Domenic Denicola, Google https://google.com, d@domenic.me, https://domenic.me/
-Editor: Ehsan Toreini, Samsung https://samsung.com/, e.toreini@samsung.com, https://toreini.github.io
+Editor: Reilly Grant, Google https://www.google.com, reillyg@google.com, w3cid 83788
+Editor: Ehsan Toreini, Samsung https://samsung.com/, e.toreini@samsung.com, https://toreini.github.io, w3cid 115969
 Abstract: The translator and language detector APIs gives web pages the ability to translate text between languages, and detect the language of such text.
 Markup Shorthands: markdown yes, css no
 Complain About: accidental-2119 yes, missing-example-ids yes
