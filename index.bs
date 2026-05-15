@@ -803,6 +803,20 @@ Access to the language detector API is gated behind the [=policy-controlled feat
 
 Please see [[WRITING-ASSISTANCE-APIS#privacy]] for a discussion of privacy considerations for the translator and language detector APIs. That text was written to apply to all APIs sharing the same infrastructure, as noted in [[#dependencies]].
 
+
+<h3 id="iframe-privacy"> Permissions policy, iframes, and workers </h3>
+
+By default, these APIs are only available to top-level `Window`s, and to their same-origin iframes. Access to the APIs can be delegated to cross-origin iframes using the [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Permissions_Policy) `allow=""` attribute:
+
+<xmp class="idl">
+<iframe src="https://example.com/" allow="translator language-detector"></iframe>
+</xmp>
+
+These APIs are currently not available in workers, due to the complexity of establishing a responsible document for each worker in order to check the permissions policy status. See [this discussion](https://github.com/webmachinelearning/translation-api/issues/18#issuecomment-2705630392) for more. It may be possible to loosen this restriction over time, if use cases arise.
+
+Note that although the APIs are not exposed to web platform workers, a browser could expose them to extension service workers, which are outside the scope of web platform specifications and have a different permissions model.
+
+
 <h2 id="security">Security considerations</h2>
 
 Please see [[WRITING-ASSISTANCE-APIS#security]] for a discussion of security considerations for the translator and language detector APIs. That text was written to apply to all APIs sharing the same infrastructure, as noted in [[#dependencies]].
