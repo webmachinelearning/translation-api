@@ -795,26 +795,29 @@ When language detection fails, the following possible reasons may be surfaced to
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the language detector API. It only contains those which can come from certain [=implementation-defined=] steps.
 
-<h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
-
-Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
 
 <h2 id="privacy">Privacy considerations</h2>
 
 Please see [[WRITING-ASSISTANCE-APIS#privacy]] for a discussion of privacy considerations for the translator and language detector APIs. That text was written to apply to all APIs sharing the same infrastructure, as noted in [[#dependencies]].
 
+<h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
 
-<h3 id="iframe-privacy"> Permissions policy, iframes, and workers </h3>
+Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
 
-By default, these APIs are only available to top-level `Window`s, and to their same-origin iframes. Access to the APIs can be delegated to cross-origin iframes using the [Permissions Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Permissions_Policy) `allow=""` attribute:
 
-<xmp class="idl">
-<iframe src="https://example.com/" allow="translator language-detector"></iframe>
-</xmp>
+<h3 id="language-detector-iframe-policy">iFrame Permissions</h3>
 
-These APIs are currently not available in workers, due to the complexity of establishing a responsible document for each worker in order to check the permissions policy status. See [this discussion](https://github.com/webmachinelearning/translation-api/issues/18#issuecomment-2705630392) for more. It may be possible to loosen this restriction over time, if use cases arise.
+By default, these APIs are only available to top-level {{Window}} object, and to their same-origin iframes. Access to the APIs can be delegated to cross-origin iframes using the Permissions Policy allow="" attribute:
 
-Note that although the APIs are not exposed to web platform workers, a browser could expose them to extension service workers, which are outside the scope of web platform specifications and have a different permissions model.
+
+<div class="example" id="example-language-iframe">
+  The translation service available to the top-origin is accessible to the example.com origin through . 
+    <xmp class="language-html">
+    <iframe src="https://example.com/" allow="translator language-detector"></iframe>
+    </xmp>
+</div>
+
+<p class="note"> These APIs are unavailable in workers due to the complexity of setting up a responsible document for each worker to check permissions policy status. For more details, see [this discussion](https://github.com/webmachinelearning/translation-api/issues/18#issuecomment-2705630392). This restriction may be relaxed in the future.<p>
 
 
 <h2 id="security">Security considerations</h2>
