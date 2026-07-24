@@ -36,6 +36,13 @@ urlPrefix: https://whatpr.org/webidl/1465.html; spec: WEBIDL
     text: quota; url: quotaexceedederror-quota
 </pre>
 
+<pre class=link-defaults>
+  spec:proofreader-api; type:dfn; text:get the language availabilities partition
+  spec:writing-assistance-apis; type:dfn; text:get the language availabilities partition
+  spec:proofreader-api; type:dfn; text:compute language availability
+  spec:writing-assistance-apis; type:dfn; text:compute language availability
+</pre>
+
 <h2 id="intro">Introduction</h2>
 
 The translator and language detector APIs expose the ability to translate text between human languages, and detect the language of such text. They are complementary to any built-in browser UI features for these purposes, giving web developers the ability to trigger these operations programmatically and integrate them into their applications. This can be especially useful for operating on user input, or text retrieved from the network.
