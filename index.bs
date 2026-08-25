@@ -36,6 +36,13 @@ urlPrefix: https://whatpr.org/webidl/1465.html; spec: WEBIDL
     text: quota; url: quotaexceedederror-quota
 </pre>
 
+<pre class=link-defaults>
+  spec:proofreader-api; type:dfn; text:get the language availabilities partition
+  spec:writing-assistance-apis; type:dfn; text:get the language availabilities partition
+  spec:proofreader-api; type:dfn; text:compute language availability
+  spec:writing-assistance-apis; type:dfn; text:compute language availability
+</pre>
+
 <h2 id="intro">Introduction</h2>
 
 The translator and language detector APIs expose the ability to translate text between human languages, and detect the language of such text. They are complementary to any built-in browser UI features for these purposes, giving web developers the ability to trigger these operations programmatically and integrate them into their applications. This can be especially useful for operating on user input, or text retrieved from the network.
@@ -465,10 +472,6 @@ When translation fails, the following possible reasons may be surfaced to the we
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the translator API. It only contains those which can come from certain [=implementation-defined=] steps.
 
-<h3 id="translator-permissions-policy">Permissions policy integration</h3>
-
-Access to the translator API is gated behind the [=policy-controlled feature=] "<dfn permission>translator</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
-
 <h2 id="language-detector-api">The language detector API</h2>
 
 <xmp class="idl">
@@ -795,13 +798,32 @@ When language detection fails, the following possible reasons may be surfaced to
 
 <p class="note">This table does not give the complete list of exceptions that can be surfaced by the language detector API. It only contains those which can come from certain [=implementation-defined=] steps.
 
-<h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
-
-Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
 
 <h2 id="privacy">Privacy considerations</h2>
 
 Please see [[WRITING-ASSISTANCE-APIS#privacy]] for a discussion of privacy considerations for the translator and language detector APIs. That text was written to apply to all APIs sharing the same infrastructure, as noted in [[#dependencies]].
+
+<h3 id="language-detector-permissions-policy">Permissions policy integration</h3>
+
+Access to the translator API is gated behind the [=policy-controlled feature=] "<dfn permission>translator</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
+
+Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
+
+
+<h3 id="language-detector-iframe-policy"><code>iframe</code> Permissions</h3>
+
+By default, these APIs are only available to top-level {{Window}} object, and to their same-origin iframes. Access to the APIs can be delegated to cross-origin iframes using the Permissions Policy <code>allow=""</code> attribute:
+
+
+<div class="example" id="example-language-iframe">
+  The translation service available to the top-origin is accessible to the example.com origin through <code>allow</code> attribute. 
+    <xmp class="language-html">
+    <iframe src="https://example.com/" allow="translator language-detector"></iframe>
+    </xmp>
+</div>
+
+<p class="note"> These APIs are unavailable in workers due to the complexity of setting up a responsible document for each worker to check permissions policy status. For more details, see [this discussion](https://github.com/webmachinelearning/translation-api/issues/18#issuecomment-2705630392). This restriction might be relaxed in the future.<p>
+
 
 <h2 id="security">Security considerations</h2>
 
