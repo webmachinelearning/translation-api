@@ -810,7 +810,7 @@ Access to the translator API is gated behind the [=policy-controlled feature=] "
 Access to the language detector API is gated behind the [=policy-controlled feature=] "<dfn permission>language-detector</dfn>", which has a [=policy-controlled feature/default allowlist=] of <code>[=default allowlist/'self'=]</code>.
 
 
-<h3 id="language-detector-iframe-policy"><code>iframe</code> Permissions</h3>
+<h3 id="iframe-policy-example"><code>iframe</code> Permissions</h3>
 
 By default, these APIs are only available to top-level {{Window}} object, and to their same-origin iframes. Access to the APIs can be delegated to cross-origin iframes using the Permissions Policy <code>allow=""</code> attribute:
 
