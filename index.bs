@@ -234,7 +234,7 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
 
     <xmp class="language-js">
     function a(sourceLanguage, targetLanguage) {
-      return ai.translator.availability({ sourceLanguage, targetLanguage }):
+      return Translator.availability({ sourceLanguage, targetLanguage });
     }
 
     await a("en", "zh-Hans") === "available";
@@ -274,7 +274,7 @@ A <dfn>language arc</dfn> is a [=tuple=] of two strings, a <dfn for="language ar
 
   Instead, a typical user agent will either support only one English-to-French language arc (presumably ("`en`", "`fr`")), or it could support multiple non-overlapping English-to-French language arcs, such as ("`en`", "`fr-FR`"), ("`en`", "`fr-CA`"), and ("`en`", "`fr-CH`").
 
-  In the latter case, if the web developer requested to create a translator using <code highlight="js">ai.translator.create({ sourceLanguage: "en", targetLanguage: "fr" })</code>, the [$LookupMatchingLocaleByBestFit$] algorithm would choose one of the three possible language arcs to use (presumably ("`en`", "`fr-FR`")).
+  In the latter case, if the web developer requested to create a translator using <code highlight="js">Translator.create({ sourceLanguage: "en", targetLanguage: "fr" })</code>, the [$LookupMatchingLocaleByBestFit$] algorithm would choose one of the three possible language arcs to use (presumably ("`en`", "`fr-FR`")).
 </div>
 
 <div algorithm>
